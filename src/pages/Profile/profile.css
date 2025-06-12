@@ -1,0 +1,46 @@
+.login-container {
+    background-image: url('images/login.png'); 
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+}
+  
+.login-card {
+  background-color: rgba(0, 0, 0, 0.19); 
+  backdrop-filter: blur(10px); 
+  padding: 20px;
+  border-radius: 15px !important;
+  margin: 20px 120px 20px 0px;
+}
+
+
+.rounded-pill {
+    border-radius: var(--bs-border-radius-pill) !important;
+    padding: 12px;
+    color: #495057;
+}
+
+.auth-toggle {
+  display: flex;
+  background-color: #142d4c; 
+  border-radius: 999px;
+  padding: 5px;
+  width: 300px;
+  justify-content: center;
+}
+
+.toggle-btn {
+  border: none;
+  background: transparent;
+  color: white;
+  padding: 10px 45px;
+  border-radius: 999px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn.active {
+  background-color: #f1b600; 
+  color: #000;
+}

@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo:wght@400;700;800&display=swap');
+
+body {
+  font-family: 'Be Vietnam Pro', sans-serif;
+}
+.hero-section {
+    background: url('/images/world-map.png') no-repeat center center;
+    background-size: cover;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .banner-text {
+    font-size: 18px;
+    width: 60%;
+    color: #555555;
+  }
+
+  button{
+    color: #EAB308;
+    background: #183251;
+    border-radius: 6px;
+    padding: 12px 36px;
+  }
+
+  .plane-img {
+    position: relative;
+    z-index: 2;
+    max-width: 100%;
+  }
+  .offer{
+    background-color: #F0F7FF;
+  }

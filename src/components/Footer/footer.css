@@ -1,0 +1,20 @@
+.bg-dark-blue {
+    background-color: #112b4b;
+  }
+  
+  .logo-text {
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .plane-icon {
+    height: 65px;
+  }
+
+  .link-text{
+    text-decoration: none;
+    color: white;
+  }
+  

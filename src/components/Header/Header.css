@@ -1,0 +1,15 @@
+.nav-link {
+  color: #183251;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  color: #EAB308;
+}
+
+.active-link {
+  background-color: #183251;
+  color: white !important;
+  font-weight: 500;
+}
