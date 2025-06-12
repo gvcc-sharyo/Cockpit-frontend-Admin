@@ -5,8 +5,7 @@ import AdminRoute from './routers/AdminRoute';
 function App() {
   return (
     <div>
-      <AppRouter/>
-      <AdminRoute/>
+      <AdminRoute />
     </div>
   );
 }

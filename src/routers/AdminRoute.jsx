@@ -10,13 +10,13 @@ import Institution from '../pages/admin/institute/Institution';
 
 const AdminRoute = () => {
   return (
-    <BrowserRouter>     
+    <BrowserRouter>
       <Routes>
-        <Route path="/admin" element={<AdminLogin />} />
+        <Route path="/" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<Dashboard />} />
         <Route path="/admin/trainingsyllabus" element={<TrainingSyllabus />} />
         <Route path="/admin/feedback" element={<Feedback />} />
-        <Route path="/admin/adminLogin" element={<AdminLogin />} />
+        {/* <Route path="/admin/adminLogin" element={<AdminLogin />} /> */}
         <Route path="/admin/trainingChapter" element={<TrainingChapter />} />
         <Route path="/admin/trainingQuestion/:syllabusName/:bookName/:chapterName" element={<TrainingQuestion />} />
         <Route path="/admin/addQuestion" element={<AddQuestion />} />
