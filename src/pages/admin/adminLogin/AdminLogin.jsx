@@ -1,33 +1,130 @@
 import React, { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import { apiPost, apiPostToken } from '../../../api/axios';
+import {
+  Grid,
+  Button,
+  TextField,
+  Typography,
+  Checkbox,
+  FormControlLabel,
+  IconButton,
+  Box,
+  Paper,
+} from '@mui/material';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useNavigate } from 'react-router-dom';
+
+const styles = {
+  containerBox: {
+    minHeight: '100vh',
+    backgroundImage: 'url(/public/images/signin.svg)',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    display: 'flex',
+    justifyContent: 'flex-end',
+    // alignItems: 'center',
+  },
+  cardPaper: {
+    padding: '2rem',
+    borderRadius: '1rem',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    backdropFilter: 'blur(10px)',
+    color: '#fff',
+    width: '100%',
+    maxWidth: '500px',
+  },
+  toggleButton: (isActive) => ({
+    border: 'none',
+    // background: 'none',
+    color: 'white',
+    fontWeight: 'bold',
+    padding:'4px',
+    width:'100%',
+    marginRight: '1rem',
+    // textTransform: 'none',
+    textDecoration: 'none',
+    cursor: 'pointer',
+    backgroundColor: isActive ? '#EAB308' : 'none',
+    borderRadius: '50px',
+  }),
+  centeredBox: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: '1rem',
+    backgroundColor: '#183251',
+    borderRadius: '50px',
+    padding: '3px',
+    width:'100%'
+  },
+  secondaryText: {
+    color: 'white',
+  },
+  formTextField: {
+    marginBottom: '1rem',
+    '& .MuiOutlinedInput-root': {
+      borderRadius: '50px',
+      backgroundColor: 'white',
+      // '& fieldset': { borderColor: '#444' },
+      // '&:hover fieldset': { borderColor: '#666' },
+      // '&.Mui-focused fieldset': { borderColor: '#f0ad4e' },
+    },
+    '& .MuiInputLabel-root': { color: 'black' },
+    '& .MuiInputBase-input': { color: 'black', height: '10px' },
+  },
+  passwordBox: {
+    position: 'relative',
+  },
+  visibilityIcon: {
+    position: 'absolute',
+    right: '1rem',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    color: '#bbb',
+  },
+  formGrid: {
+    marginBottom: '3px',
+  },
+  formCheckbox: {
+    color: '#bbb',
+    '&.Mui-checked': { color: '#f0ad4e' , },
+
+  },
+  formControlLabel: {
+    color: 'white',
+  },
+  submitButton: {
+    backgroundColor: '#f0ad4e',
+    color: '#fff',
+    borderRadius: '50px',
+    textTransform: 'none',
+    padding: '5px',
+    '&:hover': { backgroundColor: '#ec9f3e' },
+  },
+  socialIcon: {
+    height: '30px',
+  },
+};
 
 function AdminLogin() {
   const [activeForm, setActiveForm] = useState('login');
-
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  // const { setUser } = useAuth();
-
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    const role= 'sub_admin';
-     
-    const req = { email, username, password,role }
+    const role = 'super_admin';
+    const req = { email, username, password, role };
 
     try {
-      const response = await apiPost('/admin/registerAdmin', req);
+      await apiPost('/admin/registerAdmin', req);
       alert('Admin registered successfully');
       setEmail('');
       setUsername('');
       setPassword('');
       setActiveForm('login');
-
     } catch (error) {
       console.log('Error registering user:', error);
     }
@@ -35,159 +132,154 @@ function AdminLogin() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
-    const req = { email, password }
+    const req = { email, password };
 
     try {
       const response = await apiPost('/admin/loginAdmin', req);
-
       if (response.status === 200) {
         alert(response.data.message);
         localStorage.setItem('adminToken', response.data.token);
         localStorage.setItem('adminData', JSON.stringify(response.data.data));
         navigate('/admin/dashboard');
-      }
-
-      else {
+      } else {
         alert(response.data.message);
       }
 
       setEmail('');
       setPassword('');
-
     } catch (error) {
       console.log('Login failed', error);
     }
   };
 
   return (
-    <>
-      <div className="login-container d-flex justify-content-end">
-        <div className="login-card p-4 rounded shadow">
-          <div className="text-center mb-4">
-            <h6 className="text-white">Welcome to COCKPIT.!</h6>
-            <div className="btn-group mt-2">
-              <div className="auth-toggle">
-                <button
-                  className={`toggle-btn ${activeForm === 'login' ? 'active' : ''}`}
-                  onClick={() => setActiveForm('login')}
-                >
-                  Login
-                </button>
-                <button
-                  className={`toggle-btn ${activeForm === 'register' ? 'active' : ''}`}
-                  onClick={() => setActiveForm('register')}
-                >
-                  Register
-                </button>
-              </div>
-            </div>
-          </div>
-          <p className="text-light small text-center mb-4">
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-          </p>
-          {activeForm === 'login' && (
-            <form>
-              <div className="mb-4">
-                <label htmlFor="loginEmail" className="form-label text-light">User Id / Email</label>
-                <input
-                  id='loginEmail'
-                  type="email"
-                  className="form-control rounded-pill"
-                  placeholder="Enter your Email Address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div className="mb-4 position-relative">
-                <label htmlFor="loginPassword" className="form-label text-white">Password</label>
-                <input
-                  id='loginPassword'
-                  type="password"
-                  className="form-control rounded-pill"
-                  placeholder="Enter Your Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <i className="bi bi-eye-slash position-absolute end-0 top-50 translate-middle-y me-3 text-muted"></i>
-              </div>
-              <div className="d-flex justify-content-between text-light small mb-3">
-                <div>
-                  <input type="checkbox" className="form-check-input me-1" />
-                  Remember me
-                </div>
-                <a href="#" className="text-light text-decoration-none">
-                  Forgot Password?
-                </a>
-              </div>
-              <button type='button' className="btn btn-warning w-100 text-white rounded-pill" onClick={handleLogin}>Board me</button>
-            </form>
-          )}
+    <Box sx={styles.containerBox}>
+      <Grid container>
+        <Grid item size={{ xs: 12, sm: 8, md: 10 }}>
+          <Paper elevation={10} sx={styles.cardPaper} mt={5}>
+            <Typography variant="body2" align="center" gutterBottom mb={2}>
+              Welcome to COCKPIT.!
+            </Typography>
 
-          {activeForm === 'register' && (
-            <form>
-              <div className="mb-3">
-                <label htmlFor="registerEmail" className="form-label text-white">Email Address</label>
-                <input
-                  type="email"
-                  id="registerEmail"
-                  className="form-control rounded-pill"
-                  placeholder="Enter Email Address"
+            <Box sx={styles.centeredBox}>
+              <Button
+                sx={styles.toggleButton(activeForm === 'login')}
+                onClick={() => setActiveForm('login')}
+              >
+                Login
+              </Button>
+              <Button
+                style={styles.toggleButton(activeForm === 'register')}
+                onClick={() => setActiveForm('register')}
+              >
+                Register
+              </Button>
+            </Box>
+
+            <Typography variant="body2" align="center" paragraph sx={styles.secondaryText}>
+              Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+            </Typography>
+
+            {activeForm === 'login' && (
+              <form onSubmit={handleLogin}>
+                <Typography variant="body2" gutterBottom>Email</Typography>
+                <TextField
+                  label="User Id / Email"
+                  variant="outlined"
+                  fullWidth
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  sx={styles.formTextField}
                 />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="registerUser" className="form-label text-white">User Name</label>
-                <input
-                  type="text"
-                  id="registerUser"
-                  className="form-control rounded-pill"
-                  placeholder="Enter your username"
+                <Box sx={styles.passwordBox}>
+                  <Typography variant="body2" gutterBottom>Access key</Typography>
+                  <TextField
+                    label="Password"
+                    variant="outlined"
+                    type="password"
+                    fullWidth
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    sx={styles.formTextField}
+                  />
+                  <IconButton sx={styles.visibilityIcon}>
+                    <VisibilityOffIcon />
+                  </IconButton>
+                </Box>
+                <Grid container justifyContent="space-between" alignItems="center" sx={styles.formGrid}>
+                  <FormControlLabel
+                    control={<Checkbox sx={styles.formCheckbox} />}
+                    label="Remember me"
+                    sx={styles.formControlLabel}
+                  />
+                  <Typography variant="body2" sx={styles.secondaryText}>
+                    Forgot Password?
+                  </Typography>
+                </Grid>
+                <Button type="submit" fullWidth sx={styles.submitButton}>
+                  Board me
+                </Button>
+              </form>
+            )}
+
+            {activeForm === 'register' && (
+              <form onSubmit={handleRegister}>
+                <Typography variant="body2" gutterBottom>Email</Typography>
+                <TextField
+                  label="Email Address"
+                  variant="outlined"
+                  fullWidth
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  sx={styles.formTextField}
+                />
+                <Typography variant="body2" gutterBottom>Username</Typography>
+                <TextField
+                  label="User Name"
+                  variant="outlined"
+                  fullWidth
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  sx={styles.formTextField}
                 />
-              </div>
-              <div className="mb-3 position-relative">
-                <label htmlFor="registerPassword" className="form-label text-white">Password</label>
-                <input
-                  type="password"
-                  id="registerPassword"
-                  className="form-control rounded-pill"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <i className="bi bi-eye-slash position-absolute end-0 top-50 translate-middle-y me-3 text-muted"></i>
-              </div>
-              <div className="d-flex justify-content-between text-light small mb-3">
-                <div>
-                  <input type="checkbox" className="form-check-input me-1" />
-                  Remember me
-                </div>
-                <a href="#" className="text-light text-decoration-none">
-                  Forgot Password?
-                </a>
-              </div>
-              <button type='button' className="btn btn-warning w-100 text-white rounded-pill" onClick={handleRegister}>Register</button>
-            </form>
-          )}
+                <Box sx={styles.passwordBox}>
+                  <Typography variant="body2" gutterBottom>Password</Typography>
+                  <TextField
+                    label="Password"
+                    variant="outlined"
+                    type="password"
+                    fullWidth
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    sx={styles.formTextField}
+                  />
+                  <IconButton sx={styles.visibilityIcon}>
+                    <VisibilityOffIcon />
+                  </IconButton>
+                </Box>
+                <Button type="submit" fullWidth sx={styles.submitButton} mt={2}>
+                  Register
+                </Button>
+              </form>
+            )}
 
-          <div className="text-light text-center my-3">- OR -</div>
-          <div className="d-flex justify-content-center gap-3">
-            <button className="btn">
-              <img src="images/apple.png" alt="Plane" style={{ height: '40px' }} />
-            </button>
-            <button className="btn">
-              <img src="images/google.png" alt="Plane" style={{ height: '40px' }} />
-            </button>
-            <button className="btn">
-              <img src="images/twitter.png" alt="Plane" style={{ height: '40px' }} />
-            </button>
-          </div>
-        </div>
-      </div>
-    </>
+            <Typography variant="body2" align="center" sx={{ ...styles.secondaryText, my: 1 }}>
+              - OR -
+            </Typography>
+
+            <Grid container justifyContent="center" spacing={2}>
+              {['apple', 'google', 'twitter'].map((platform) => (
+                <Grid item key={platform}>
+                  <Button>
+                    <img src={`images/${platform}.png`} alt={platform} style={styles.socialIcon} />
+                  </Button>
+                </Grid>
+              ))}
+            </Grid>
+          </Paper>
+        </Grid>
+      </Grid>
+    </Box>
   );
 }
 

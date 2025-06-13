@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:3000/cockpit';
+const BASE_URL = 'http://13.235.91.167:8000/cockpit';
 
 // GET
 export const apiGet = async (endpoint) => {
