@@ -227,7 +227,7 @@ const Navbar = ({ title, children }) => {
             {/* Title */}
             <Typography
               sx={{
-                fontSize: '1rem',
+                fontSize: '12px',
                 fontWeight: 'bold',
                 flexGrow: 1,
                 whiteSpace: 'nowrap',
