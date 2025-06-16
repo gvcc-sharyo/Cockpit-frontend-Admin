@@ -45,7 +45,7 @@ const Navbar = ({ title, children }) => {
       {/* Sidebar */}
       <Grid
         item
-        size={{ xs: sidebarOpen ? 8 : 0, md: 2 }}
+        size={{ xs: sidebarOpen ? 8 : 0, md: 2, sm:4 }}
         sx={{
           bgcolor: 'white',
           borderRight: '1px solid #ddd',
@@ -114,12 +114,13 @@ const Navbar = ({ title, children }) => {
                 cursor: 'pointer',
               }}
             >
-              <ListItemIcon>
+              <ListItemIcon sx={{ minWidth: 40, mr: 1 }}> {/* Increase space here */}
                 <img src="/images/database.svg" alt="Database" />
               </ListItemIcon>
               <ListItemText primary="Database" />
               {openDatabase ? <ExpandLess /> : <ExpandMore />}
             </ListItem>
+
 
             <Collapse in={openDatabase} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
@@ -245,7 +246,7 @@ const Navbar = ({ title, children }) => {
                 display: 'flex',
                 alignItems: 'center',
                 bgcolor: '#f0f0f0',
-                px:1,
+                px: 1,
                 py: 0.5,
                 borderRadius: '5px',
                 width: 140, // increased width to fit icon + text
@@ -297,7 +298,7 @@ const Navbar = ({ title, children }) => {
                   display: 'flex',
                   alignItems: 'center',
                   bgcolor: '#f0f0f0',
-                  p:1,
+                  p: 1,
                   borderRadius: '5px',
                   // width: '70%', // increased width to fit icon + text
                   fontSize: '0.75rem',

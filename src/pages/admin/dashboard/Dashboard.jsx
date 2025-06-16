@@ -147,11 +147,11 @@ function Dashboard() {
           </Grid>
 
           {/* New Report Box */}
-          <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid container spacing={2} sx={{ mt: 4 }}>
             <Grid size={{ xs: 10, md: 5, sm: 5 }}>
               <Box sx={classes.reportBox}>
                 <Typography sx={classes.reportTitle}>Report</Typography>
-                <Typography sx={classes.reportName}>John Doe</Typography>
+                <Typography sx={classes.reportName}>User</Typography>
                 <Box sx={classes.reportLine}>
                   <Typography sx={classes.reportedText}>reported</Typography>
                   <Typography sx={classes.replyText}>reply</Typography>
