@@ -37,16 +37,19 @@ function TrainingChapter() {
     const fetchBooks = async () => {
         try {
             const response = await apiGetToken('/getBooks');
-            setBooks(response.data.books);
-            console.log("selected book", selectedBook);
-            
+            const bookList = response.data.books;
+            setBooks(bookList);
+            if (bookList.length > 0) {
+                setSelectedBook(bookList[0].bookTitle);
+            }
+
 
         } catch (error) {
             console.error('Error fetching syllabus:', error);
         }
     };
 
-    const [selectedBook, setSelectedBook] = useState(books[0]);
+    const [selectedBook, setSelectedBook] = useState('');
 
     const fetchChapters = async () => {
         try {
@@ -137,92 +140,165 @@ function TrainingChapter() {
     }
 
     return (
-        <>
-            <Navbar title="Training" />
 
-            <Container maxWidth="xl" >
+        <Navbar title={'Training'}>
 
-                <Grid container sx={{ flexDirection: 'column', position: "relative", backgroundColor: '#f8f9fa', padding: '10px' }} mt={-60} ml={30} >
+            <Grid container sx={{ flexDirection: 'column', position: "relative", backgroundColor: '#f8f9fa', padding: '10px' }} >
 
-                    <Grid sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Grid>
-                            <Typography sx={{ fontSize: '30px' }} gutterBottom >Books for {syllabusTitle}</Typography>
-
-                        </Grid>
-
-                        <Box sx={{ minWidth: '150px', flexShrink: 0 }}>
-                            <Button
-                                onClick={handleModalOpen}
-                                variant="outlined"
-                                sx={{ backgroundColor: 'orange', color: 'white' }}
-                            >
-                                + Add books
-                            </Button>
-                        </Box>
+                <Grid size={{ xs: 12, md: 12, sm: 12 }} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} >
+                    <Grid >
+                        <Typography sx={{ fontSize: { xs: '16px', md: '22px', sm: '20px' } }} gutterBottom >Books for {syllabusTitle}</Typography>
                     </Grid>
 
-                    <Box sx={{ maxWidth: '100%', overflowX: 'auto' }}>
-                        <Box sx={{ display: 'flex', gap: '15px', padding: '10px', width: 'max-content' }}>
-                            {
-                                books.map((book) => (
-                                    <Box
-                                        key={book.bookTitle}
-                                        onClick={() => setSelectedBook(book.bookTitle)}
-                                        sx={{
-                                            minWidth: '150px',
-                                            padding: '7px',
-                                            textAlign: 'center',
-                                            cursor: 'pointer',
-                                            backgroundColor: selectedBook === book.bookTitle ? '#FFEBAB' : '#fff',
-                                            border: '1px solid #ccc',
-                                            boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.1)',
-                                            borderRadius: '10px',
-                                            fontWeight: 'bold',
-                                            flexShrink: 0,
-                                        }}
-                                    >
-                                        {book.bookTitle}
-                                    </Box>
-                                ))
-                            }
-                       </Box>
+                    <Grid >
+                        <Button
+                            onClick={handleModalOpen}
+                            variant="outlined"
+                            sx={{ backgroundColor: 'orange', color: 'white', fontSize: { xs: '12px', md: '14px', sm: '14px' }, padding: '5px' }}
+                        >
+                            + Add books
+                        </Button>
+                    </Grid>
+                </Grid>
+
+                <Box sx={{ maxWidth: '100%', overflowX: 'auto' }} mt={2}>
+                    <Box sx={{ display: 'flex', gap: '15px', padding: '10px', width: 'max-content' }}>
+                        {
+                            books.map((book) => (
+                                <Box
+                                    key={book.bookTitle}
+                                    onClick={() => setSelectedBook(book.bookTitle)}
+                                    sx={{
+                                        minWidth: { xs: '100px', md: '150px', sm: '120px' },
+                                        padding: '7px',
+                                        textAlign: 'center',
+                                        cursor: 'pointer',
+                                        backgroundColor: selectedBook === book.bookTitle ? '#FFEBAB' : '#fff',
+                                        border: '1px solid #ccc',
+                                        boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.1)',
+                                        borderRadius: '10px',
+                                        fontWeight: 'bold',
+                                        flexShrink: 0,
+                                        fontSize: { xs: '12px', md: '14px', sm: '14px' }
+                                    }}
+                                >
+                                    {book.bookTitle}
+                                </Box>
+                            ))
+                        }
                     </Box>
+                </Box>
 
+                <Grid
+                container
+                    mt={4}
+                    sx={{
+                        boxShadow: 3,
+                        borderRadius: 2,
+                        p: 2,
+                        backgroundColor: '#fff',
+                    }}
+                    size={{ xs: 12, md: 10, sm: 10 }}
+                >
+                    <Grid
+                        container
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                        }}
+                        // size={{ xs: 12, md: 12, sm: 12 }}
+                        
+                    >
+                        <Typography
+                            sx={{ fontSize: { xs: '16px', sm: '20px', md: '22px' } }}
+                            gutterBottom
+                        >
+                            Chapters of {selectedBook}
+                        </Typography>
 
-                    <Grid size={{ xs: 6, md: 10 }} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography sx={{ fontSize: '30px' }} gutterBottom >Chapters of {selectedBook}</Typography>
-                        <Button variant="'outlined" sx={{ backgroundColor: 'orange', color: 'white', padding: '5px' }}
-                            onClick={handleChapterModalOpen}>+ Add Chapters</Button>
+                        <Button
+                            variant="outlined"
+                            sx={{
+                                backgroundColor: 'orange',
+                                color: 'white',
+                                px: 1,
+                                py: 1,
+                                fontSize: { xs: '10px', sm: '12px', md: '14px' },
+                                // minWidth: { xs: 'auto' },
+                            }}
+                            onClick={handleChapterModalOpen}
+                        >
+                            + Add Chapters
+                        </Button>
                     </Grid>
 
-                    <Grid>
-                        <TableContainer component={Paper} elevation={0} sx={{
-                            boxShadow: 'none',
-                            maxHeight: 400,
-                            overflowY: 'auto',
-                        }}>
-                            <Table>
+                    <Grid item size={{ xs: 8 }} mt={2} sx={{   maxWidth: '100%', overflowX: 'auto',}}>
+                        <TableContainer
+                            component={Paper}
+                            elevation={0}
+                            sx={{
+                                boxShadow: 'none',
+                                maxHeight: 400,
+                                overflowY: 'auto',
+                                overflowX: { xs: 'auto', md: 'visible' },
+                            }}
+                        >
+                            <Table >
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell><Typography fontWeight="bold">Chapter No</Typography></TableCell>
-                                        <TableCell><Typography fontWeight="bold">Chapter Name</Typography></TableCell>
-                                        <TableCell><Typography fontWeight="bold">Status</Typography></TableCell>
-                                        <TableCell><Typography fontWeight="bold">Action</Typography></TableCell>
+                                        <TableCell>
+                                            <Typography fontWeight="bold" sx={{ fontSize: { xs: '12px', md: '14px' } }}>
+                                                Chapter No
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Typography fontWeight="bold" sx={{ fontSize: { xs: '12px', md: '14px' } }}>
+                                                Chapter Name
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Typography fontWeight="bold" sx={{ fontSize: { xs: '12px', md: '14px' } }}>
+                                                Status
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Typography fontWeight="bold" sx={{ fontSize: { xs: '12px', md: '14px' } }}>
+                                                Action
+                                            </Typography>
+                                        </TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {filteredChapters.map((chapter, index) => (
-                                        <TableRow key={index} sx={{ borderBottom: '1px solid #e0e0e0', cursor: 'pointer' }}>
-                                            <TableCell >{index + 1}</TableCell>
-                                            <TableCell onClick={() => handleChapterClick(chapter)}>{chapter.chaptername}</TableCell>
+                                        <TableRow
+                                            key={index}
+                                            sx={{ borderBottom: '1px solid #e0e0e0', cursor: 'pointer' }}
+                                        >
+                                            <TableCell>{index + 1}</TableCell>
+                                            <TableCell onClick={() => handleChapterClick(chapter)}>
+                                                {chapter.chaptername}
+                                            </TableCell>
                                             <TableCell>
-                                                <Button variant="contained" sx={{ backgroundColor: chapter.status === 'active' ? '#109CF1' : 'red', color: 'white' }}>
+                                                <Button
+                                                    variant="contained"
+                                                    sx={{
+                                                        backgroundColor: chapter.status === 'active' ? '#109CF1' : 'red',
+                                                        color: 'white',
+                                                        fontSize: { xs: '10px', sm: '12px' },
+                                                        px: 1.5,
+                                                        py: 0.5,
+                                                        minWidth: 'auto',
+                                                    }}
+                                                >
                                                     {chapter.status}
                                                 </Button>
                                             </TableCell>
                                             <TableCell>
-                                                <IconButton>
-                                                    <EditSquareIcon sx={{ color: 'orange' }} fontSize="small" />
+                                                <IconButton size="small">
+                                                    <EditSquareIcon
+                                                        sx={{ color: 'orange', fontSize: { xs: '18px', sm: '20px' } }}
+                                                    />
                                                 </IconButton>
                                             </TableCell>
                                         </TableRow>
@@ -231,9 +307,11 @@ function TrainingChapter() {
                             </Table>
                         </TableContainer>
                     </Grid>
-
                 </Grid>
-            </Container>
+
+
+            </Grid>
+
 
             <Dialog open={openModal} onClose={handleModalClose} maxWidth="sm" fullWidth>
                 <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -334,7 +412,9 @@ function TrainingChapter() {
 
                 </DialogContent>
             </Dialog>
-        </>
+        </Navbar>
+
+
     );
 }
 

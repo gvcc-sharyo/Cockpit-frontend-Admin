@@ -17,7 +17,9 @@ import {
   TextField,
   MenuItem,
   Alert,
-  Snackbar
+  Snackbar,
+  CircularProgress,
+  Backdrop
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import CloseIcon from '@mui/icons-material/Close';
@@ -70,51 +72,75 @@ function TrainingSyllabus() {
 
   const [showAlert, setShowAlert] = useState(false);
 
+  const [formErrors, setFormErrors] = useState({
+  title: '',
+  category: '',
+});
+const [loading, setLoading] = useState(false);
+
   const handleAddSyllabus = async () => {
+
+      const errors = {};
+
+  if (!formData.title) errors.title = 'Title is required';
+  if (!formData.category) errors.category = 'Category is required';
+
+  setFormErrors(errors);
+
+  if (Object.keys(errors).length > 0) return;
+
+  setLoading(true);
+
     const data = new FormData();
     data.append('image', formData.image);
     data.append('title', formData.title);
     data.append('category', formData.category);
 
     try {
+      
       const response = await apiPostUploadToken('/addSyllabus', data);
-      if (response.status === 200) {
+      if (response.data.status === 200) {
 
         fetchSyllabus();
         handleModalClose();
-        setShowAlert(true);
 
       } else {
-        Alert("Something went wrong");
+        handleModalClose();
+        Alert(response.data.message);
+        
       }
     } catch (error) {
-      console.error('Error adding syllabus:', error);
+      Alert('something went wrong');
+  
     }
   };
 
+
+const styles={
+  textField:{
+    '& .MuiOutlinedInput-root': {
+      borderRadius: '12px',
+    },
+  }
+}
+
   return (
-    <>
-      <Navbar title="Training" />
+    
+      <Navbar title="Training">
 
-      {
-        showAlert && (
-          <Snackbar open={showAlert} autoHideDuration={2000} onClose={() => setShowAlert(false)}>
-            <Alert onClose={() => setShowAlert(false)} severity="success" sx={{ width: '100%' }}>
-              Syllabus added successfully!
-            </Alert>
-          </Snackbar>
-        )
-      }
+          {/* {
+                loading && (
+                  <Backdrop open={loading} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+                    <CircularProgress size={60} color="inherit" />
+                  </Backdrop>
+                )
+              } */}
 
-      <Container maxWidth="xl" >
-
-
-        <Box sx={{ position: "relative", backgroundColor: '#f8f9fa', padding: '10px' }} mt={-60} ml={30} >
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold' }}>List of Syllabus</Typography>
-            <Button onClick={handleModalOpen} variant="contained" sx={{ backgroundColor: 'orange', color: 'white', fontWeight: 'bold' }}> + Add Syllabus</Button>
+        <Box >
+          <Box sx={{ display: 'flex', mb: 1, alignItems:'center'}}>
+            <Typography  sx={{ flexGrow: 0.8, fontWeight: 'bold', fontSize: { xs: '14px', sm: '15px', md: '18px' }}}>List of Syllabus</Typography>
+            <Button onClick={handleModalOpen} variant="contained" sx={{ backgroundColor: 'orange', color: 'white', fontWeight: 'bold', fontSize: { xs: '10px', sm: '12px', md: '14px' }}}> + Add Syllabus</Button>
           </Box>
-
 
           <Grid container spacing={4} sx={{ mt: 5 }} >
             {
@@ -159,11 +185,9 @@ function TrainingSyllabus() {
                   ))}
                 </>
             }
-
-
           </Grid>
         </Box>
-      </Container>
+
 
 
       <Dialog open={openModal} onClose={handleModalClose} maxWidth="sm" fullWidth>
@@ -196,7 +220,7 @@ function TrainingSyllabus() {
           </Box>
 
           <Grid container sx={{ display: 'flex', gap: 3, mb: 3 }}>
-            <Grid size={{ xs: 6, md: 5 }}>
+            <Grid size={{ xs: 10, md: 5, sm: 5 }}>
               <Typography sx={{ fontSize: '14px' }} gutterBottom>Syllabus title</Typography>
               <TextField
                 fullWidth
@@ -204,10 +228,14 @@ function TrainingSyllabus() {
                 name="title"
                 value={formData.title}
                 onChange={handleInputChange}
+                sx={styles.textField}
               />
+
+              <Typography variant="caption" color="error">{formErrors.title}</Typography>
+
             </Grid>
 
-            <Grid size={{ xs: 6, md: 5 }}>
+            <Grid size={{ xs: 10, md: 5, sm: 5 }} >
               <Typography sx={{ fontSize: '14px' }} gutterBottom>Category</Typography>
               <TextField
                 select
@@ -216,10 +244,12 @@ function TrainingSyllabus() {
                 name="category"
                 value={formData.category}
                 onChange={handleInputChange}
+                sx={styles.textField}
               >
                 <MenuItem value="General">General</MenuItem>
                 <MenuItem value="Radio">Radio</MenuItem>
               </TextField>
+               <Typography variant="caption" color="error">{formErrors.category}</Typography>
             </Grid>
 
           </Grid>
@@ -237,7 +267,7 @@ function TrainingSyllabus() {
 
         </DialogContent>
       </Dialog>
-    </>
+    </Navbar>
   );
 }
 

@@ -19,6 +19,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { useNavigate, useLocation } from 'react-router-dom';
+import SearchIcon from '@mui/icons-material/Search';
 
 const Navbar = ({ title, children }) => {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ const Navbar = ({ title, children }) => {
       {/* Sidebar */}
       <Grid
         item
-        size={{ xs: sidebarOpen ? 8 : 0, md: 2 }}
+        size={{ xs: sidebarOpen ? 8 : 0, md: 2, sm:4 }}
         sx={{
           bgcolor: 'white',
           borderRight: '1px solid #ddd',
@@ -113,12 +114,13 @@ const Navbar = ({ title, children }) => {
                 cursor: 'pointer',
               }}
             >
-              <ListItemIcon>
+              <ListItemIcon sx={{ minWidth: 40, mr: 1 }}> {/* Increase space here */}
                 <img src="/images/database.svg" alt="Database" />
               </ListItemIcon>
               <ListItemText primary="Database" />
               {openDatabase ? <ExpandLess /> : <ExpandMore />}
             </ListItem>
+
 
             <Collapse in={openDatabase} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
@@ -201,7 +203,7 @@ const Navbar = ({ title, children }) => {
             </Box>
 
             {/* Admin text */}
-            <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
               <Typography variant="caption" sx={{ fontWeight: 'bold', fontSize: '0.75rem' }}>
                 {adminData?.username || 'Admin'}
               </Typography>
@@ -226,7 +228,7 @@ const Navbar = ({ title, children }) => {
             {/* Title */}
             <Typography
               sx={{
-                fontSize: '1rem',
+                fontSize: '12px',
                 fontWeight: 'bold',
                 flexGrow: 1,
                 whiteSpace: 'nowrap',
@@ -239,19 +241,29 @@ const Navbar = ({ title, children }) => {
             </Typography>
 
             {/* Search bar */}
-            <InputBase
-              placeholder="Search..."
+            <Box
               sx={{
+                display: 'flex',
+                alignItems: 'center',
                 bgcolor: '#f0f0f0',
                 px: 1,
-                py: 0.3,
+                py: 0.5,
                 borderRadius: '5px',
-                width: 100,
+                width: 140, // increased width to fit icon + text
                 fontSize: '0.75rem',
                 flexShrink: 0,
               }}
-              inputProps={{ 'aria-label': 'search' }}
-            />
+            >
+              <SearchIcon sx={{ fontSize: 16, mr: 0.5 }} />
+              <InputBase
+                placeholder="Search..."
+                sx={{
+                  fontSize: '0.75rem',
+                  // width: '100%',
+                }}
+                inputProps={{ 'aria-label': 'search' }}
+              />
+            </Box>
 
             {/* Notification icon */}
             <IconButton size="small" sx={{ p: 0.5 }}>
@@ -281,16 +293,28 @@ const Navbar = ({ title, children }) => {
 
             {/* Right section */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <InputBase
-                placeholder="Search..."
+              <Box
                 sx={{
+                  display: 'flex',
+                  alignItems: 'center',
                   bgcolor: '#f0f0f0',
-                  px: 2,
-                  py: 0.5,
+                  p: 1,
                   borderRadius: '5px',
-                  width: 200,
+                  // width: '70%', // increased width to fit icon + text
+                  fontSize: '0.75rem',
+                  flexShrink: 0,
                 }}
-              />
+              >
+                <SearchIcon sx={{ fontSize: '20px', mr: 0.5 }} />
+                <InputBase
+                  placeholder="Search..."
+                  sx={{
+                    fontSize: '0.75rem',
+                    // width: '100%',
+                  }}
+                  inputProps={{ 'aria-label': 'search' }}
+                />
+              </Box>
               <IconButton>
                 <NotificationsIcon />
               </IconButton>
