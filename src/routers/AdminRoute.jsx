@@ -7,6 +7,9 @@ import TrainingChapter from '../pages/admin/database/training/TrainingChapter';
 import TrainingQuestion from '../pages/admin/database/training/TrainingQuestion';
 import AddQuestion from '../pages/admin/database/training/AddQuestion';
 import Institution from '../pages/admin/institute/Institution';
+import Notifications from '../pages/admin/Notifications/notifications';
+import Pricing from '../pages/admin/Pricing/pricing';
+import Profile from '../pages/admin/UserProfile/profile';
 
 const AdminRoute = () => {
   return (
@@ -21,6 +24,9 @@ const AdminRoute = () => {
         <Route path="/admin/trainingQuestion/:syllabusName/:bookName/:chapterName" element={<TrainingQuestion />} />
         <Route path="/admin/addQuestion" element={<AddQuestion />} />
         <Route path="/admin/institution" element={<Institution />} />
+        <Route path="/admin/notifications" element={<Notifications />} />
+        <Route path="/admin/pricing" element={<Pricing />} />
+        <Route path="/admin/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>
   );
