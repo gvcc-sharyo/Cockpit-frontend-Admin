@@ -94,6 +94,8 @@ const styles = {
     },
   },
   formGrid: {
+    display: 'flex',
+    justifyContent: 'flex-end',
     marginBottom: '3px',
   },
   formCheckbox: {
@@ -271,13 +273,13 @@ function AdminLogin() {
                   <Typography variant="caption" color="error">{loginErrors.password}</Typography>
                 )}
 
-                <Grid container justifyContent="space-between" alignItems="center" sx={styles.formGrid}>
-                  <FormControlLabel
+                <Grid container alignItems="center" sx={styles.formGrid}>
+                  {/* <FormControlLabel
                     control={<Checkbox sx={styles.formCheckbox} />}
                     label="Remember me"
                     sx={styles.formControlLabel}
-                  />
-                  <Typography variant="body2" sx={styles.secondaryText}>Forgot Password?</Typography>
+                  /> */}
+                  <Typography variant="body2" sx={styles.secondaryText} gutterBottom>Forgot Password?</Typography>
                 </Grid>
 
                 <Button fullWidth sx={styles.submitButton} onClick={handleLogin}>
