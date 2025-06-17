@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Box, Grid, Typography, TextField, Button } from "@mui/material";
 import Navbar from "../../../components/admin/Navbar";
-import { apiGet, apiPost } from "../../../api/axios";
+import { apiDelete, apiGet, apiPost, apiPut } from "../../../api/axios";
+import CustomTextField from "../../../components/admin/customTextfield";
+
 
 const Pricing = () => {
   const [forms, setForms] = useState([
@@ -14,69 +16,59 @@ const Pricing = () => {
   ]);
   const [errors, setErrors] = useState([{}]);
 
-  const handleChange = (index, field, value) => {
-    const newForms = [...forms];
-    newForms[index] = { ...newForms[index], [field]: value };
-    setForms(newForms);
-
-    const newErrors = [...errors];
-    newErrors[index] = { ...newErrors[index], [field]: "" };
-    setErrors(newErrors);
+  const clearError = (index, field) => {
+    const updated = [...errors];
+    updated[index] = { ...updated[index], [field]: "" };
+    setErrors(updated);
   };
 
-  const validate = (formData) => {
-    const newErrors = {};
+  const handleChange = (index, field, value) => {
+    const updatedForms = [...forms];
+    updatedForms[index] = { ...updatedForms[index], [field]: value };
+    setForms(updatedForms);
+    clearError(index, field);
+  };
 
-    if (!formData.planName || formData.planName.trim() === "") {
-      newErrors.planName = "Plan Name is required";
-    }
+  const validate = ({ planName, price, duration }) => {
+    const errs = {};
+    if (!planName?.trim()) errs.planName = "Plan Name is required";
+    if (!price || isNaN(price) || Number(price) <= 0)
+      errs.price = "Price must be a valid number";
+    if (!duration?.trim()) errs.duration = "Duration is required";
+    return errs;
+  };
 
-    if (
-      formData.price === undefined ||
-      formData.price === null ||
-      formData.price === "" ||
-      isNaN(formData.price) ||
-      Number(formData.price) <= 0
-    ) {
-      newErrors.price = "Price must be a valid number";
-    }
-
-    if (!formData.duration || formData.duration.trim() === "") {
-      newErrors.duration = "Duration is required";
-    }
-
-    return newErrors;
+  const setValidationErrors = (index, validationErrors) => {
+    const updated = [...errors];
+    updated[index] = validationErrors;
+    setErrors(updated);
   };
 
   const handleSubmit = async (index) => {
-    const validationErrors = validate(forms[index]);
-    if (Object.keys(validationErrors).length > 0) {
-      const newErrors = [...errors];
-      newErrors[index] = validationErrors;
-      setErrors(newErrors);
-      return;
-    }
+    const form = forms[index];
+    const validationErrors = validate(form);
+    if (Object.keys(validationErrors).length)
+      return setValidationErrors(index, validationErrors);
 
     try {
-      const res = await apiPost("/admin/createPricing", {
-        planName: forms[index].planName.trim(),
-        price: parseInt(forms[index].price),
-        duration: forms[index].duration.trim(),
-      });
+      const payload = {
+        planName: form.planName.trim(),
+        price: parseInt(form.price),
+        duration: form.duration.trim(),
+      };
 
-      console.log("Submitted successfully:", res.data);
+      const { data } = await apiPost("/admin/createPricing", payload);
+      const updatedForms = [...forms];
+      updatedForms[index] = { ...form, isNew: false, _id: data.data._id };
+      updatedForms.push({ planName: "", price: "", duration: "", isNew: true });
+      setForms(updatedForms);
 
-      const newForms = [...forms];
-      newForms[index].isNew = false;
+      const updatedErrors = [...errors];
+      updatedErrors[index] = {};
+      updatedErrors.push({});
+      setErrors(updatedErrors);
 
-      // Add new empty form after successful submission
-      newForms.push({ planName: "", price: "", duration: "", isNew: true });
-      setForms(newForms);
-
-      const newErrors = [...errors];
-      newErrors[index] = {};
-      newErrors.push({});
-      setErrors(newErrors);
+      console.log("Submitted successfully:", data);
     } catch (error) {
       console.error("Submission failed:", error);
     }
@@ -84,27 +76,24 @@ const Pricing = () => {
 
   const getPlanDetails = async () => {
     try {
-      const response = await apiGet("/admin/getPricing");
-      const rawData = response.data?.data || [];
-
-      const validEntries = rawData.filter(
-        (entry) =>
-          entry.planName?.trim() &&
-          entry.price !== null &&
-          entry.duration?.trim()
+      const { data } = await apiGet("/admin/getPricing");
+      const plans = (data?.data || []).filter(
+        ({ planName, price, duration }) =>
+          planName?.trim() && price != null && duration?.trim()
       );
 
-      const formattedForms = validEntries.map((entry) => ({
-        planName: entry.planName,
-        price: entry.price.toString(),
-        duration: entry.duration,
+      const formatted = plans.map((p) => ({
+        planName: p.planName,
+        price: p.price.toString(),
+        duration: p.duration,
+        _id: p._id,
         isNew: false,
       }));
 
-      setForms(formattedForms);
-      setErrors(formattedForms.map(() => ({})));
+      setForms(formatted);
+      setErrors(formatted.map(() => ({})));
 
-      console.log("Valid Plans:", formattedForms);
+      console.log("Valid Plans:", formatted);
     } catch (error) {
       console.error("Failed to fetch plan details:", error);
     }
@@ -122,169 +111,145 @@ const Pricing = () => {
     setErrors([...errors, {}]);
   };
 
-  const handleDelete = (index) => {
+  const handleDelete = async (index) => {
     if (forms.length === 1) return;
-    const newForms = forms.filter((_, i) => i !== index);
-    const newErrors = errors.filter((_, i) => i !== index);
-    setForms(newForms);
-    setErrors(newErrors);
+    const pricingId = forms[index]?._id;
+    if (!pricingId) return console.warn("No pricingId found");
+
+    try {
+      const res = await apiDelete("/admin/deletePricing", { pricingId });
+      console.log("Deleted:", res.data);
+      setForms(forms.filter((_, i) => i !== index));
+      setErrors(errors.filter((_, i) => i !== index));
+    } catch (error) {
+      console.error("Delete failed:", error?.response?.data || error);
+    }
   };
+
+  const handleUpdate = async (index) => {
+    const validationErrors = validate(forms[index]);
+    if (Object.keys(validationErrors).length > 0) {
+      const newErrors = [...errors];
+      newErrors[index] = validationErrors;
+      setErrors(newErrors);
+      return;
+    }
+
+    try {
+      const { _id, planName, price, duration } = forms[index];
+
+      const res = await apiPost("/admin/updatePricing", {
+        pricingId: forms[index]._id,
+        planName: forms[index].planName,
+        price: Number(forms[index].price),
+        duration: forms[index].duration,
+        modules: forms[index].modules || [],
+      });
+
+      console.log("Updated successfully:", res.data);
+
+      const updatedForms = [...forms];
+      updatedForms[index].isNew = false;
+      setForms(updatedForms);
+
+      const updatedErrors = [...errors];
+      updatedErrors[index] = {};
+      setErrors(updatedErrors);
+    } catch (error) {
+      console.error("Update failed:", error);
+    }
+  };
+
+
+const fields = [
+  { label: "Plan Name", placeholder: "Monthly Plan", valueKey: "planName", type: "text" },
+  { label: "Plan Price", placeholder: "169", valueKey: "price", type: "number" },
+  { label: "Plan Duration", placeholder: "1 month", valueKey: "duration", type: "text" },
+];
+
 
   return (
     <Navbar title={"Pricing"}>
       <Box>
-        <Box mb={4}>
-          <Typography
-            variant="h5"
-            mb={3}
-            sx={{ fontFamily: "Jost", fontWeight: 600 }}
+        <Typography
+          variant="h5"
+          mb={3}
+          sx={{ fontFamily: "Jost", fontWeight: 600 }}
+        >
+          Plan Details
+        </Typography>
+        {forms.map((formData, index) => (
+          <Box
+            key={index}
+            sx={{
+              bgcolor: "#fff",
+              p: { xs: 2, md: 4 },
+              borderRadius: 4,
+              boxShadow: 1,
+              marginBottom: 2,
+            }}
           >
-            Plan Details
-          </Typography>
-          {forms.map((formData, index) => (
-            <Box
-              key={index}
-              sx={{
-                bgcolor: "#fff",
-                p: 4,
-                borderRadius: 4,
-                boxShadow: 1,
-                marginBottom: 2,
-              }}
-            >
-              <Grid container spacing={3}>
-                <Grid size={{ xs: 12, sm: 12, md: 6, lg: 4, xl: 4 }}>
-                  <Typography
-                    sx={{
-                      fontFamily: "Jost",
-                      fontWeight: 400,
-                      fontSize: "14px",
-                      mb: 1,
-                    }}
-                  >
-                    Plan Name <span style={{ color: "red" }}>*</span>
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    required
-                    placeholder="Monthly Plan"
-                    value={formData.planName}
-                    onChange={(e) =>
-                      handleChange(index, "planName", e.target.value)
-                    }
-                    error={!!errors[index]?.planName}
-                    helperText={errors[index]?.planName}
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        borderRadius: "10px",
-                        height: "50px",
-                      },
-                    }}
-                  />
-                </Grid>
+            <Grid container spacing={3}>
+              {fields.map(
+                ({ label, placeholder, valueKey, type,}, idx) => (
+                  <Grid key={valueKey} size={{xs: 12, sm: 12, md: 4, lg: 4, xl: 4 }}>
+                    <CustomTextField label={label} required placeholder={placeholder} type={type} value={formData[valueKey]} onChange={(e) => handleChange(index, valueKey, e.target.value)} error={!!errors[index]?.[valueKey]} helperText={errors[index]?.[valueKey]} />
+                  </Grid>
+                )
+              )}
 
-                <Grid size={{ xs: 12, sm: 12, md: 4, lg: 4, xl: 4 }}>
-                  <Typography
-                    sx={{
-                      fontFamily: "Jost",
-                      fontWeight: 400,
-                      fontSize: "14px",
-                      mb: 1,
-                    }}
-                  >
-                    Plan Price <span style={{ color: "red" }}>*</span>
-                  </Typography>
-                  <TextField
-                    type="number"
-                    fullWidth
-                    required
-                    placeholder="169"
-                    value={formData.price}
-                    onChange={(e) =>
-                      handleChange(index, "price", e.target.value)
-                    }
-                    error={!!errors[index]?.price}
-                    helperText={errors[index]?.price}
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        borderRadius: "10px",
-                        height: "50px",
-                      },
-                    }}
-                  />
-                </Grid>
-
-                <Grid size={{ xs: 12, sm: 12, md: 4, lg: 4, xl: 4 }}>
-                  <Typography
-                    sx={{
-                      fontFamily: "Jost",
-                      fontWeight: 400,
-                      fontSize: "14px",
-                      mb: 1,
-                    }}
-                  >
-                    Plan Duration <span style={{ color: "red" }}>*</span>
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    required
-                    placeholder="1 month"
-                    value={formData.duration}
-                    onChange={(e) =>
-                      handleChange(index, "duration", e.target.value)
-                    }
-                    error={!!errors[index]?.duration}
-                    helperText={errors[index]?.duration}
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        borderRadius: "10px",
-                        height: "50px",
-                      },
-                    }}
-                  />
-                </Grid>
-
-                <Grid size={{ xs: 12 }}>
-                  <Box textAlign="center">
-                    {formData.isNew && (
-                      <Button
-                        onClick={() => handleSubmit(index)}
-                        sx={{
-                          bgcolor: "#EAB308",
-                          color: "#fff",
-                          borderRadius: 2,
-                          px: 4,
-                        }}
-                      >
-                        Save
-                      </Button>
-                    )}
-                  </Box>
-                </Grid>
+              <Grid size={{ xs: 12 }}>
+                <Box textAlign="center">
+                  {formData.isNew ? (
+                    <Button
+                      onClick={() => handleSubmit(index)}
+                      sx={{
+                        bgcolor: "#EAB308",
+                        color: "#fff",
+                        borderRadius: 2,
+                        px: 4,
+                      }}
+                    >
+                      Save
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => handleUpdate(index)}
+                      sx={{
+                        bgcolor: "#3B82F6", 
+                        color: "#fff",
+                        borderRadius: 2,
+                        px: 4,
+                      }}
+                    >
+                      Update
+                    </Button>
+                  )}
+                </Box>
               </Grid>
+            </Grid>
 
-              <Box sx={{ textAlign: { md: "right", xs: "center" }, mt: 2 }}>
-                <Button
-                  variant="text"
-                  color="primary"
-                  onClick={() => handleDelete(index)}
-                  disabled={forms.length === 1}
-                >
-                  Delete
-                </Button>
-              </Box>
+            <Box sx={{ textAlign: { md: "right", xs: "center" }, mt: 2 }}>
+              <Button
+                variant="text"
+                color="primary"
+                onClick={() => handleDelete(index)}
+                disabled={forms.length === 1}
+              >
+                Delete
+              </Button>
             </Box>
-          ))}
-        </Box>
+          </Box>
+        ))}
+      </Box>
 
-        <Box mt={4} textAlign={{ xs: "center", md: "right" }}>
-          <Button
-            onClick={handleAddPlan}
-            sx={{ bgcolor: "#EAB308", color: "#fff", borderRadius: 2, px: 4 }}
-          >
-            + Add Plans
-          </Button>
-        </Box>
+      <Box mt={4} textAlign={{ xs: "center", md: "right" }}>
+        <Button
+          onClick={handleAddPlan}
+          sx={{ bgcolor: "#EAB308", color: "#fff", borderRadius: 2, px: 4 }}
+        >
+          + Add Plans
+        </Button>
       </Box>
     </Navbar>
   );

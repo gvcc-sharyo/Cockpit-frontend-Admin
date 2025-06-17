@@ -69,8 +69,12 @@ export const apiPut = async (endpoint, data) => {
   return await axios.put(`${BASE_URL}${endpoint}`, data, { headers });
 };
 
+
+
+
+
 // DELETE
-export const apiDelete = async (endpoint) => {
+export const apiDelete = async (endpoint, body) => {
   const headers = {
     'Content-Type': 'application/json',
   };
