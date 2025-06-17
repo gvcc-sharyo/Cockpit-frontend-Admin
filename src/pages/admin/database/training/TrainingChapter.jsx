@@ -420,7 +420,6 @@ function TrainingChapter() {
                                 placeholder="Book Title"
                                 error={!!bookError} //error={bookError ? true : false}
                                 helperText={bookError}
-
                             />
 
                         </Grid>
@@ -450,7 +449,7 @@ function TrainingChapter() {
                 <DialogContent dividers>
 
                     <Grid container sx={{ display: 'flex', gap: 3, mb: 3 }}>
-                        <Grid size={{ xs: 10, md: 5 }}>
+                        <Grid size={{ xs: 10, md: 5, sm:5 }}>
                          <CustomTextField
                                 label="Chapter No"
                                 name="chapterno"
@@ -462,7 +461,7 @@ function TrainingChapter() {
                             />
 
                         </Grid>
-                        <Grid size={{ xs: 10, md: 5 }}>
+                        <Grid size={{ xs: 10, md: 5, sm:5 }}>
                              <CustomTextField
                                 label="Chapter name"
                                 name="chaptername"

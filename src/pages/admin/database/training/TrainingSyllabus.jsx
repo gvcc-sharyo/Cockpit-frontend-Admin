@@ -26,6 +26,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import { snackbarEmitter } from "../../../../components/admin/CustomSnackbar";
 import CustomTextField from "../../../../components/admin/CustomTextField";
+import CustomButton from "../../../../components/admin/CustomButton";
 
 function TrainingSyllabus() {
   const [syllabus, setSyllabus] = useState([]);
@@ -72,6 +73,7 @@ function TrainingSyllabus() {
   const handleModalClose = () => {
     setOpenModal(false);
     setFormData({ image: null, title: '', category: '' });
+    setFormErrors({ title: '', category: '' });
   };
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
@@ -88,6 +90,7 @@ function TrainingSyllabus() {
     category: '',
   });
 
+  const [loading, setLoading] = useState(false);
   const handleAddSyllabus = async () => {
 
     const errors = {};
@@ -99,6 +102,8 @@ function TrainingSyllabus() {
 
     if (Object.keys(errors).length > 0) return;
 
+    setLoading(true);
+
     const data = new FormData();
     data.append('image', formData.image);
     data.append('title', formData.title);
@@ -107,7 +112,9 @@ function TrainingSyllabus() {
     try {
 
       const response = await apiPostUpload('/addSyllabus', data);
-      if (response.data.status === 200) {
+ setTimeout(() => {
+  setLoading(false);
+    if (response.data.status === 200) {
         snackbarEmitter(response.data.message, 'success');
         fetchSyllabus();
         handleModalClose();
@@ -116,11 +123,16 @@ function TrainingSyllabus() {
         snackbarEmitter(response.data.message, 'error');
         fetchSyllabus();
         handleModalClose();
-
-
       }
+
+ }, 1500)
+
     } catch (error) {
-      snackbarEmitter('Something went wrong', 'error');
+      setTimeout(() => {
+        setLoading(false);
+        snackbarEmitter('Something went wrong', 'error');
+      },1500);
+      
 
     }
   };
@@ -241,15 +253,8 @@ function TrainingSyllabus() {
 
           </Grid>
 
-          <Grid item sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Button
-              // fullWidth
-              variant="contained"
-              sx={{ backgroundColor: 'orange', color: 'white', fontWeight: 'bold' }}
-              onClick={handleAddSyllabus}
-            >
-              Add
-            </Button>
+          <Grid  sx={{ display: 'flex', justifyContent: 'center' }}>
+              <CustomButton children='Add' onClick={handleAddSyllabus} loading={loading} bgColor='#EAB308' sx={{width:'20%'}} />
           </Grid>
 
         </DialogContent>

@@ -9,6 +9,7 @@ const CustomTextField = ({
   placeholder = "",
   name = "",
   borderRadius = "10px",
+  bgcolor,
   ...rest
 }) => {
   return (
@@ -24,6 +25,7 @@ const CustomTextField = ({
           "& .MuiOutlinedInput-root": {
             borderRadius,
             height: "45px",
+            backgroundColor: 'white'
           },
           "& .MuiInputBase-input": {
             padding: "0 14px",
