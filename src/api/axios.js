@@ -48,6 +48,9 @@ export const apiPostToken = async (endpoint, data) => {
   return await axios.post(`${BASE_URL}${endpoint}`, data, { headers });
 };
 
+
+
+
 export const apiPostUploadToken = async (endpoint, data) => {
              
  const token = localStorage.getItem('adminToken'); 
@@ -70,11 +73,18 @@ export const apiPut = async (endpoint, data) => {
   return await axios.put(`${BASE_URL}${endpoint}`, data, { headers });
 };
 
+
+
+
+
 // DELETE
-export const apiDelete = async (endpoint) => {
+export const apiDelete = async (endpoint, body) => {
   const headers = {
     'Content-Type': 'application/json',
   };
 
-  return await axios.delete(`${BASE_URL}${endpoint}`, { headers });
+  return await axios.delete(`${BASE_URL}${endpoint}`, {
+    headers,
+    data: body, // ✅ pass body here
+  });
 };
