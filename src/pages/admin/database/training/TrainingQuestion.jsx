@@ -22,7 +22,7 @@ import {
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import EditSquareIcon from '@mui/icons-material/EditSquare';
-import { apiGet, apiGetToken, apiPostUpload } from "../../../../api/axios";
+import { apiGet, apiPostUpload } from "../../../../api/axios";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { snackbarEmitter } from "../../../../components/admin/CustomSnackbar";
 
@@ -34,8 +34,7 @@ function TrainingQuestion() {
 
     const fetchQuestions = async () => {
         try {
-            const response = await apiGetToken('/questions');
-            console.log("Response: ",response.data.data);
+            const response = await apiGet('/questions');
             if (response.data.status === 200 && response.data.data.length === 0) {
                 snackbarEmitter('No questions found', 'info');
             }
@@ -61,9 +60,13 @@ function TrainingQuestion() {
 
     const navigate = useNavigate();
     const handleAddClick = () => {
-        navigate('/admin/addQuestion');
+        navigate('/admin/addQuestion',
+           { state: {
+      syllabusName,
+      bookName,
+      chapterName,
+    }},);
     }
-
 
     //bulk upload
     const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
@@ -112,6 +115,14 @@ function TrainingQuestion() {
         }
     };
 
+    const handleEditClick = (question) => {
+        navigate('/admin/addQuestion/', {state:{
+            syllabusName,
+            bookName,
+            chapterName,
+            question
+        }});
+    };
 
     return (
 
@@ -222,7 +233,7 @@ function TrainingQuestion() {
                                             </Button>
                                         </TableCell>
                                         <TableCell>
-                                            <IconButton size="small">
+                                            <IconButton size="small" onClick={()=>handleEditClick(question)}>
                                                 <EditSquareIcon
                                                     sx={{ color: 'orange', fontSize: { xs: '18px', sm: '20px' } }}
                                                 />

@@ -1,13 +1,15 @@
 import React from "react";
 import { Typography } from "@mui/material";
-const CustomTypography = ({ text }) => {
+const CustomTypography = ({ text,   fontSize = { xs: '12px', sm: '13px', md: '14px' }, fontWeight=400, color='black', mb=1, sx = {}}) => {
   return (
     <Typography
       sx={{
         fontFamily: "Jost",
-        fontWeight: 400,
-        fontSize: "14px",
-        mb: 1,
+        fontWeight: fontWeight,
+        fontSize: fontSize,
+        mb: mb,
+        color: color,
+        ...sx
       }}
     >
       {text}
