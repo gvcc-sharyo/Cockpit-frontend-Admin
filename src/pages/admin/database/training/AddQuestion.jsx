@@ -116,11 +116,12 @@ const location = useLocation();
       const response = await apiPost(endpoint, payload);
 
       if (response?.data?.status === 200) {
-        snackbarEmitter(response.data.message, "success");
+       
 
         setTimeout(() => {
           setLoading(false);
-
+           snackbarEmitter(response.data.message, "success");
+         
           if (!isUpdate) {
             setFormData({
               syllabus: "",
