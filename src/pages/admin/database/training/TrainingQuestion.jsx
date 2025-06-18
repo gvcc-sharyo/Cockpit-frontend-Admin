@@ -35,6 +35,7 @@ function TrainingQuestion() {
     const fetchQuestions = async () => {
         try {
             const response = await apiGetToken('/questions');
+            console.log("Response: ",response.data.data);
             if (response.data.status === 200 && response.data.data.length === 0) {
                 snackbarEmitter('No questions found', 'info');
             }
