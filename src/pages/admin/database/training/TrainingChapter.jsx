@@ -29,6 +29,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
 import { snackbarEmitter } from "../../../../components/admin/CustomSnackbar";
 import CustomTextField from "../../../../components/admin/CustomTextField";
+import CustomButton from "../../../../components/admin/CustomButton";
 
 function TrainingChapter() {
     const [books, setBooks] = useState([]);
@@ -119,6 +120,8 @@ function TrainingChapter() {
     };
 
     const [bookError, setBookError] = useState('');
+    const [loading, setLoading] = useState(false);
+
     const handleAddBook = async () => {
 
         if (!bookName) {
@@ -126,20 +129,34 @@ function TrainingChapter() {
             return;
         }
 
+        setLoading(true);
+
         try {
             const response = await apiPost('/addBooks', { bookTitle: bookName });
-            if (response.data.status === 200) {
-                snackbarEmitter(response.data.message, 'success');
-                handleModalClose();
-            } else {
 
-                snackbarEmitter(response.data.message, 'error');
-                handleModalClose();
-            }
-            fetchBooks();
+            setTimeout(() => {
+                setLoading(false);
+                if (response.data.status === 200) {
+                    snackbarEmitter(response.data.message, 'success');
+                    handleModalClose();
+                } else {
+
+                    snackbarEmitter(response.data.message, 'error');
+                    handleModalClose();
+                }
+                fetchBooks();
+            }, 1500)
+
+
         } catch (error) {
-            snackbarEmitter('Something went wrong', 'error');
-            fetchBooks();
+
+            setTimeout(() => {
+                setLoading(false);
+                snackbarEmitter('Something went wrong', 'error');
+                fetchBooks();
+            }, 1500);
+
+
         }
     }
 
@@ -184,20 +201,31 @@ function TrainingChapter() {
             req.chapterId = chapterId;
         }
 
+        setLoading(true);
+
         try {
             const endpoint = isEditing ? '/updateChapter' : '/addChapters';
             const response = await apiPost(endpoint, req);
 
-            if (response.data.status === 200) {
+            setTimeout(() => {
+                setLoading(false);
+                if (response.data.status === 200) {
                 snackbarEmitter(response.data.message, 'success');
                 fetchChapters();
                 handleChapterModalClose();
             } else {
                 snackbarEmitter(response.data.message, 'error');
             }
+            }, 1500)
+           
 
         } catch (error) {
-            snackbarEmitter('Something went wrong', 'error');
+            setTimeout(() => {
+                setLoading(false);
+                 snackbarEmitter('Something went wrong', 'error');
+                 fetchChapters();
+            }, 1500);
+           
         }
     };
 
@@ -425,14 +453,15 @@ function TrainingChapter() {
                         </Grid>
 
                         <Grid item mt={{ xs: 0, md: 3, sm: 3 }} >
-                            <Button
+                            {/* <Button
                                 // fullWidth
                                 variant="contained"
                                 sx={{ backgroundColor: 'orange', color: 'white', fontWeight: 'bold' }}
                                 onClick={handleAddBook}
                             >
                                 Add
-                            </Button>
+                            </Button> */}
+                            <CustomButton children='Add' onClick={handleAddBook} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
                         </Grid>
                     </Grid>
                 </DialogContent>
@@ -449,26 +478,26 @@ function TrainingChapter() {
                 <DialogContent dividers>
 
                     <Grid container sx={{ display: 'flex', gap: 3, mb: 3 }}>
-                        <Grid size={{ xs: 10, md: 5, sm:5 }}>
-                         <CustomTextField
+                        <Grid size={{ xs: 10, md: 5, sm: 5 }}>
+                            <CustomTextField
                                 label="Chapter No"
                                 name="chapterno"
                                 value={formData.chapterno}
                                 onChange={handleInputChange}
                                 placeholder="Chapter No"
-                                error={!!formErrors.chapterno} 
+                                error={!!formErrors.chapterno}
                                 helperText={formErrors.chapterno}
                             />
 
                         </Grid>
-                        <Grid size={{ xs: 10, md: 5, sm:5 }}>
-                             <CustomTextField
+                        <Grid size={{ xs: 10, md: 5, sm: 5 }}>
+                            <CustomTextField
                                 label="Chapter name"
                                 name="chaptername"
                                 value={formData.chaptername}
                                 onChange={handleInputChange}
                                 placeholder="Chapter name"
-                                error={!!formErrors.chaptername} 
+                                error={!!formErrors.chaptername}
                                 helperText={formErrors.chaptername}
                             />
                         </Grid>
@@ -476,13 +505,13 @@ function TrainingChapter() {
                     <Grid container sx={{ display: 'flex', gap: 3, mb: 3 }}>
                         <Grid size={{ xs: 10, md: 5, sm: 10 }}>
 
-                             <CustomTextField
+                            <CustomTextField
                                 label="Status"
                                 name="status"
                                 value={formData.status}
                                 onChange={handleInputChange}
                                 placeholder="Choose"
-                                error={!!formErrors.status} 
+                                error={!!formErrors.status}
                                 helperText={formErrors.status}
                                 select
                             >
@@ -494,14 +523,8 @@ function TrainingChapter() {
                     </Grid>
 
                     <Grid item sx={{ display: 'flex', justifyContent: 'center' }}>
-                        <Button
-                            // fullWidth
-                            variant="contained"
-                            sx={{ backgroundColor: 'orange', color: 'white', fontWeight: 'bold' }}
-                            onClick={handleAddChapter}
-                        >
-                            {isEditing ? 'Update' : 'Add'}
-                        </Button>
+
+                         <CustomButton children={isEditing ? 'Update' : 'Add'} onClick={handleAddChapter} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
                     </Grid>
 
                 </DialogContent>

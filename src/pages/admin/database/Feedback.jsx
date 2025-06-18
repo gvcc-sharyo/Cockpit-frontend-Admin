@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Box, Grid, Typography, IconButton, Collapse, Button } from "@mui/material";
+import { Box, Grid, Typography, IconButton, Collapse, Button, Avatar } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import Navbar from "../../../components/admin/Navbar";
+import CustomTypography from "../../../components/admin/CustomTypography";
 
 function Feedback() {
   const [open, setOpen] = useState(false);
@@ -58,50 +59,86 @@ function Feedback() {
   return (
     <Navbar title={"Feedback"}>
       <Grid container justifyContent="center">
-        <Grid size={{ xs: 10, sm: 10, md: 10 }}>
+        <Grid size={{ xs: 10, sm: 10, md: 10 }} >
           {/* Toggle Box */}
           <Box sx={styles.toggleBox} onClick={() => setOpen(!open)}>
-            <Typography sx={{ fontSize: { xs: "0.95rem", md: "1.05rem" }, fontWeight: 600 }}>
-              View Feedback
-            </Typography>
+            <Grid sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Avatar>U</Avatar>
+              <CustomTypography
+                fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
+                fontWeight={500}
+                text=' User has reported a question on syllabus and chapter'
+                mb={0} />
+            </Grid>
+
             <IconButton>
               {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
             </IconButton>
           </Box>
 
           {/* Expandable Content */}
-          <Collapse in={open}>
-            <Grid container spacing={2} mt={1}>
+          <Collapse in={open} >
+            <Grid container spacing={2} mt={1} sx={{justifyContent: "center", backgroundColor:'#F0F0F0'}}>
               {/* Question & Our Answer Box */}
-              <Grid size={{ xs: 10, sm: 11, md: 11 }}>
+              <Grid size={{ xs: 8, sm: 10, md: 10}}>
                 <Box sx={styles.sectionBox}>
-                  <Typography sx={styles.sectionTitle}>Question</Typography>
-                  <Typography sx={styles.sectionText}>
-                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Est iusto illum ex molestiae exercitationem!
-                  </Typography>
+                  <CustomTypography
+                    fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
+                    color='orange'
+                    fontWeight={500}
+                    text='Question'
+                    mb={0} />
 
-                  <Typography sx={styles.sectionTitle} mt={2}>Our Answer</Typography>
-                  <Typography sx={styles.sectionText}>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Exercitationem pariatur necessitatibus dignissimos ullam, voluptates adipisci esse, provident quo amet cum voluptas? Amet, nam esse!                  </Typography>
+                  <CustomTypography
+                    fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
+                    fontWeight={500}
+                    text='   Lorem ipsum dolor sit, amet consectetur adipisicing elit. Est iusto illum ex molestiae exercitationem!'
+                    mb={0} />
+
+                 <CustomTypography
+                    fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
+                    color='orange'
+                    fontWeight={500}
+                    text='Our Answer'
+                    mb={0}
+                    sx={{ mt: 2 }} />
+
+                  <CustomTypography
+                    fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
+                    fontWeight={500}
+                    text='   Lorem ipsum dolor sit, amet consectetur adipisicing elit. Est iusto illum ex molestiae exercitationem!'
+                    mb={0} />
                 </Box>
               </Grid>
 
               {/* Student Answer Box */}
-              <Grid size={{ xs: 10, sm: 11, md: 11 }}>
+              <Grid size={{ xs: 8, sm: 10, md: 10 }}>
                 <Box sx={styles.sectionBox}>
-                  <Typography sx={styles.sectionTitle}>Student Answer</Typography>
-                  <Typography sx={styles.sectionText}>
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ducimus, doloremque amet. Incidunt, quisquam, harum magnam nesciunt possimus libero, a laboriosam amet cupiditate cum esse.
-                  </Typography>
+                 <CustomTypography
+                    fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
+                    color='orange'
+                    fontWeight={500}
+                    text='Student Answer'
+                    mb={0}
+                     />
+
+                  <CustomTypography
+                    fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
+                    fontWeight={500}
+                    text=' Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ducimus, doloremque amet. Incidunt, quisquam, harum magnam nesciunt possimus libero, a laboriosam amet cupiditate cum esse.'
+                    mb={0}
+                       />
                 </Box>
               </Grid>
-            </Grid>
 
-            {/* Action Buttons */}
-            <Box sx={styles.buttonGroup}>
+                <Box sx={styles.buttonGroup} mb={2}>
               <Button sx={styles.actionButton}>Approve</Button>
               <Button sx={styles.actionButton}>Decline</Button>
             </Box>
+            </Grid>
+
+            {/* Action Buttons */}
+          
           </Collapse>
         </Grid>
       </Grid>

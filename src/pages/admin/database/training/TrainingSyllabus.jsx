@@ -254,7 +254,7 @@ function TrainingSyllabus() {
           </Grid>
 
           <Grid  sx={{ display: 'flex', justifyContent: 'center' }}>
-              <CustomButton children='Add' onClick={handleAddSyllabus} loading={loading} bgColor='#EAB308' sx={{width:'20%'}} />
+              <CustomButton children='Add' onClick={handleAddSyllabus} loading={loading} bgColor='#EAB308' sx={{width:'20%'}} mb={0} />
           </Grid>
 
         </DialogContent>
