@@ -23,8 +23,7 @@ const CustomButton = ({
                 color: '#fff',
                 fontWeight: 600,
                 textTransform: 'none',
-                px: 3,
-                py: 1.5,
+               
                 '&:hover': {
                     backgroundColor: bgColor,
                 },

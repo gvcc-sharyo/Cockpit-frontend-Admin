@@ -9,28 +9,37 @@ import {
   Radio,
   RadioGroup,
 } from "@mui/material";
-import CustomTextField from "../../../../components/admin/customTextfield";
 import CustomTypography from "../../../../components/admin/CustomTypography";
 import CustomTextArea from "../../../../components/admin/CustomTextArea";
+import { useLocation } from "react-router-dom";
+import { apiPost, apiPostToken } from "../../../../api/axios";
+import CustomButton from "../../../../components/admin/CustomButton";
+import { snackbarEmitter } from "../../../../components/admin/CustomSnackbar";
+import CustomTextField from "../../../../components/admin/CustomTextField";
 
 function AddQuestion() {
-  // Changed: Added state to manage form data matching the request body structure
+const location = useLocation();
+
+  // Destructure from location.state (used for prefilled updates)
+  const { syllabusName, bookName, chapterName, question } = location.state || {};
+
+  // =================== State ===================
+  const [loading, setLoading] = useState(false);
+  const [options, setOptions] = useState([1, 2]);
+
   const [formData, setFormData] = useState({
-    syllabus: "",
-    book: "",
-    chapter: "",
-    question: "",
-    options: [
+    syllabus: syllabusName || "",
+    book: bookName || "",
+    chapter: chapterName || "",
+    question: question?.question || "",
+    options: question?.options || [
       { id: 1, text: "", isCorrect: false },
       { id: 2, text: "", isCorrect: false },
     ],
-    explanation: "",
+    explanation: question?.explanation || "",
   });
 
-  // Changed: Modified options state to work with formData
-  const [options, setOptions] = useState([1, 2]);
-
-  // Changed: Added handleInputChange for text fields
+  // =================== Input Handlers ===================
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -39,7 +48,14 @@ function AddQuestion() {
     }));
   };
 
-  // Changed: Added handleOptionTextChange for option text
+  const handleExplanationChange = (value) => {
+    setFormData((prev) => ({
+      ...prev,
+      explanation: value,
+    }));
+  };
+
+  // =================== Option Handlers ===================
   const handleOptionTextChange = (index, value) => {
     setFormData((prev) => {
       const newOptions = [...prev.options];
@@ -48,7 +64,6 @@ function AddQuestion() {
     });
   };
 
-  // Changed: Added handleOptionCorrectChange for radio button selection
   const handleOptionCorrectChange = (value) => {
     const index = parseInt(value.split("-")[1]);
     setFormData((prev) => {
@@ -60,15 +75,6 @@ function AddQuestion() {
     });
   };
 
-  // Changed: Added handleExplanationChange for explanation textarea
-  const handleExplanationChange = (value) => {
-    setFormData((prev) => ({
-      ...prev,
-      explanation: value,
-    }));
-  };
-
-  // Changed: Modified handleAddOption to update both options and formData
   const handleAddOption = () => {
     const newId = options.length + 1;
     setOptions((prev) => [...prev, newId]);
@@ -78,7 +84,6 @@ function AddQuestion() {
     }));
   };
 
-  // Changed: Modified handleDeleteOption to update both options and formData
   const handleDeleteOption = (indexToDelete) => {
     setOptions((prev) => prev.filter((_, index) => index !== indexToDelete));
     setFormData((prev) => ({
@@ -89,10 +94,60 @@ function AddQuestion() {
     }));
   };
 
-  // Changed: Added handleSubmit to process form data
-  const handleSubmit = () => {
-    console.log("Submitted data:", formData);
+  // =================== Submit Handler ===================
+  const handleSubmit = async () => {
+    setLoading(true);
+
+    const isUpdate = !!question?._id;
+
+    const payload = isUpdate
+      ? {
+          questionId: question._id,
+          question: formData.question,
+          options: formData.options,
+          explanation: formData.explanation,
+        }
+      : formData;
+
+    console.log("Submitting:", payload);
+
+    try {
+      const endpoint = isUpdate ? "/updateQuestion" : "/uploadQuestions";
+      const response = await apiPost(endpoint, payload);
+
+      if (response?.data?.status === 200) {
+        snackbarEmitter(response.data.message, "success");
+
+        setTimeout(() => {
+          setLoading(false);
+
+          if (!isUpdate) {
+            setFormData({
+              syllabus: "",
+              book: "",
+              chapter: "",
+              question: "",
+              options: [
+                { id: 1, text: "", isCorrect: false },
+                { id: 2, text: "", isCorrect: false },
+              ],
+              explanation: "",
+            });
+          }
+        }, 2000);
+      } else {
+        setLoading(false);
+        console.error("Submission failed with response:", response);
+        snackbarEmitter(response.data.message, "error");
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error("Submission error:", error);
+      snackbarEmitter("Something went wrong", "error");
+    }
   };
+
+
 
   return (
     <>
@@ -111,7 +166,6 @@ function AddQuestion() {
 
           <Grid size={{ xs: 12, md: 4 }}>
             <CustomTextField
-            select
               label="Book"
               required
               placeholder="Book"
@@ -123,7 +177,6 @@ function AddQuestion() {
 
           <Grid size={{ xs: 12, md: 4 }}>
             <CustomTextField
-            select
               label="Chapter"
               required
               placeholder="Chapter"
@@ -264,21 +317,18 @@ function AddQuestion() {
             mt: 4,
           }}
         >
-          <Button
-            variant="contained"
-            fullWidth={{ xs: true, sm: false }}
-            sx={{
-              backgroundColor: "#EAB308",
-              color: "white",
-              fontWeight: "bold",
-              borderRadius: "10px",
-              px: { xs: 2, sm: 4 },
-            }}
+          <CustomButton
             onClick={handleSubmit}
+            loading={loading}
+            bgColor="#EAB308"
+            borderRadius="10px"
+            sx={{
+              px: { xs: 2, sm: 4 },
+              width: { xs: "100%", sm: "auto" },
+            }}
           >
-            Add Question
-          </Button>
-
+            {question?._id ? "Update Question" : "Add Question"}
+          </CustomButton>
           <Button
             variant="outlined"
             fullWidth={{ xs: true, sm: false }}
