@@ -252,7 +252,6 @@ function TrainingChapter() {
         setOpenChapterModal(true);
     };
 
-
     return (
 
         <Navbar title={'Training'}>

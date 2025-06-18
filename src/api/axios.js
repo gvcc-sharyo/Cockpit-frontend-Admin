@@ -70,9 +70,6 @@ export const apiPut = async (endpoint, data) => {
 };
 
 
-
-
-
 // DELETE
 export const apiDelete = async (endpoint, body) => {
   const headers = {

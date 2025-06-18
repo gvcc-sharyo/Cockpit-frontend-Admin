@@ -39,7 +39,7 @@ function TrainingQuestion() {
                 snackbarEmitter('No questions found', 'info');
             }
 
-            else if (response.data.status === 200) {
+            else if (response.data.status === 200 && response.data.data.length > 0) {
                 snackbarEmitter(response.data.message, 'success');
                 setQuestions(response.data.data);
             }
