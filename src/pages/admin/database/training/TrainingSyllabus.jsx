@@ -21,7 +21,7 @@ import {
   CircularProgress,
   Backdrop
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import CloseIcon from '@mui/icons-material/Close';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import { snackbarEmitter } from "../../../../components/admin/CustomSnackbar";
@@ -91,6 +91,7 @@ function TrainingSyllabus() {
   });
 
   const [loading, setLoading] = useState(false);
+  
   const handleAddSyllabus = async () => {
 
     const errors = {};
@@ -153,7 +154,7 @@ function TrainingSyllabus() {
       <Box >
         <Box sx={{ display: 'flex', mb: 1, alignItems: 'center' }}>
           <Typography sx={{ flexGrow: 0.8, fontWeight: 'bold', fontSize: { xs: '14px', sm: '15px', md: '18px' } }}>List of Syllabus</Typography>
-          <Button onClick={handleModalOpen} variant="contained" sx={{ backgroundColor: 'orange', color: 'white', fontWeight: 'bold', fontSize: { xs: '10px', sm: '12px', md: '14px' } }}> + Add Syllabus</Button>
+          <CustomButton children=' + Add syllabus' onClick={handleModalOpen} loading={false} bgColor='#EAB308' sx={{ width: { xs: '70%', md: '20%', sm: '30%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
         </Box>
 
         <Grid container spacing={4} sx={{ mt: 5 }} >

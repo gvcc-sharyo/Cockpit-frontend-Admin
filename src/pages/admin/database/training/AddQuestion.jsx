@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import CustomTypography from "../../../../components/admin/CustomTypography";
 import CustomTextArea from "../../../../components/admin/CustomTextArea";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate} from "react-router-dom";
 import { apiPost, apiPostToken } from "../../../../api/axios";
 import CustomButton from "../../../../components/admin/CustomButton";
 import { snackbarEmitter } from "../../../../components/admin/CustomSnackbar";
@@ -95,6 +95,8 @@ const location = useLocation();
   };
 
   // =================== Submit Handler ===================
+
+  const navigate = useNavigate();
   const handleSubmit = async () => {
     setLoading(true);
 
@@ -117,11 +119,11 @@ const location = useLocation();
 
       if (response?.data?.status === 200) {
        
-
         setTimeout(() => {
           setLoading(false);
            snackbarEmitter(response.data.message, "success");
-         
+           navigate('/admin/trainingQuestion', {state: {syllabusName: formData.syllabus, bookName: formData.book, chapterName: formData.chapter}});
+
           if (!isUpdate) {
             setFormData({
               syllabus: "",
@@ -135,7 +137,7 @@ const location = useLocation();
               explanation: "",
             });
           }
-        }, 2000);
+        }, 1500);
       } else {
         setLoading(false);
         console.error("Submission failed with response:", response);

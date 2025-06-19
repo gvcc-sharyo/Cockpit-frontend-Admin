@@ -199,6 +199,11 @@ function TrainingChapter() {
         // If editing, add chapterId to the request body
         if (isEditing) {
             req.chapterId = chapterId;
+            req.isactive = isActive;
+
+            console.log('isActive', isActive);
+            
+        
         }
 
         setLoading(true);
@@ -210,22 +215,23 @@ function TrainingChapter() {
             setTimeout(() => {
                 setLoading(false);
                 if (response.data.status === 200) {
-                snackbarEmitter(response.data.message, 'success');
-                fetchChapters();
-                handleChapterModalClose();
-            } else {
-                snackbarEmitter(response.data.message, 'error');
-            }
+                    snackbarEmitter(response.data.message, 'success');
+                    fetchChapters();
+                    handleChapterModalClose();
+                    handleStatusModalClose();
+                } else {
+                    snackbarEmitter(response.data.message, 'error');
+                }
             }, 1500)
-           
+
 
         } catch (error) {
             setTimeout(() => {
                 setLoading(false);
-                 snackbarEmitter('Something went wrong', 'error');
-                 fetchChapters();
+                snackbarEmitter('Something went wrong', 'error');
+                fetchChapters();
             }, 1500);
-           
+
         }
     };
 
@@ -233,13 +239,20 @@ function TrainingChapter() {
     const navigate = useNavigate();
 
     const handleChapterClick = (chapter) => {
-        navigate(`/admin/trainingQuestion/${chapter.syllabus}/${chapter.book}/${chapter.chaptername}`)
+        navigate('/admin/trainingQuestion', {
+            state: {
+                syllabusName: chapter.syllabus,
+                bookName: chapter.book,
+                chapterName: chapter.chaptername,
+            },
+        });
     }
 
 
     //edit chapter
     const [isEditing, setIsEditing] = useState(false);
     const [chapterId, setChapterId] = useState('');
+    const[isActive, setIsActive] = useState(false);
 
     const handleEditChapter = (chapter) => {
         setFormData({
@@ -249,7 +262,24 @@ function TrainingChapter() {
         });
         setChapterId(chapter._id); // or use other unique field if no ID
         setIsEditing(true);
+        setIsActive(chapter.isactive === true? true : false);
         setOpenChapterModal(true);
+    };
+
+    const [openStatusModal, setOpenStatusModal] = useState(false);
+    const handleStatusModalOpen = () => setOpenStatusModal(true);
+    const handleStatusModalClose = () => setOpenStatusModal(false);
+
+    const handleStatusClick = (chapter) => {
+  setFormData({
+            chapterno: chapter.chapterno,
+            chaptername: chapter.chaptername,
+            status: chapter.status,
+        });
+        setChapterId(chapter._id); // or use other unique field if no ID
+        setIsActive(chapter.isactive === true? false : true);
+        setIsEditing(true);
+        setOpenStatusModal(true);
     };
 
     return (
@@ -258,19 +288,13 @@ function TrainingChapter() {
 
             <Grid container sx={{ flexDirection: 'column', position: "relative", backgroundColor: '#f8f9fa', padding: '10px' }} >
 
-                <Grid size={{ xs: 12, md: 12, sm: 12 }} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} >
+                <Grid size={{ xs: 12, md: 12, sm: 12 }} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', }} >
                     <Grid size={{ xs: 6, md: 12, sm: 10 }}>
                         <Typography sx={{ fontSize: { xs: '16px', md: '22px', sm: '20px' } }} gutterBottom >Books for {syllabusTitle}</Typography>
                     </Grid>
 
-                    <Grid size={{ xs: 4, md: 3, sm: 3 }}>
-                        <Button
-                            onClick={handleModalOpen}
-                            variant="outlined"
-                            sx={{ backgroundColor: 'orange', color: 'white', fontSize: { xs: '10px', md: '14px', sm: '14px' }, p: 0.4 }}
-                        >
-                            + Add books
-                        </Button>
+                    <Grid size={{ xs: 6, md: 6, sm: 6 }}>
+                        <CustomButton children=' + Add books' onClick={handleModalOpen} loading={false} bgColor='#EAB308' sx={{ width: { xs: '90%', md: '50%', sm: '60%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
                     </Grid>
                 </Grid>
 
@@ -311,7 +335,7 @@ function TrainingChapter() {
                         p: 2,
                         backgroundColor: '#fff',
                     }}
-                    size={{ xs: 12, md: 11, sm: 10 }}
+                    size={{ xs: 12, md: 12, sm: 12 }}
                 >
                     <Grid
                         container
@@ -330,23 +354,11 @@ function TrainingChapter() {
                             Chapters of {selectedBook}
                         </Typography>
 
-                        <Button
-                            variant="outlined"
-                            sx={{
-                                backgroundColor: 'orange',
-                                color: 'white',
-                                px: 0.4,
-                                py: 0.2,
-                                fontSize: { xs: '10px', sm: '12px', md: '14px' },
-                                // minWidth: { xs: 'auto' },
-                            }}
-                            onClick={handleChapterModalOpen}
-                        >
-                            + Add Chapters
-                        </Button>
+                        <CustomButton children=' + Add chapters' onClick={handleChapterModalOpen} loading={false} bgColor='#EAB308' sx={{ width: { xs: '70%', md: '20%', sm: '30%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
+
                     </Grid>
 
-                    <Grid item size={{ xs: 8 }} mt={2} sx={{ maxWidth: '100%', overflowX: 'auto', }}>
+                    <Grid item size={{ xs: 12, md: 12, sm: 12 }} mt={2} sx={{ maxWidth: '100%', overflowX: 'auto', overflowY: 'auto' }}>
                         <TableContainer
                             component={Paper}
                             elevation={0}
@@ -396,15 +408,16 @@ function TrainingChapter() {
                                                 <Button
                                                     variant="contained"
                                                     sx={{
-                                                        backgroundColor: chapter.status === 'active' ? '#109CF1' : 'red',
+                                                        backgroundColor: chapter.isactive === true ? '#109CF1' : 'red',
                                                         color: 'white',
                                                         fontSize: { xs: '10px', sm: '12px' },
                                                         px: 1.5,
                                                         py: 0.5,
                                                         minWidth: 'auto',
                                                     }}
+                                                    onClick={()=>  handleStatusClick(chapter)}
                                                 >
-                                                    {chapter.status}
+                                                    {chapter.isactive === true ? 'Active' : 'Inactive'}
                                                 </Button>
                                             </TableCell>
                                             <TableCell>
@@ -452,14 +465,6 @@ function TrainingChapter() {
                         </Grid>
 
                         <Grid item mt={{ xs: 0, md: 3, sm: 3 }} >
-                            {/* <Button
-                                // fullWidth
-                                variant="contained"
-                                sx={{ backgroundColor: 'orange', color: 'white', fontWeight: 'bold' }}
-                                onClick={handleAddBook}
-                            >
-                                Add
-                            </Button> */}
                             <CustomButton children='Add' onClick={handleAddBook} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
                         </Grid>
                     </Grid>
@@ -501,7 +506,7 @@ function TrainingChapter() {
                             />
                         </Grid>
                     </Grid>
-                    <Grid container sx={{ display: 'flex', gap: 3, mb: 3 }}>
+                    {/* <Grid container sx={{ display: 'flex', gap: 3, mb: 3 }}>
                         <Grid size={{ xs: 10, md: 5, sm: 10 }}>
 
                             <CustomTextField
@@ -519,15 +524,55 @@ function TrainingChapter() {
                                 <MenuItem value="inactive">Inactive</MenuItem>
                             </CustomTextField>
                         </Grid>
-                    </Grid>
+                    </Grid> */}
 
                     <Grid item sx={{ display: 'flex', justifyContent: 'center' }}>
 
-                         <CustomButton children={isEditing ? 'Update' : 'Add'} onClick={handleAddChapter} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
+                        <CustomButton children={isEditing ? 'Update' : 'Add'} onClick={handleAddChapter} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
                     </Grid>
 
                 </DialogContent>
             </Dialog>
+
+
+
+            <Dialog open={openStatusModal} onClose={handleStatusModalClose} maxWidth="md">
+                <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Status update</Typography>
+                    <IconButton onClick={handleStatusModalClose}>
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+
+                <DialogContent dividers>
+
+                    <Grid container sx={{ display: 'flex', alignItems: 'center', gap: 3 }} >
+                        <Grid item>
+                            <Typography sx={{ fontSize: '16px' }}>
+                                Do you want to change the status?
+                            </Typography>
+                        </Grid>
+                        <Grid item>
+                            <Grid container spacing={2} justifyContent="center">
+                                <Grid item>
+                                 
+                                    <CustomButton children='Yes' onClick={handleAddChapter} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
+                                </Grid>
+                                <Grid item>
+                                    <Button
+                                        variant="outlined"
+                                        color="secondary"
+                                        onClick={handleStatusModalClose}
+                                    >
+                                        No
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </DialogContent>
+            </Dialog>
+
         </Navbar>
 
 

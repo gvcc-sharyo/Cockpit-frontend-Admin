@@ -195,7 +195,7 @@ function AdminLogin() {
     }
   };
 
-  const handleRegister = async (e) => {
+  const handleRegister = async () => {
     // e.preventDefault();
     if (!validateRegisterForm()) return;
 
@@ -216,7 +216,7 @@ function AdminLogin() {
         else {
           snackbarEmitter(response.data.message, 'error');
         }
-      })
+      },1500)
 
 
     } catch (error) {
