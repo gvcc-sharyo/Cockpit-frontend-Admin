@@ -21,7 +21,7 @@ const AdminRoute = () => {
         <Route path="/admin/feedback" element={<Feedback />} />
         {/* <Route path="/admin/adminLogin" element={<AdminLogin />} /> */}
         <Route path="/admin/trainingChapter" element={<TrainingChapter />} />
-        <Route path="/admin/trainingQuestion/:syllabusName/:bookName/:chapterName" element={<TrainingQuestion />} />
+        <Route path="/admin/trainingQuestion" element={<TrainingQuestion />} />
         <Route path="/admin/addQuestion" element={<AddQuestion />} />
         <Route path="/admin/institution" element={<Institution />} />
         <Route path="/admin/notifications" element={<Notifications />} />

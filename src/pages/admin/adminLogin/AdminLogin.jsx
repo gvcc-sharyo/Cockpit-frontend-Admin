@@ -21,6 +21,9 @@ import {
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { apiPost } from '../../../api/axios';
+import CustomTextField from '../../../components/admin/CustomTextField';
+import { snackbarEmitter } from '../../../components/admin/CustomSnackbar';
+import CustomButton from '../../../components/admin/CustomButton';
 
 const styles = {
   containerBox: {
@@ -70,12 +73,12 @@ const styles = {
   },
   secondaryText: {
     color: 'white',
-    fontSize: {xs: '12px', md: '13px'},
-    
+    fontSize: { xs: '12px', md: '13px' },
+
   },
   formTextField: {
 
-    marginBottom: '1rem',
+    // marginBottom: '1rem',
     '& .MuiOutlinedInput-root': {
       borderRadius: '50px',
       backgroundColor: 'white',
@@ -94,21 +97,23 @@ const styles = {
     },
   },
   formGrid: {
+    display: 'flex',
+    justifyContent: 'flex-end',
     marginBottom: '3px',
   },
   formCheckbox: {
     color: '#bbb',
     '&.Mui-checked': { color: '#f0ad4e' },
-     transform: 'scale(0.7)'
+    transform: 'scale(0.7)'
   },
   formControlLabel: {
     color: 'white',
-     '& .MuiTypography-root': {
-      fontSize: {xs: '13px', md: '14px'},
+    '& .MuiTypography-root': {
+      fontSize: { xs: '13px', md: '14px' },
     },
     alignItems: 'center',
     // gap: 1,
-   
+
   },
   submitButton: {
     backgroundColor: '#f0ad4e',
@@ -133,13 +138,9 @@ function AdminLogin() {
   const [registerErrors, setRegisterErrors] = useState({});
 
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   const navigate = useNavigate();
 
-
-  const handleSnackbarClose = () => setSnackbar({ ...snackbar, open: false });
 
   const validateLoginForm = () => {
     const errors = {};
@@ -162,58 +163,78 @@ function AdminLogin() {
     return Object.keys(errors).length === 0;
   };
 
+  const [loading, setLoading] = useState(false);
   const handleLogin = async () => {
     // e.preventDefault();
     if (!validateLoginForm()) return;
 
-    const req = { email: loginForm.email, password: loginForm.password };
     setLoading(true);
+
+    const req = { email: loginForm.email, password: loginForm.password };
     try {
       const response = await apiPost('/admin/loginAdmin', req);
-      if (response.data.status === 200) {
-        localStorage.setItem('adminToken', response.data.token);
-        navigate('/admin/dashboard');
-        setSnackbar({ open: true, message: response.data.message, severity: 'success' });
-        setLoginForm({ email: '', password: '' });
-      } else {
-        setSnackbar({ open: true, message: response.data.message, severity: 'error' });
-      }
+      // console.log("Response :", response.data);
+      
+     
+
+      setTimeout(() => {
+        setLoading(false);
+
+        if (response.data.status === 200) {
+          snackbarEmitter(response.data.message, 'success');
+          localStorage.setItem('adminToken', response.data.token);
+          localStorage.setItem('adminId', response.data.data._id);
+          setLoginForm({ email: '', password: '' });
+          navigate('/admin/dashboard');
+        } else {
+          snackbarEmitter(response.data.message, 'error');
+        }
+      }, 1500)
+
     } catch (error) {
-      setLoading(true);
-      setSnackbar({ open: true, message: 'Failed', severity: 'error' });
-    } finally {
-      setLoading(false);
+      setTimeout(() => {
+        setLoading(false);
+        snackbarEmitter('Something went wrong', 'error');
+      }, 1500);
     }
   };
-  const handleRegister = async (e) => {
+
+  const handleRegister = async () => {
     // e.preventDefault();
     if (!validateRegisterForm()) return;
 
     const req = { ...registerForm, role: 'super_admin' };
     setLoading(true);
+
     try {
-      await apiPost('/admin/registerAdmin', req);
-      setSnackbar({ open: true, message: 'Admin registered successfully', severity: 'success' });
-      setRegisterForm({ email: '', username: '', password: '' });
-      setActiveForm('login');
+      const response = await apiPost('/admin/registerAdmin', req);
+
+      setTimeout(() => {
+        setLoading(false);
+
+        if (response.data.status === 200) {
+          snackbarEmitter(response.data.message, 'success');
+          setRegisterForm({ email: '', username: '', password: '' });
+          setActiveForm('login');
+        }
+        else {
+          snackbarEmitter(response.data.message, 'error');
+        }
+      },1500)
+
+
     } catch (error) {
-      setSnackbar({ open: true, message: 'Registration failed', severity: 'error' });
-    } finally {
-      setLoading(false);
+      setTimeout(() => {
+        setLoading(false);
+        snackbarEmitter('Something went wrong', 'error');
+      }, 1500)
+
     }
   };
 
 
   return (
     <Box sx={styles.containerBox}>
-      {
-        loading && (
-          <Backdrop open={loading} sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-            <CircularProgress size={60} color="inherit" />
-          </Backdrop>
-        )
-      }
-
       <Grid container>
         <Grid item size={{ xs: 12, sm: 8, md: 10 }} sx={styles.gridBox}>
           <Paper elevation={10} sx={styles.cardPaper}>
@@ -230,131 +251,110 @@ function AdminLogin() {
               </Button>
             </Box>
 
-            <Typography variant="body2" align="center" paragraph sx={styles.secondaryText}>
+            <Typography variant="body2" align="center" sx={styles.secondaryText}>
               Lorem Ipsum is simply dummy text of the printing and typesetting industry.
             </Typography>
 
             {activeForm === 'login' && (
               <>
-                <Typography variant="body2" gutterBottom>Email</Typography>
-                <TextField
-                  label="User Id / Email"
-                  variant="outlined"
-                  fullWidth
-                  value={loginForm.email}
-                  onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
-                  sx={styles.formTextField}
-                />
-                {loginErrors.email && (
-                  <Typography variant="caption" color="error">{loginErrors.email}</Typography>
-                )}
+                <Grid item >
+                  <CustomTextField
+                    label="Email"
+                    name="email"
+                    value={loginForm.email}
+                    onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
+                    placeholder="Email"
+                    error={!!loginErrors.email}
+                    helperText={loginErrors.email}
+                    borderRadius='50px'
 
-                <Typography variant="body2" gutterBottom>Access key</Typography>
-                <FormControl variant="outlined" fullWidth sx={styles.formTextField}>
-                  <InputLabel htmlFor="password">Password</InputLabel>
-                  <OutlinedInput
-                    id="password"
+                  />
+
+                </Grid>
+
+                <Grid item mt={2}>
+                  <CustomTextField
+                    label="Access Key"
+                    name="password"
                     type={showPassword ? 'text' : 'password'}
                     value={loginForm.password}
                     onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                    label="Password"
+                    placeholder="Access Key"
+                    error={!!loginErrors.password}
+                    helperText={loginErrors.password}
+                    borderRadius="50px"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
                   />
-                </FormControl>
-                {loginErrors.password && (
-                  <Typography variant="caption" color="error">{loginErrors.password}</Typography>
-                )}
-
-                <Grid container justifyContent="space-between" alignItems="center" sx={styles.formGrid}>
-                  <FormControlLabel
-                    control={<Checkbox sx={styles.formCheckbox} />}
-                    label="Remember me"
-                    sx={styles.formControlLabel}
-                  />
-                  <Typography variant="body2" sx={styles.secondaryText}>Forgot Password?</Typography>
                 </Grid>
 
-                <Button fullWidth sx={styles.submitButton} onClick={handleLogin}>
-                  Board me
-                </Button>
+                <Grid container alignItems="center" gap={1} sx={styles.formGrid} mt={2} >
+
+                  <Typography variant="body2" sx={styles.secondaryText} gutterBottom>Forgot Password?</Typography>
+
+                  <CustomButton children='Board me' onClick={handleLogin} loading={loading} bgColor='#EAB308' borderRadius='50px' />
+
+                </Grid>
 
               </>
             )}
 
             {activeForm === 'register' && (
               <>
-                <Typography variant="body2" gutterBottom>Email</Typography>
-                <TextField
-                  label="Email Address"
-                  variant="outlined"
-                  fullWidth
-                  value={registerForm.email}
-                  onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })}
-                  sx={styles.formTextField}
-                />
-                {registerErrors.email && (
-                  <Typography variant="caption" color="error">{registerErrors.email}</Typography>
-                )}
 
-                <Typography variant="body2" gutterBottom>Username</Typography>
-                <TextField
-                  label="User Name"
-                  variant="outlined"
-                  fullWidth
-                  value={registerForm.username}
-                  onChange={(e) => setRegisterForm({ ...registerForm, username: e.target.value })}
-                  sx={styles.formTextField}
-                />
-                {registerErrors.username && (
-                  <Typography variant="caption" color="error">{registerErrors.username}</Typography>
-                )}
+                <Grid mt={2}>
+                  <CustomTextField
+                    label='Email'
+                    name="email"
+                    value={registerForm.email}
+                    onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })}
+                    placeholder="Email"
+                    error={!!registerErrors.email}
+                    helperText={registerErrors.email}
+                    borderRadius='50px'
+                  />
 
-                <Typography variant="body2" gutterBottom>Password</Typography>
-                <FormControl variant="outlined" fullWidth sx={styles.formTextField}>
-                  <InputLabel htmlFor="password">Password</InputLabel>
-                  <OutlinedInput
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
+                </Grid>
+
+                <Grid mt={2}>
+                  <CustomTextField
+                    label='Username'
+                    name="username"
+                    value={registerForm.username}
+                    onChange={(e) => setRegisterForm({ ...registerForm, username: e.target.value })}
+                    placeholder="Username"
+                    error={!!registerErrors.username}
+                    helperText={registerErrors.username}
+                    borderRadius='50px'
+                  />
+                </Grid>
+
+                <Grid mt={2} mb={4}>
+                  <CustomTextField
+                    label='Password'
+                    name="password"
                     value={registerForm.password}
                     onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton onClick={() => setShowPassword((prev) => !prev)} edge="end">
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                    label="Password"
+                    placeholder="Access Key"
+                    error={!!registerErrors.password}
+                    helperText={registerErrors.password}
+                    borderRadius='50px'
                   />
-                </FormControl>
-                {registerErrors.password && (
-                  <Typography variant="caption" color="error">{registerErrors.password}</Typography>
-                )}
 
-                <Button fullWidth sx={styles.submitButton} onClick={handleRegister} disabled={loading}>
-                  {loading ? <CircularProgress size={24} color="inherit" /> : 'Register'}
-                </Button>
+                </Grid>
+
+                <CustomButton children='Register' onClick={handleRegister} loading={loading} bgColor='#EAB308' borderRadius='50px'/>
 
               </>
             )}
 
-
-            <Snackbar
-              open={snackbar.open}
-              autoHideDuration={3000}
-              onClose={handleSnackbarClose}
-              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            >
-              <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: '100%' }}>
-                {snackbar.message}
-              </Alert>
-            </Snackbar>
           </Paper>
         </Grid>
       </Grid>
