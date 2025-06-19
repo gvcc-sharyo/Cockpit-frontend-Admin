@@ -8,25 +8,24 @@ import {
   Divider,
   Radio,
   RadioGroup,
+  MenuItem,
 } from "@mui/material";
 import CustomTypography from "../../../../components/admin/CustomTypography";
 import CustomTextArea from "../../../../components/admin/CustomTextArea";
-import { useLocation, useNavigate} from "react-router-dom";
-import { apiPost, apiPostToken } from "../../../../api/axios";
+import { useLocation, useNavigate } from "react-router-dom";
+import { apiGet, apiPost, apiPostToken } from "../../../../api/axios";
 import CustomButton from "../../../../components/admin/CustomButton";
 import { snackbarEmitter } from "../../../../components/admin/CustomSnackbar";
 import CustomTextField from "../../../../components/admin/CustomTextField";
 
 function AddQuestion() {
-const location = useLocation();
+  const location = useLocation();
 
-  // Destructure from location.state (used for prefilled updates)
-  const { syllabusName, bookName, chapterName, question } = location.state || {};
+  const { syllabusName, bookName, chapterName, question } =
+    location.state || {};
 
-  // =================== State ===================
   const [loading, setLoading] = useState(false);
   const [options, setOptions] = useState([1, 2]);
-
   const [formData, setFormData] = useState({
     syllabus: syllabusName || "",
     book: bookName || "",
@@ -39,6 +38,27 @@ const location = useLocation();
     explanation: question?.explanation || "",
   });
 
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.syllabus.trim()) newErrors.syllabus = "Syllabus is required.";
+    if (!formData.book.trim()) newErrors.book = "Book is required.";
+    if (!formData.chapter.trim()) newErrors.chapter = "Chapter is required.";
+    if (!formData.question.trim()) newErrors.question = "Question is required.";
+    if (!formData.explanation.trim())
+      newErrors.explanation = "Explanation is required.";
+    formData.options.forEach((opt, i) => {
+      if (!opt.text.trim())
+        newErrors[`option_${i}`] = "Option text is required.";
+    });
+    if (!formData.options.some((opt) => opt.isCorrect)) {
+      newErrors.correct = "Please select the correct answer.";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   // =================== Input Handlers ===================
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -46,12 +66,20 @@ const location = useLocation();
       ...prev,
       [name]: value,
     }));
+    setErrors((prev) => ({
+      ...prev,
+      [name]: undefined,
+    }));
   };
 
   const handleExplanationChange = (value) => {
     setFormData((prev) => ({
       ...prev,
       explanation: value,
+    }));
+    setErrors((prev) => ({
+      ...prev,
+      explanation: undefined,
     }));
   };
 
@@ -62,6 +90,10 @@ const location = useLocation();
       newOptions[index] = { ...newOptions[index], text: value };
       return { ...prev, options: newOptions };
     });
+    setErrors((prev) => ({
+      ...prev,
+      [`option_${index}`]: undefined,
+    }));
   };
 
   const handleOptionCorrectChange = (value) => {
@@ -73,6 +105,10 @@ const location = useLocation();
       }));
       return { ...prev, options: newOptions };
     });
+    setErrors((prev) => ({
+      ...prev,
+      correct: undefined,
+    }));
   };
 
   const handleAddOption = () => {
@@ -92,16 +128,24 @@ const location = useLocation();
         .filter((_, index) => index !== indexToDelete)
         .map((option, index) => ({ ...option, id: index + 1 })),
     }));
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      delete newErrors[`option_${indexToDelete}`];
+      return newErrors;
+    });
   };
 
   // =================== Submit Handler ===================
-
   const navigate = useNavigate();
+
   const handleSubmit = async () => {
+    if (!validateForm()) {
+      snackbarEmitter("Please fill all required fields", "error");
+      return;
+    }
+
     setLoading(true);
-
     const isUpdate = !!question?._id;
-
     const payload = isUpdate
       ? {
           questionId: question._id,
@@ -110,20 +154,21 @@ const location = useLocation();
           explanation: formData.explanation,
         }
       : formData;
-
     console.log("Submitting:", payload);
-
     try {
       const endpoint = isUpdate ? "/updateQuestion" : "/uploadQuestions";
       const response = await apiPost(endpoint, payload);
-
       if (response?.data?.status === 200) {
-       
         setTimeout(() => {
           setLoading(false);
-           snackbarEmitter(response.data.message, "success");
-           navigate('/admin/trainingQuestion', {state: {syllabusName: formData.syllabus, bookName: formData.book, chapterName: formData.chapter}});
-
+          snackbarEmitter(response.data.message, "success");
+          navigate("/admin/trainingQuestion", {
+            state: {
+              syllabusName: formData.syllabus,
+              bookName: formData.book,
+              chapterName: formData.chapter,
+            },
+          });
           if (!isUpdate) {
             setFormData({
               syllabus: "",
@@ -136,6 +181,7 @@ const location = useLocation();
               ],
               explanation: "",
             });
+            setErrors({});
           }
         }, 1500);
       } else {
@@ -150,7 +196,54 @@ const location = useLocation();
     }
   };
 
+  const [syllabus, setSyllabus] = useState([]);
+  const getSyllabus = async () => {
+    try {
+      const response = await apiGet("/getSyllabus");
+      const titles = response.data.data
+        .map((item) => item.title)
+        .filter(Boolean);
+      setSyllabus(titles);
+      console.log(titles);
+    } catch (error) {
+      console.error("Error fetching syllabus:", error);
+    }
+  };
 
+  const [book, setBook] = useState([]);
+  const getBooks = async () => {
+    try {
+      const response = await apiGet("/getBooks");
+      const booksList = response.data.books
+        .map((item) => item.bookTitle)
+        .filter(Boolean);
+      setBook(booksList);
+      console.log(booksList);
+    } catch (error) {
+      console.error("Error fetching books:", error);
+    }
+  };
+
+  const [chapters, setChapters] = useState([]);
+  const getChapters = async () => {
+    try {
+      const response = await apiGet("/getChapters");
+      const chapterList = response.data.chapters.map(
+        (item) => item.chaptername
+      );
+      console.log(chapterList);
+      setChapters(chapterList);
+      // const booksList = response.data.books.map((item) => item.bookTitle).filter(Boolean);
+    } catch (error) {
+      console.error("Error fetching books:", error);
+    }
+  };
+
+  useEffect(() => {
+    getSyllabus();
+    getBooks();
+    getChapters();
+  }, []);
 
   return (
     <>
@@ -159,23 +252,42 @@ const location = useLocation();
           <Grid size={{ xs: 12, md: 4 }}>
             <CustomTextField
               label="Syllabus"
+              select
               required
               placeholder="Syllabus"
               name="syllabus"
               value={formData.syllabus}
               onChange={handleInputChange}
-            />
+              error={!!errors.syllabus}
+              helperText={errors.syllabus}
+              SelectProps={{ native: false }}
+            >
+              {syllabus.map((item, index) => (
+                <MenuItem key={index} value={item}>
+                  {item}
+                </MenuItem>
+              ))}
+            </CustomTextField>
           </Grid>
-
           <Grid size={{ xs: 12, md: 4 }}>
             <CustomTextField
               label="Book"
               required
+              select
               placeholder="Book"
               name="book"
               value={formData.book}
               onChange={handleInputChange}
-            />
+              error={!!errors.book}
+              helperText={errors.book}
+              SelectProps={{ native: false }}
+            >
+              {book.map((item, index) => (
+                <MenuItem key={index} value={item}>
+                  {item}
+                </MenuItem>
+              ))}
+            </CustomTextField>
           </Grid>
 
           <Grid size={{ xs: 12, md: 4 }}>
@@ -186,7 +298,20 @@ const location = useLocation();
               name="chapter"
               value={formData.chapter}
               onChange={handleInputChange}
-            />
+              error={!!errors.chapter}
+              helperText={errors.chapter}
+              select
+              SelectProps={{ native: false }}
+            >
+              {chapters.map((item, index) => (
+                <MenuItem key={index} value={item}>
+                  {item}
+                </MenuItem>
+              ))}
+              </CustomTextField>
+
+
+
           </Grid>
           <Grid size={{ xs: 12 }}>
             <Box display="flex" justifyContent="flex-end">
@@ -212,12 +337,12 @@ const location = useLocation();
                   target: { name: "question", value: e.target.value },
                 })
               }
+              error={!!errors.question}
+              helperText={errors.question}
             />
           </Grid>
         </Grid>
-
         <Divider sx={{ border: "1px solid #DBDBDB", mb: 2 }} />
-
         <Box
           sx={{
             justifyContent: "space-between",
@@ -228,7 +353,6 @@ const location = useLocation();
         >
           <CustomTypography text="Selected Correct Options" />
           <CustomTypography text="Choices" />
-
           <Box sx={{ width: { xs: "100%", sm: "auto" } }}>
             <Button
               onClick={handleAddOption}
@@ -245,8 +369,7 @@ const location = useLocation();
             </Button>
           </Box>
         </Box>
-
-        <FormControl fullWidth sx={{ mt: 2 }}>
+        <FormControl fullWidth sx={{ mt: 2 }} error={!!errors.correct}>
           <RadioGroup
             onChange={(e) => handleOptionCorrectChange(e.target.value)}
           >
@@ -285,15 +408,20 @@ const location = useLocation();
                     onChange={(e) =>
                       handleOptionTextChange(index, e.target.value)
                     }
+                    error={!!errors[`option_${index}`]}
+                    helperText={errors[`option_${index}`]}
                   />
                 </Box>
               </Box>
             ))}
           </RadioGroup>
+          {!!errors.correct && (
+            <Box sx={{ color: "#d32f2f", fontSize: "0.75rem", mt: 1 }}>
+              {errors.correct}
+            </Box>
+          )}
         </FormControl>
-
         <Divider sx={{ border: "1px solid #DBDBDB", mb: 2, mt: 2 }} />
-
         <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
           <CustomTypography text={"Solution"} />
           <Box
@@ -305,6 +433,8 @@ const location = useLocation();
             <CustomTextArea
               value={formData.explanation}
               onChange={(e) => handleExplanationChange(e.target.value)}
+              error={!!errors.explanation}
+              helperText={errors.explanation}
             />
           </Box>
         </Box>

@@ -1,7 +1,15 @@
 import axios from 'axios';
 const BASE_URL = import.meta.env.VITE_API_URL;
+
+
+
+
 // const BASE_URL = 'http://13.235.91.167:8000/cockpit';
 // GET
+
+
+
+
 export const apiGet = async (endpoint) => {
   const headers = {
     'Content-Type': 'application/json',
@@ -42,6 +50,10 @@ export const apiPostUpload = async (endpoint, data) => {
   };
   return await axios.post(`${BASE_URL}${endpoint}`, data, { headers });
 };
+
+
+
+
 // PUT
 export const apiPut = async (endpoint, data) => {
   const headers = {
@@ -52,13 +64,12 @@ export const apiPut = async (endpoint, data) => {
 // DELETE
 
 
+
+
+
 export const apiDelete = async (endpoint, body) => {
   const headers = {
     'Content-Type': 'application/json',
   };
-
-  return await axios.delete(`${BASE_URL}${endpoint}`, {
-    headers,
-    data: body, 
-  });
+  return await axios.delete(`${BASE_URL}${endpoint}`, {headers,data: body,});
 };

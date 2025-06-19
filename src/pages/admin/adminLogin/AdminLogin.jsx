@@ -173,6 +173,9 @@ function AdminLogin() {
     const req = { email: loginForm.email, password: loginForm.password };
     try {
       const response = await apiPost('/admin/loginAdmin', req);
+      // console.log("Response :", response.data);
+      
+     
 
       setTimeout(() => {
         setLoading(false);
@@ -180,6 +183,7 @@ function AdminLogin() {
         if (response.data.status === 200) {
           snackbarEmitter(response.data.message, 'success');
           localStorage.setItem('adminToken', response.data.token);
+          localStorage.setItem('adminId', response.data.data._id);
           setLoginForm({ email: '', password: '' });
           navigate('/admin/dashboard');
         } else {
