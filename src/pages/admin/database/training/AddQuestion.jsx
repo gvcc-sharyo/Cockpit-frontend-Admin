@@ -313,7 +313,6 @@ function AddQuestion() {
 
 
           </Grid>
-
           <Grid size={{ xs: 12 }}>
             <Box display="flex" justifyContent="flex-end">
               <Button
@@ -479,5 +478,4 @@ function AddQuestion() {
     </>
   );
 }
-
 export default AddQuestion;

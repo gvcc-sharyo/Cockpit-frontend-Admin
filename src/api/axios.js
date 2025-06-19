@@ -17,10 +17,6 @@ export const apiGet = async (endpoint) => {
   return await axios.get(`${BASE_URL}${endpoint}`, { headers });
 };
 
-
-
-
-
 export const apiGetToken = async (endpoint,  userType='student', data) => {
   const tokenType = userType === 'student' ? 'authToken' : 'adminToken';
   const token = localStorage.getItem(tokenType);
@@ -32,18 +28,12 @@ export const apiGetToken = async (endpoint,  userType='student', data) => {
   return await axios.get(`${BASE_URL}${endpoint}`, { headers });
 };
 
-
-
-
-
 export const apiPost = async (endpoint, data) => {
   const headers = {
     'Content-Type': 'application/json',
   };
   return await axios.post(`${BASE_URL}${endpoint}`, data, { headers });
 };
-
-
 
 export const apiPostToken = async (endpoint, data) => {
   const token = localStorage.getItem('adminToken');
@@ -53,9 +43,6 @@ export const apiPostToken = async (endpoint, data) => {
   };
   return await axios.post(`${BASE_URL}${endpoint}`, data, { headers });
 };
-
-
-
 
 export const apiPostUpload = async (endpoint, data) => {
   const headers = {
