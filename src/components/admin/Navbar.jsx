@@ -104,6 +104,24 @@ const Navbar = ({ title, children }) => {
               <ListItemText primary="Dashboard" />
             </ListItem>
 
+             <ListItem
+              button
+              onClick={() => handleNavigate('/admin/trainingsyllabus')}
+              sx={{
+                fontWeight: 'bold',
+                borderRadius: 1,
+                mb: 1,
+                bgcolor: isActive('/admin/trainingsyllabus') ? 'orange' : 'white',
+                color: isActive('/admin/trainingsyllabus') ? 'white' : 'black',
+                cursor: 'pointer',
+              }}
+            >
+              <ListItemIcon>
+                <img src="/images/syllabus.svg" alt="Syllabus" />
+              </ListItemIcon>
+              <ListItemText primary="Syllabus" />
+            </ListItem>
+
             {/* Database collapsible */}
             <ListItem
               button
@@ -130,11 +148,11 @@ const Navbar = ({ title, children }) => {
                   sx={{
                     pl: 4,
                     mb: 1,
-                    bgcolor: isActive('/admin/trainingsyllabus') ? 'orange' : 'white',
-                    color: isActive('/admin/trainingsyllabus') ? 'white' : 'black',
+                    bgcolor: isActive('/admin/trainingAdd') ? 'orange' : 'white',
+                    color: isActive('/admin/trainingAdd') ? 'white' : 'black',
                     cursor: 'pointer',
                   }}
-                  onClick={() => handleNavigate('/admin/trainingsyllabus')}
+                  onClick={() => handleNavigate('/admin/trainingAdd')}
                 >
                   <ListItemIcon>
                     <img src="/images/database.svg" alt="Training" />
@@ -177,6 +195,7 @@ const Navbar = ({ title, children }) => {
               </ListItemIcon>
               <ListItemText primary="Pricing" />
             </ListItem>
+           
 
           </List>
         </Box>

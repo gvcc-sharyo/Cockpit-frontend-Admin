@@ -1,6 +1,6 @@
-import Navbar from "../../../../components/admin/Navbar";
+import Navbar from "../../../components/admin/Navbar";
 import { useEffect, useState } from "react";
-import { apiGet, apiPost } from "../../../../api/axios";
+import { apiGet, apiPost } from "../../../api/axios";
 import {
     Grid,
     Card,
@@ -27,9 +27,9 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import CloseIcon from '@mui/icons-material/Close';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
-import { snackbarEmitter } from "../../../../components/admin/CustomSnackbar";
-import CustomTextField from "../../../../components/admin/CustomTextField";
-import CustomButton from "../../../../components/admin/CustomButton";
+import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
+import CustomTextField from "../../../components/admin/CustomTextField";
+import CustomButton from "../../../components/admin/CustomButton";
 
 function TrainingChapter() {
     const [books, setBooks] = useState([]);
@@ -284,7 +284,7 @@ function TrainingChapter() {
 
     return (
 
-        <Navbar title={'Training'}>
+        <Navbar title={'Syllabus'}>
 
             <Grid container sx={{ flexDirection: 'column', position: "relative", backgroundColor: '#f8f9fa', padding: '10px' }} >
 

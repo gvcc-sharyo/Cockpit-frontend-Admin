@@ -1,4 +1,3 @@
-import Navbar from "../../../../components/admin/Navbar";
 import { useEffect, useState } from "react";
 import {
   Grid,
@@ -10,19 +9,18 @@ import {
   RadioGroup,
   MenuItem,
 } from "@mui/material";
-import CustomTypography from "../../../../components/admin/CustomTypography";
-import CustomTextArea from "../../../../components/admin/CustomTextArea";
+import CustomTypography from "./CustomTypography";
+import CustomTextArea from "./CustomTextArea";
 import { useLocation, useNavigate } from "react-router-dom";
-import { apiGet, apiPost, apiPostToken } from "../../../../api/axios";
-import CustomButton from "../../../../components/admin/CustomButton";
-import { snackbarEmitter } from "../../../../components/admin/CustomSnackbar";
-import CustomTextField from "../../../../components/admin/CustomTextField";
+import { apiGet, apiPost } from "../../api/axios";
+import CustomButton from "./CustomButton";
+import { snackbarEmitter } from "./CustomSnackbar";
+import CustomTextField from "./CustomTextField";
 
-function AddQuestion() {
-  const location = useLocation();
+function Training({ syllabusName, bookName, chapterName, question }) {
+//   const location = useLocation();
 
-  const { syllabusName, bookName, chapterName, question } =
-    location.state || {};
+//   const { syllabusName, bookName, chapterName, question } = location.state || {};
 
   const [loading, setLoading] = useState(false);
   const [options, setOptions] = useState([1, 2]);
@@ -247,7 +245,6 @@ function AddQuestion() {
 
   return (
     <>
-      <Navbar title="Training">
         <Grid container spacing={2}>
           <Grid size={{ xs: 12, md: 4 }}>
             <CustomTextField
@@ -474,8 +471,7 @@ function AddQuestion() {
             Cancel
           </Button>
         </Box>
-      </Navbar>
     </>
   );
 }
-export default AddQuestion;
+export default Training;
