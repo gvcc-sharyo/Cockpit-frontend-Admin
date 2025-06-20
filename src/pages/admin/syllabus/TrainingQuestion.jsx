@@ -43,7 +43,6 @@ function TrainingQuestion() {
             }
 
             else if (response.data.status === 200 && response.data.data.length > 0) {
-                snackbarEmitter(response.data.message, 'success');
                 setQuestions(response.data.data);
             }
             else {

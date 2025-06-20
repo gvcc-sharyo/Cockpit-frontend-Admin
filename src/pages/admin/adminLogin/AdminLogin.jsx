@@ -175,8 +175,6 @@ function AdminLogin() {
       const response = await apiPost('/admin/loginAdmin', req);
       // console.log("Response :", response.data);
       
-     
-
       setTimeout(() => {
         setLoading(false);
 

@@ -16,6 +16,8 @@ import {
 import './dashboard.css'
 import { useState, useEffect } from "react";
 import { apiGet } from "../../../api/axios";
+import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
   const stats = [
@@ -43,20 +45,36 @@ function Dashboard() {
     },
   ];
 
-  const [institutes, setInstitutes] = useState([])
+  const [reports, setReports] = useState([]);
 
-  const fetchInstitute = async () => {
+  const fetchReports = async () => {
     try {
-      const response = await apiGet('/admin/getInstitute');
-      setInstitutes(response.data.data);
+      const response = await apiGet('/reports');
+
+      if (response.data.status === 200 && response.data.data.length === 0) {
+        snackbarEmitter('No reports found', 'info');
+      }
+      else if (response.data.status === 200) {
+        setReports(response.data.data);
+      }
+      else {
+        snackbarEmitter(response.data.message, 'error');
+      }
+
     } catch (error) {
-      console.error('Error fetching institutes:', error);
+      snackbarEmitter('Something went wrong', 'error');
     }
   };
 
   useEffect(() => {
-    fetchInstitute();
+    fetchReports();
   }, [])
+
+  const navigate = useNavigate();
+
+  const handleNavigate = (route) => {
+    navigate(route);
+  };
 
   const classes = {
     statsBox: {
@@ -73,7 +91,7 @@ function Dashboard() {
     statTitle: {
       fontSize: { xs: "0.7rem", md: "0.8rem" },
       color: "text.secondary",
-      lineHeight: 0.7,
+      lineHeight: 1.2,
     },
     statNumber: {
       fontSize: { xs: "0.8rem", md: "1.1rem" },
@@ -94,6 +112,8 @@ function Dashboard() {
       p: 2,
       mt: 3,
       width: "100%",
+      maxHeight: '50vh',
+      overflowY:'auto'
     },
     reportTitle: {
       fontWeight: 600,
@@ -103,7 +123,7 @@ function Dashboard() {
     reportName: {
       fontWeight: "bold",
       fontSize: { xs: "0.9rem", md: "1rem" },
-      mb: 0.5,
+      // mb: 0.5,
     },
     reportLine: {
       display: "flex",
@@ -111,7 +131,7 @@ function Dashboard() {
       alignItems: "center",
     },
     reportedText: {
-      color: "text.secondary",
+      color: "grey",
       fontSize: { xs: "0.7rem", md: "0.8rem" },
     },
     replyText: {
@@ -149,13 +169,21 @@ function Dashboard() {
           {/* New Report Box */}
           <Grid container spacing={2} sx={{ mt: 4 }}>
             <Grid size={{ xs: 10, md: 5, sm: 5 }}>
-              <Box sx={classes.reportBox}>
+              <Box sx={classes.reportBox} >
                 <Typography sx={classes.reportTitle}>Report</Typography>
-                <Typography sx={classes.reportName}>User</Typography>
-                <Box sx={classes.reportLine}>
-                  <Typography sx={classes.reportedText}>reported</Typography>
-                  <Typography sx={classes.replyText}>reply</Typography>
-                </Box>
+                {
+                  reports.map((report, index) => (
+                    <Box mt={2}>
+                      <Typography sx={classes.reportName}>{report.userId.username}</Typography>
+                      <Box sx={classes.reportLine}>
+                        <Typography sx={classes.reportedText}>Has reported a question on {report.questionId.syllabus}</Typography>
+                        <Typography sx={classes.replyText} onClick={() => handleNavigate(`/admin/feedback`)}>Reply</Typography>
+                      </Box>
+                    </Box>
+
+                  ))
+                }
+
               </Box>
             </Grid>
             {/* You can add more Grid items here if you want multiple reports */}

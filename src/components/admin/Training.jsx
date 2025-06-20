@@ -17,10 +17,10 @@ import CustomButton from "./CustomButton";
 import { snackbarEmitter } from "./CustomSnackbar";
 import CustomTextField from "./CustomTextField";
 
-function Training({ syllabusName, bookName, chapterName, question }) {
-//   const location = useLocation();
+function Training({ syllabusName, bookName, chapterName, question, report = false, modalClose }) {
+  //   const location = useLocation();
 
-//   const { syllabusName, bookName, chapterName, question } = location.state || {};
+  //   const { syllabusName, bookName, chapterName, question } = location.state || {};
 
   const [loading, setLoading] = useState(false);
   const [options, setOptions] = useState([1, 2]);
@@ -146,11 +146,11 @@ function Training({ syllabusName, bookName, chapterName, question }) {
     const isUpdate = !!question?._id;
     const payload = isUpdate
       ? {
-          questionId: question._id,
-          question: formData.question,
-          options: formData.options,
-          explanation: formData.explanation,
-        }
+        questionId: question._id,
+        question: formData.question,
+        options: formData.options,
+        explanation: formData.explanation,
+      }
       : formData;
     console.log("Submitting:", payload);
     try {
@@ -160,13 +160,19 @@ function Training({ syllabusName, bookName, chapterName, question }) {
         setTimeout(() => {
           setLoading(false);
           snackbarEmitter(response.data.message, "success");
-          navigate("/admin/trainingQuestion", {
-            state: {
-              syllabusName: formData.syllabus,
-              bookName: formData.book,
-              chapterName: formData.chapter,
-            },
-          });
+
+          if (report === true) {
+            modalClose();
+          } else {
+            navigate("/admin/trainingQuestion", {
+              state: {
+                syllabusName: formData.syllabus,
+                bookName: formData.book,
+                chapterName: formData.chapter,
+              },
+            });
+          }
+
           if (!isUpdate) {
             setFormData({
               syllabus: "",
@@ -198,13 +204,18 @@ function Training({ syllabusName, bookName, chapterName, question }) {
   const getSyllabus = async () => {
     try {
       const response = await apiGet("/getSyllabus");
-      const titles = response.data.data
-        .map((item) => item.title)
-        .filter(Boolean);
-      setSyllabus(titles);
-      console.log(titles);
+      if (response.data.status === 200) {
+        const titles = response.data.data
+          .map((item) => item.title)
+          .filter(Boolean);
+        setSyllabus(titles);
+        console.log(titles);
+      } else {
+        snackbarEmitter(response.data.message, 'error');
+      }
+
     } catch (error) {
-      console.error("Error fetching syllabus:", error);
+      snackbarEmitter('Something went wrong', 'error');
     }
   };
 
@@ -212,13 +223,21 @@ function Training({ syllabusName, bookName, chapterName, question }) {
   const getBooks = async () => {
     try {
       const response = await apiGet("/getBooks");
-      const booksList = response.data.books
-        .map((item) => item.bookTitle)
-        .filter(Boolean);
-      setBook(booksList);
-      console.log(booksList);
+
+      if (response.data.status === 200) {
+        const booksList = response.data.books
+          .map((item) => item.bookTitle)
+          .filter(Boolean);
+        setBook(booksList);
+        console.log(booksList);
+      }
+      else {
+        snackbarEmitter(response.data.message, 'error');
+      }
+
+
     } catch (error) {
-      console.error("Error fetching books:", error);
+      snackbarEmitter('Something went wrong', 'error');
     }
   };
 
@@ -226,14 +245,19 @@ function Training({ syllabusName, bookName, chapterName, question }) {
   const getChapters = async () => {
     try {
       const response = await apiGet("/getChapters");
-      const chapterList = response.data.chapters.map(
-        (item) => item.chaptername
-      );
-      console.log(chapterList);
-      setChapters(chapterList);
-      // const booksList = response.data.books.map((item) => item.bookTitle).filter(Boolean);
+
+      if (response.data.status === 200) {
+        const chapterList = response.data.chapters.map(
+          (item) => item.chaptername
+        );
+        console.log(chapterList);
+        setChapters(chapterList);
+      } else {
+        snackbarEmitter(response.data.message, 'error');
+      }
+
     } catch (error) {
-      console.error("Error fetching books:", error);
+      snackbarEmitter('Something went wrong', 'error');
     }
   };
 
@@ -245,232 +269,236 @@ function Training({ syllabusName, bookName, chapterName, question }) {
 
   return (
     <>
-        <Grid container spacing={2}>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <CustomTextField
-              label="Syllabus"
-              select
-              required
-              placeholder="Syllabus"
-              name="syllabus"
-              value={formData.syllabus}
-              onChange={handleInputChange}
-              error={!!errors.syllabus}
-              helperText={errors.syllabus}
-              SelectProps={{ native: false }}
-            >
-              {syllabus.map((item, index) => (
-                <MenuItem key={index} value={item}>
-                  {item}
-                </MenuItem>
-              ))}
-            </CustomTextField>
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <CustomTextField
-              label="Book"
-              required
-              select
-              placeholder="Book"
-              name="book"
-              value={formData.book}
-              onChange={handleInputChange}
-              error={!!errors.book}
-              helperText={errors.book}
-              SelectProps={{ native: false }}
-            >
-              {book.map((item, index) => (
-                <MenuItem key={index} value={item}>
-                  {item}
-                </MenuItem>
-              ))}
-            </CustomTextField>
-          </Grid>
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12, md: 4 }}>
+          <CustomTextField
+            label="Syllabus"
+            select
+            required
+            placeholder="Syllabus"
+            name="syllabus"
+            value={formData.syllabus}
+            onChange={handleInputChange}
+            error={!!errors.syllabus}
+            helperText={errors.syllabus}
+            SelectProps={{ native: false }}
+            disabled={report}
 
-          <Grid size={{ xs: 12, md: 4 }}>
-            <CustomTextField
-              label="Chapter"
-              required
-              placeholder="Chapter"
-              name="chapter"
-              value={formData.chapter}
-              onChange={handleInputChange}
-              error={!!errors.chapter}
-              helperText={errors.chapter}
-              select
-              SelectProps={{ native: false }}
-            >
-              {chapters.map((item, index) => (
-                <MenuItem key={index} value={item}>
-                  {item}
-                </MenuItem>
-              ))}
-              </CustomTextField>
-
-
-
-          </Grid>
-          <Grid size={{ xs: 12 }}>
-            <Box display="flex" justifyContent="flex-end">
-              <Button
-                variant="contained"
-                sx={{
-                  backgroundColor: "#EAB308",
-                  color: "white",
-                  borderRadius: "10px",
-                }}
-              >
-                +Add Image
-              </Button>
-            </Box>
-          </Grid>
+          >
+            {syllabus.map((item, index) => (
+              <MenuItem key={index} value={item}>
+                {item}
+              </MenuItem>
+            ))}
+          </CustomTextField>
         </Grid>
-        <Grid container spacing={2} sx={{ mt: 2, mb: 2 }}>
-          <Grid size={{ xs: 12, md: 12 }}>
-            <CustomTextArea
-              value={formData.question}
-              onChange={(e) =>
-                handleInputChange({
-                  target: { name: "question", value: e.target.value },
-                })
-              }
-              error={!!errors.question}
-              helperText={errors.question}
-            />
-          </Grid>
+        <Grid size={{ xs: 12, md: 4 }}>
+          <CustomTextField
+            label="Book"
+            required
+            select
+            placeholder="Book"
+            name="book"
+            value={formData.book}
+            onChange={handleInputChange}
+            error={!!errors.book}
+            helperText={errors.book}
+            SelectProps={{ native: false }}
+            disabled={report}
+          >
+            {book.map((item, index) => (
+              <MenuItem key={index} value={item}>
+                {item}
+              </MenuItem>
+            ))}
+          </CustomTextField>
         </Grid>
-        <Divider sx={{ border: "1px solid #DBDBDB", mb: 2 }} />
-        <Box
-          sx={{
-            justifyContent: "space-between",
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 2,
-          }}
-        >
-          <CustomTypography text="Selected Correct Options" />
-          <CustomTypography text="Choices" />
-          <Box sx={{ width: { xs: "100%", sm: "auto" } }}>
+
+        <Grid size={{ xs: 12, md: 4 }}>
+          <CustomTextField
+            label="Chapter"
+            required
+            placeholder="Chapter"
+            name="chapter"
+            value={formData.chapter}
+            onChange={handleInputChange}
+            error={!!errors.chapter}
+            helperText={errors.chapter}
+            select
+            SelectProps={{ native: false }}
+            disabled={report}
+          >
+            {chapters.map((item, index) => (
+              <MenuItem key={index} value={item}>
+                {item}
+              </MenuItem>
+            ))}
+          </CustomTextField>
+
+
+
+        </Grid>
+        <Grid size={{ xs: 12 }}>
+          <Box display="flex" justifyContent="flex-end">
             <Button
-              onClick={handleAddOption}
               variant="contained"
-              fullWidth={true}
               sx={{
                 backgroundColor: "#EAB308",
                 color: "white",
                 borderRadius: "10px",
-                whiteSpace: "nowrap",
               }}
             >
-              +Add Option
+              +Add Image
             </Button>
           </Box>
-        </Box>
-        <FormControl fullWidth sx={{ mt: 2 }} error={!!errors.correct}>
-          <RadioGroup
-            onChange={(e) => handleOptionCorrectChange(e.target.value)}
-          >
-            {formData.options.map((option, index) => (
-              <Box
-                key={option.id}
-                sx={{
-                  display: "flex",
-                  width: "100%",
-                  alignItems: "center",
-                  mb: 2,
-                }}
-              >
-                <Radio
-                  value={`option-${index}`}
-                  checked={option.isCorrect}
-                  sx={{ mt: 2, mr: { xs: -2, md: 2 } }}
-                />
-                <Box
-                  sx={{ width: "-webkit-fill-available", marginLeft: "50px" }}
-                >
-                  <Box
-                    sx={{ display: "flex", justifyContent: "flex-end", mb: 1 }}
-                  >
-                    <Button
-                      variant="text"
-                      color="primary"
-                      onClick={() => handleDeleteOption(index)}
-                      sx={{ padding: 0, minWidth: "auto", fontWeight: "bold" }}
-                    >
-                      Delete
-                    </Button>
-                  </Box>
-                  <CustomTextArea
-                    value={option.text}
-                    onChange={(e) =>
-                      handleOptionTextChange(index, e.target.value)
-                    }
-                    error={!!errors[`option_${index}`]}
-                    helperText={errors[`option_${index}`]}
-                  />
-                </Box>
-              </Box>
-            ))}
-          </RadioGroup>
-          {!!errors.correct && (
-            <Box sx={{ color: "#d32f2f", fontSize: "0.75rem", mt: 1 }}>
-              {errors.correct}
-            </Box>
-          )}
-        </FormControl>
-        <Divider sx={{ border: "1px solid #DBDBDB", mb: 2, mt: 2 }} />
-        <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
-          <CustomTypography text={"Solution"} />
-          <Box
-            sx={{
-              width: "-webkit-fill-available",
-              marginLeft: { xs: "20px", md: "50px" },
-            }}
-          >
-            <CustomTextArea
-              value={formData.explanation}
-              onChange={(e) => handleExplanationChange(e.target.value)}
-              error={!!errors.explanation}
-              helperText={errors.explanation}
-            />
-          </Box>
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            flexDirection: { xs: "column", sm: "row" },
-            gap: 2,
-            mt: 4,
-          }}
-        >
-          <CustomButton
-            onClick={handleSubmit}
-            loading={loading}
-            bgColor="#EAB308"
-            borderRadius="10px"
-            sx={{
-              px: { xs: 2, sm: 4 },
-              width: { xs: "100%", sm: "auto" },
-            }}
-          >
-            {question?._id ? "Update Question" : "Add Question"}
-          </CustomButton>
+        </Grid>
+      </Grid>
+      <Grid container spacing={2} sx={{ mt: 2, mb: 2 }}>
+        <Grid size={{ xs: 12, md: 12 }}>
+          <CustomTextArea
+            value={formData.question}
+            onChange={(e) =>
+              handleInputChange({
+                target: { name: "question", value: e.target.value },
+              })
+            }
+            error={!!errors.question}
+            helperText={errors.question}
+          />
+        </Grid>
+      </Grid>
+      <Divider sx={{ border: "1px solid #DBDBDB", mb: 2 }} />
+      <Box
+        sx={{
+          justifyContent: "space-between",
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 2,
+        }}
+      >
+        <CustomTypography text="Selected Correct Options" />
+        <CustomTypography text="Choices" />
+        <Box sx={{ width: { xs: "100%", sm: "auto" } }}>
           <Button
-            variant="outlined"
-            fullWidth={{ xs: true, sm: false }}
+            onClick={handleAddOption}
+            variant="contained"
+            fullWidth={true}
             sx={{
-              color: "#fff",
-              fontWeight: "bold",
-              backgroundColor: "#BF0000",
+              backgroundColor: "#EAB308",
+              color: "white",
               borderRadius: "10px",
-              px: { xs: 2, sm: 4 },
+              whiteSpace: "nowrap",
             }}
           >
-            Cancel
+            +Add Option
           </Button>
         </Box>
+      </Box>
+      <FormControl fullWidth sx={{ mt: 2 }} error={!!errors.correct}>
+        <RadioGroup
+          onChange={(e) => handleOptionCorrectChange(e.target.value)}
+        >
+          {formData.options.map((option, index) => (
+            <Box
+              key={option.id}
+              sx={{
+                display: "flex",
+                width: "100%",
+                alignItems: "center",
+                mb: 2,
+              }}
+            >
+              <Radio
+                value={`option-${index}`}
+                checked={option.isCorrect}
+                sx={{ mt: 2, mr: { xs: -2, md: 2 } }}
+              />
+              <Box
+                sx={{ width: "-webkit-fill-available", marginLeft: "50px" }}
+              >
+                <Box
+                  sx={{ display: "flex", justifyContent: "flex-end", mb: 1 }}
+                >
+                  <Button
+                    variant="text"
+                    color="primary"
+                    onClick={() => handleDeleteOption(index)}
+                    sx={{ padding: 0, minWidth: "auto", fontWeight: "bold" }}
+                  >
+                    Delete
+                  </Button>
+                </Box>
+                <CustomTextArea
+                  value={option.text}
+                  onChange={(e) =>
+                    handleOptionTextChange(index, e.target.value)
+                  }
+                  error={!!errors[`option_${index}`]}
+                  helperText={errors[`option_${index}`]}
+                />
+              </Box>
+            </Box>
+          ))}
+        </RadioGroup>
+        {!!errors.correct && (
+          <Box sx={{ color: "#d32f2f", fontSize: "0.75rem", mt: 1 }}>
+            {errors.correct}
+          </Box>
+        )}
+      </FormControl>
+      <Divider sx={{ border: "1px solid #DBDBDB", mb: 2, mt: 2 }} />
+      <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
+        <CustomTypography text={"Solution"} />
+        <Box
+          sx={{
+            width: "-webkit-fill-available",
+            marginLeft: { xs: "20px", md: "50px" },
+          }}
+        >
+          <CustomTextArea
+            value={formData.explanation}
+            onChange={(e) => handleExplanationChange(e.target.value)}
+            error={!!errors.explanation}
+            helperText={errors.explanation}
+          />
+        </Box>
+      </Box>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: { xs: "column", sm: "row" },
+          gap: 2,
+          mt: 4,
+        }}
+      >
+        <CustomButton
+          onClick={handleSubmit}
+          loading={loading}
+          bgColor="#EAB308"
+          borderRadius="10px"
+          sx={{
+            px: { xs: 2, sm: 4 },
+            width: { xs: "100%", sm: "auto" },
+          }}
+        >
+          {question?._id ? "Update Question" : "Add Question"}
+        </CustomButton>
+        <Button
+          variant="outlined"
+          fullWidth={{ xs: true, sm: false }}
+          sx={{
+            color: "#fff",
+            fontWeight: "bold",
+            backgroundColor: "#BF0000",
+            borderRadius: "10px",
+            px: { xs: 2, sm: 4 },
+          }}
+        >
+          Cancel
+        </Button>
+      </Box>
     </>
   );
 }
