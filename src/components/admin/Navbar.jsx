@@ -29,6 +29,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import { snackbarEmitter } from './CustomSnackbar';
 import { apiGet } from '../../api/axios';
+import CustomButton from './CustomButton';
 
 const Navbar = ({ title, children }) => {
   const navigate = useNavigate();
@@ -294,20 +295,17 @@ const Navbar = ({ title, children }) => {
         onClose={handleClose}
         aria-labelledby="logout-dialog-title"
         aria-describedby="logout-dialog-description"
+        // fullWidth
       >
         <DialogTitle id="logout-dialog-title">Confirm Logout</DialogTitle>
         <DialogContent>
           <DialogContentText id="logout-dialog-description">
-            Are you sure you want to log out?
+           Do you want to logout?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={confirmLogout} color="error" autoFocus>
-            Logout
-          </Button>
+                <CustomButton children='Cancel' onClick={handleClose}  bgColor='#BF0000' sx={{ width: { xs: '50%', md: '30%', sm: '30%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
+          <CustomButton children='Logout' onClick={confirmLogout}  bgColor='#EAB308' sx={{ width: { xs: '50%', md: '30%', sm: '30%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
         </DialogActions>
       </Dialog>
 

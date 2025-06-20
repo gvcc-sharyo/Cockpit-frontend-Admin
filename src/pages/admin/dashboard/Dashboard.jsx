@@ -20,30 +20,8 @@ import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
-  const stats = [
-    {
-      title: "Total Users",
-      number: 100,
-      icon: (
-        <img
-          src="/images/users.svg"
-          alt="Users"
-          width={'130%'}
-        />
-      ),
-    },
-    {
-      title: "Total Revenue",
-      number: "₹20000",
-      icon: (
-        <img
-          src="/images/revenue.svg"
-          alt="Revenue"
-          width={'130%'}
-        />
-      ),
-    },
-  ];
+
+  const adminId = localStorage.getItem('adminId');
 
   const [reports, setReports] = useState([]);
 
@@ -66,9 +44,53 @@ function Dashboard() {
     }
   };
 
+  const[totals, setTotals] = useState([]);
+
+    const getTotals = async () => {
+    try {
+      const response = await apiGet(`/subscription/getTotalRevenue?adminId=${adminId}`);
+
+      if (response.data.status === 200) {
+       setTotals(response.data.data);
+
+      } else {
+        snackbarEmitter(response.data.message, 'error');
+      }
+
+    } catch (error) {
+      snackbarEmitter("Error fetching profile", "error");
+    }
+  };
+
   useEffect(() => {
     fetchReports();
+    getTotals();
   }, [])
+
+  const stats = [
+    {
+      title: "Total Users",
+      number: totals.totalUsers,
+      icon: (
+        <img
+          src="/images/users.svg"
+          alt="Users"
+          width={'130%'}
+        />
+      ),
+    },
+    {
+      title: "Total Revenue",
+      number: totals.totalRevenue,
+      icon: (
+        <img
+          src="/images/revenue.svg"
+          alt="Revenue"
+          width={'130%'}
+        />
+      ),
+    },
+  ];
 
   const navigate = useNavigate();
 
