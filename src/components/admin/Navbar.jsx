@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useEffect, useState, } from 'react';
 import {
   Grid,
   Box,
@@ -12,7 +12,13 @@ import {
   ListItemIcon,
   ListItemText,
   Collapse,
-  Avatar
+  Avatar,
+   Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -21,12 +27,15 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { useNavigate, useLocation } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
+import { snackbarEmitter } from './CustomSnackbar';
+import { apiGet } from '../../api/axios';
+import CustomButton from './CustomButton';
 
 const Navbar = ({ title, children }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
+  const adminId = localStorage.getItem('adminId');
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [openDatabase, setOpenDatabase] = useState(false);
@@ -40,6 +49,52 @@ const Navbar = ({ title, children }) => {
     navigate(route);
     if (sidebarOpen) setSidebarOpen(false);
   };
+
+  const [adminData, setAdminData] = useState({
+    username: "",
+    role: "",
+  });
+
+  const getProfile = async () => {
+    try {
+      const response = await apiGet(`/admin/getAdmin?adminId=${adminId}`);
+
+      if (response.data.status === 200) {
+        setAdminData({
+          username: response.data.data.username,
+          role: response.data.data.role,
+        });
+
+      } else {
+        snackbarEmitter(response.data.message, 'error');
+      }
+
+    } catch (error) {
+      snackbarEmitter("Error fetching profile", "error");
+    }
+  };
+
+  useEffect(() => {
+    getProfile();
+  }, []);
+
+    const [open, setOpen] = useState(false);
+  // const navigate = useNavigate();
+
+  const handleLogoutClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const confirmLogout = () => {
+    localStorage.removeItem('adminToken');
+    setOpen(false);
+    navigate('/');
+  };
+
 
   return (
     <Grid container sx={{ minHeight: '100vh' }}>
@@ -91,17 +146,41 @@ const Navbar = ({ title, children }) => {
               onClick={() => handleNavigate('/admin/dashboard')}
               sx={{
                 fontWeight: 'bold',
-                borderRadius: 1,
+                borderRadius: 2,
                 mb: 1,
-                bgcolor: isActive('/admin/dashboard') ? 'orange' : 'white',
+                bgcolor: isActive('/admin/dashboard') ? '#EAB308' : 'white',
                 color: isActive('/admin/dashboard') ? 'white' : 'black',
                 cursor: 'pointer',
+                ":hover": {
+                  color: 'black'
+                }
               }}
             >
               <ListItemIcon>
                 <img src="/images/dashboard.svg" alt="Dashboard" />
               </ListItemIcon>
               <ListItemText primary="Dashboard" />
+            </ListItem>
+
+            <ListItem
+              button
+              onClick={() => handleNavigate('/admin/trainingsyllabus')}
+              sx={{
+                fontWeight: 'bold',
+                borderRadius: 2,
+                mb: 1,
+                bgcolor: isActive('/admin/trainingsyllabus') ? '#EAB308' : 'white',
+                color: isActive('/admin/trainingsyllabus') ? 'white' : 'black',
+                cursor: 'pointer',
+                ":hover": {
+                  color: 'black'
+                }
+              }}
+            >
+              <ListItemIcon>
+                <img src="/images/syllabus.svg" alt="Syllabus" />
+              </ListItemIcon>
+              <ListItemText primary="Syllabus" />
             </ListItem>
 
             {/* Database collapsible */}
@@ -130,11 +209,15 @@ const Navbar = ({ title, children }) => {
                   sx={{
                     pl: 4,
                     mb: 1,
-                    bgcolor: isActive('/admin/trainingsyllabus') ? 'orange' : 'white',
-                    color: isActive('/admin/trainingsyllabus') ? 'white' : 'black',
+                    borderRadius: 2,
+                    bgcolor: isActive('/admin/trainingAdd') ? '#EAB308' : 'white',
+                    color: isActive('/admin/trainingAdd') ? 'white' : 'black',
                     cursor: 'pointer',
+                    ":hover": {
+                      color: 'black'
+                    }
                   }}
-                  onClick={() => handleNavigate('/admin/trainingsyllabus')}
+                  onClick={() => handleNavigate('/admin/trainingAdd')}
                 >
                   <ListItemIcon>
                     <img src="/images/database.svg" alt="Training" />
@@ -146,7 +229,7 @@ const Navbar = ({ title, children }) => {
                   button
                   sx={{
                     pl: 4,
-                    bgcolor: isActive('/admin/feedback') ? 'orange' : 'white',
+                    bgcolor: isActive('/admin/feedback') ? '#EAB308' : 'white',
                     color: isActive('/admin/feedback') ? 'white' : 'black',
                     cursor: 'pointer',
                   }}
@@ -165,11 +248,15 @@ const Navbar = ({ title, children }) => {
               onClick={() => handleNavigate('/admin/pricing')}
               sx={{
                 fontWeight: 'bold',
-                borderRadius: 1,
+                borderRadius: 2,
                 mb: 1,
-                bgcolor: isActive('/admin/pricing') ? 'orange' : 'white',
+                bgcolor: isActive('/admin/pricing') ? '#EAB308' : 'white',
                 color: isActive('/admin/pricing') ? 'white' : 'black',
                 cursor: 'pointer',
+                ":hover": {
+                  color: 'black'
+                },
+                                
               }}
             >
               <ListItemIcon>
@@ -178,9 +265,49 @@ const Navbar = ({ title, children }) => {
               <ListItemText primary="Pricing" />
             </ListItem>
 
+            <ListItem
+              button
+              onClick={handleLogoutClick}
+              sx={{
+                fontWeight: 'bold',
+                borderRadius: 2,
+                mb: 1,
+                bgcolor:'#EAB308',
+                color: 'white',
+                cursor: 'pointer',
+                ":hover": {
+                  color: 'black'
+                },
+                // mt:15
+              }}
+            >
+              <ListItemIcon>
+                <img src="/images/Logout.svg" alt="" />
+              </ListItemIcon>
+              <ListItemText primary="Logout"  />
+            </ListItem>
           </List>
         </Box>
       </Grid>
+
+       <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="logout-dialog-title"
+        aria-describedby="logout-dialog-description"
+        // fullWidth
+      >
+        <DialogTitle id="logout-dialog-title">Confirm Logout</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="logout-dialog-description">
+           Do you want to logout?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+                <CustomButton children='Cancel' onClick={handleClose}  bgColor='#BF0000' sx={{ width: { xs: '50%', md: '30%', sm: '30%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
+          <CustomButton children='Logout' onClick={confirmLogout}  bgColor='#EAB308' sx={{ width: { xs: '50%', md: '30%', sm: '30%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
+        </DialogActions>
+      </Dialog>
 
       {/* Main Content */}
       <Grid
@@ -224,8 +351,7 @@ const Navbar = ({ title, children }) => {
 
             {/* Admin text */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, cursor: 'pointer' }} onClick={() => handleNavigate('/admin/profile')}>
-              <Avatar sx={{ width: 25, height: 25, }}>A</Avatar>
-
+              <Avatar sx={{ width: 25, height: 25, }}>{adminData.username.charAt(0).toUpperCase()}</Avatar>
             </Box>
           </Toolbar>
 
@@ -282,9 +408,9 @@ const Navbar = ({ title, children }) => {
             </Box>
 
             {/* Notification icon */}
-            <IconButton size="small" sx={{ p: 0.5 }}>
+            {/* <IconButton size="small" sx={{ p: 0.5 }}>
               <NotificationsIcon fontSize="small" />
-            </IconButton>
+            </IconButton> */}
           </Toolbar>
 
           {/* Desktop / Laptop View: Single Clean Row */}
@@ -331,19 +457,19 @@ const Navbar = ({ title, children }) => {
                   inputProps={{ 'aria-label': 'search' }}
                 />
               </Box>
-              <IconButton>
+              {/* <IconButton>
                 <NotificationsIcon />
-              </IconButton>
+              </IconButton> */}
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }} onClick={() => handleNavigate('/admin/profile')}>
-              <Avatar sx={{ width: 40, height: 40 }}>A</Avatar>
+              <Avatar sx={{ width: 40, height: 40 }}>{adminData.username.charAt(0).toUpperCase()}</Avatar>
               <Grid sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
                 <Typography variant="body1">
-                  {adminData?.username || 'Admin'}
+                  {adminData?.username}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  {adminData?.role === 'super_admin' ? 'Super Admin' : 'Sub Admin'}
+                  {adminData?.role === "super_admin" ? "Super Admin" : "Admin"}
                 </Typography>
               </Grid>
 

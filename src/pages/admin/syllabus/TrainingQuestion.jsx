@@ -1,4 +1,4 @@
-import Navbar from "../../../../components/admin/Navbar";
+import Navbar from "../../../components/admin/Navbar";
 import { useEffect, useState } from "react";
 import {
     Grid,
@@ -22,10 +22,10 @@ import {
 } from "@mui/material";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import EditSquareIcon from '@mui/icons-material/EditSquare';
-import { apiGet, apiPostUpload, apiPost } from "../../../../api/axios";
+import { apiGet, apiPostUpload, apiPost } from "../../../api/axios";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { snackbarEmitter } from "../../../../components/admin/CustomSnackbar";
-import CustomButton from "../../../../components/admin/CustomButton";
+import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
+import CustomButton from "../../../components/admin/CustomButton";
 import CloseIcon from '@mui/icons-material/Close';
 
 function TrainingQuestion() {
@@ -43,7 +43,6 @@ function TrainingQuestion() {
             }
 
             else if (response.data.status === 200 && response.data.data.length > 0) {
-                snackbarEmitter(response.data.message, 'success');
                 setQuestions(response.data.data);
             }
             else {
@@ -203,7 +202,7 @@ function TrainingQuestion() {
 
     return (
 
-        <Navbar title={'Training'}>
+        <Navbar title={'Syllabus'}>
             <Grid
                 container
                 sx={{

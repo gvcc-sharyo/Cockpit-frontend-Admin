@@ -1,6 +1,6 @@
-import Navbar from "../../../../components/admin/Navbar";
+import Navbar from "../../../components/admin/Navbar";
 import { useEffect, useState } from "react";
-import { apiGet, apiPost } from "../../../../api/axios";
+import { apiGet, apiPost } from "../../../api/axios";
 import {
     Grid,
     Card,
@@ -27,9 +27,9 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import CloseIcon from '@mui/icons-material/Close';
 import EditSquareIcon from '@mui/icons-material/EditSquare';
-import { snackbarEmitter } from "../../../../components/admin/CustomSnackbar";
-import CustomTextField from "../../../../components/admin/CustomTextField";
-import CustomButton from "../../../../components/admin/CustomButton";
+import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
+import CustomTextField from "../../../components/admin/CustomTextField";
+import CustomButton from "../../../components/admin/CustomButton";
 
 function TrainingChapter() {
     const [books, setBooks] = useState([]);
@@ -45,7 +45,6 @@ function TrainingChapter() {
                 snackbarEmitter('No books found', 'info');
             }
             else if (response.data.status === 200) {
-                snackbarEmitter(response.data.message, 'success');
                 const bookList = response.data.books;
                 setBooks(bookList);
 
@@ -73,7 +72,6 @@ function TrainingChapter() {
                 snackbarEmitter('No chapters found', 'info');
             }
             else if (response.data.status === 200) {
-                snackbarEmitter(response.data.message, 'success');
                 setChapters(response.data.chapters);
             }
             else {
@@ -284,7 +282,7 @@ function TrainingChapter() {
 
     return (
 
-        <Navbar title={'Training'}>
+        <Navbar title={'Syllabus'}>
 
             <Grid container sx={{ flexDirection: 'column', position: "relative", backgroundColor: '#f8f9fa', padding: '10px' }} >
 

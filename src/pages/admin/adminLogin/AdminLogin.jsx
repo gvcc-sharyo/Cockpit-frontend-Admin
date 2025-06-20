@@ -49,7 +49,7 @@ const styles = {
     maxWidth: '500px',
     marginTop: { xs: '10px', md: 0 }
   },
-  toggleButton: (isActive) => ({
+  toggleButton: (activeForm) => ({
     border: 'none',
     color: 'white',
     fontWeight: 'bold',
@@ -58,7 +58,7 @@ const styles = {
     marginRight: '1rem',
     textDecoration: 'none',
     cursor: 'pointer',
-    backgroundColor: isActive ? '#EAB308' : 'none',
+    backgroundColor: activeForm ? '#EAB308' : 'none',
     borderRadius: '50px',
   }),
   centeredBox: {
@@ -175,8 +175,6 @@ function AdminLogin() {
       const response = await apiPost('/admin/loginAdmin', req);
       // console.log("Response :", response.data);
       
-     
-
       setTimeout(() => {
         setLoading(false);
 
@@ -246,7 +244,7 @@ function AdminLogin() {
               <Button sx={styles.toggleButton(activeForm === 'login')} onClick={() => setActiveForm('login')}>
                 Login
               </Button>
-              <Button style={styles.toggleButton(activeForm === 'register')} onClick={() => setActiveForm('register')}>
+              <Button sx={styles.toggleButton(activeForm === 'register')} onClick={() => setActiveForm('register')}>
                 Register
               </Button>
             </Box>

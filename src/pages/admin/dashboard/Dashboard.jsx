@@ -16,12 +16,61 @@ import {
 import './dashboard.css'
 import { useState, useEffect } from "react";
 import { apiGet } from "../../../api/axios";
+import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
+
+  const adminId = localStorage.getItem('adminId');
+
+  const [reports, setReports] = useState([]);
+
+  const fetchReports = async () => {
+    try {
+      const response = await apiGet('/reports');
+
+      if (response.data.status === 200 && response.data.data.length === 0) {
+        snackbarEmitter('No reports found', 'info');
+      }
+      else if (response.data.status === 200) {
+        setReports(response.data.data);
+      }
+      else {
+        snackbarEmitter(response.data.message, 'error');
+      }
+
+    } catch (error) {
+      snackbarEmitter('Something went wrong', 'error');
+    }
+  };
+
+  const[totals, setTotals] = useState([]);
+
+    const getTotals = async () => {
+    try {
+      const response = await apiGet(`/subscription/getTotalRevenue?adminId=${adminId}`);
+
+      if (response.data.status === 200) {
+       setTotals(response.data.data);
+
+      } else {
+        snackbarEmitter(response.data.message, 'error');
+      }
+
+    } catch (error) {
+      snackbarEmitter("Error fetching profile", "error");
+    }
+  };
+
+  useEffect(() => {
+    fetchReports();
+    getTotals();
+  }, [])
+
   const stats = [
     {
       title: "Total Users",
-      number: 100,
+      number: totals.totalUsers,
       icon: (
         <img
           src="/images/users.svg"
@@ -32,7 +81,7 @@ function Dashboard() {
     },
     {
       title: "Total Revenue",
-      number: "₹20000",
+      number: totals.totalRevenue,
       icon: (
         <img
           src="/images/revenue.svg"
@@ -43,20 +92,11 @@ function Dashboard() {
     },
   ];
 
-  const [institutes, setInstitutes] = useState([])
+  const navigate = useNavigate();
 
-  const fetchInstitute = async () => {
-    try {
-      const response = await apiGet('/admin/getInstitute');
-      setInstitutes(response.data.data);
-    } catch (error) {
-      console.error('Error fetching institutes:', error);
-    }
+  const handleNavigate = (route) => {
+    navigate(route);
   };
-
-  useEffect(() => {
-    fetchInstitute();
-  }, [])
 
   const classes = {
     statsBox: {
@@ -73,7 +113,7 @@ function Dashboard() {
     statTitle: {
       fontSize: { xs: "0.7rem", md: "0.8rem" },
       color: "text.secondary",
-      lineHeight: 0.7,
+      lineHeight: 1.2,
     },
     statNumber: {
       fontSize: { xs: "0.8rem", md: "1.1rem" },
@@ -94,6 +134,8 @@ function Dashboard() {
       p: 2,
       mt: 3,
       width: "100%",
+      maxHeight: '50vh',
+      overflowY:'auto'
     },
     reportTitle: {
       fontWeight: 600,
@@ -103,7 +145,7 @@ function Dashboard() {
     reportName: {
       fontWeight: "bold",
       fontSize: { xs: "0.9rem", md: "1rem" },
-      mb: 0.5,
+      // mb: 0.5,
     },
     reportLine: {
       display: "flex",
@@ -111,7 +153,7 @@ function Dashboard() {
       alignItems: "center",
     },
     reportedText: {
-      color: "text.secondary",
+      color: "grey",
       fontSize: { xs: "0.7rem", md: "0.8rem" },
     },
     replyText: {
@@ -149,13 +191,21 @@ function Dashboard() {
           {/* New Report Box */}
           <Grid container spacing={2} sx={{ mt: 4 }}>
             <Grid size={{ xs: 10, md: 5, sm: 5 }}>
-              <Box sx={classes.reportBox}>
+              <Box sx={classes.reportBox} >
                 <Typography sx={classes.reportTitle}>Report</Typography>
-                <Typography sx={classes.reportName}>User</Typography>
-                <Box sx={classes.reportLine}>
-                  <Typography sx={classes.reportedText}>reported</Typography>
-                  <Typography sx={classes.replyText}>reply</Typography>
-                </Box>
+                {
+                  reports.map((report, index) => (
+                    <Box mt={2}>
+                      <Typography sx={classes.reportName}>{report.userId.username}</Typography>
+                      <Box sx={classes.reportLine}>
+                        <Typography sx={classes.reportedText}>Has reported a question on {report.questionId.syllabus}</Typography>
+                        <Typography sx={classes.replyText} onClick={() => handleNavigate(`/admin/feedback`)}>Reply</Typography>
+                      </Box>
+                    </Box>
+
+                  ))
+                }
+
               </Box>
             </Grid>
             {/* You can add more Grid items here if you want multiple reports */}
