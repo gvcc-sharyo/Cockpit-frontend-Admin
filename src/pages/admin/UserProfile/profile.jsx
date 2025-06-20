@@ -9,10 +9,9 @@ import {
   Button,
   Card,
   Box,
-  Typography,
 } from "@mui/material";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import { apiGet, apiPost, apiPostToken, apiPut } from "../../../api/axios";
+import { apiGet, apiPost } from "../../../api/axios";
 import Navbar from "../../../components/admin/Navbar";
 import CustomTextField from "../../../components/admin/CustomTextField";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
@@ -20,10 +19,9 @@ import CustomButton from "../../../components/admin/CustomButton";
 
 const Profile = () => {
   const adminId = localStorage.getItem("adminId");
-
+  const [email, setEmail] = useState("");
   const [formData, setFormData] = useState({
     username: "",
-    email: "",
     dob: "",
     phone: "",
     firstname: "",
@@ -33,140 +31,143 @@ const Profile = () => {
     state: "",
     zipcode: "",
     gender: "",
-    profileimage: "",
     role: "",
   });
-
   const [loading, setLoading] = useState(false);
-
   const [initialFormData, setInitialFormData] = useState(formData);
+  const [profileImage, setProfileImage] = useState(null);
 
+  // Combined getProfile and useEffect into single function
   useEffect(() => {
-    getProfile();
-  }, []);
-
-  const getProfile = async () => {
-    try {
-      const response = await apiGet(`/admin/getAdmin?adminId=${adminId}`);
-      const data = response.data.data;
-      console.log(response.data);
-
-      if (response.data.status === 200) {
-        snackbarEmitter(response.data.message, "success");
-      } else {
-        snackbarEmitter("Unexpected error", "error");
+    const getProfile = async () => {
+      try {
+        const {
+          data: { data },
+        } = await apiGet(`/admin/getAdmin?adminId=${adminId}`);
+        console.log("Fetched profile data:", data);
+        const newFormData = {
+          username: data.username || "",
+          dob: data.dob?.split("T")[0] || "",
+          phone: data.phone || "",
+          firstname: data.firstname || "",
+          lastname: data.lastname || "",
+          address: data.address || "",
+          city: data.city || "",
+          state: data.state || "",
+          zipcode: data.zipcode || "",
+          gender: data.gender || "",
+          role: data.role || "",
+        };
+        setFormData(newFormData);
+        setInitialFormData(newFormData);
+        setProfileImage(data.profileimage);
+        setEmail(data.email);
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        snackbarEmitter("Error fetching profile", "error");
       }
+    };
+    getProfile();
+  }, [adminId]); // Added adminId as dependency
 
-      console.log("Fetched profile data:", data);
-
-      const newFormData = {
-        username: data.username || "",
-        email: data.email || "",
-        dob: data.dob ? data.dob.split("T")[0] : "",
-        phone: data.phone || "",
-        firstname: data.firstname || "",
-        lastname: data.lastname || "",
-        address: data.address || "",
-        city: data.city || "",
-        state: data.state || "",
-        zipcode: data.zipcode || "",
-        gender: data.gender || "",
-        profileimage: data.profileimage || "",
-        role: data.role || "",
-      };
-
-      setFormData(newFormData);
-      setInitialFormData(newFormData);
-    } catch (error) {
-      console.error("Error fetching profile:", error);
-      snackbarEmitter("Failed to fetch profile", "error");
-    }
-  };
-
-  const updateProfile = async () => {
+  // Combined updateProfile and uploadImage into single submit handler
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setLoading(true);
 
     try {
-      const payload = {
-        adminId,
-        ...formData,
-      };
-      console.log("Sending data:", payload);
-
-      
-
-      const response = await apiPost("/admin/updateAdmin", payload);
-
-      if (response.data.status === 200) {
-        setTimeout(() => {
-          snackbarEmitter(response.data.message, "success");
-        }, 2000);
-      } else {
-         setTimeout(() => {
-          snackbarEmitter(response.data.message, "warning");
-        }, 2000);
+      // Upload image if present
+      if (profileImage instanceof File) {
+        const formDataImage = new FormData();
+        formDataImage.append("image", profileImage);
+        const { data } = await apiPost(
+          `/admin/uploadAdminImage?adminId=${adminId}`,
+          formDataImage
+        );
+        setProfileImage(data.data.profileimage);
       }
+
+      // Update profile
+      const payload = { adminId, ...formData, profileimage: profileImage };
+      console.log("Sending data:", payload);
+      const { data } = await apiPost("/admin/updateAdmin", payload);
+
       setTimeout(() => {
+        snackbarEmitter(
+          data.message,
+          data.status === 200 ? "success" : "warning"
+        );
         setLoading(false);
       }, 2000);
 
-      console.log("Profile updated:", response.data);
+      console.log("Profile updated:", data);
     } catch (error) {
-      console.error("Error updating profile:", error);
-      snackbarEmitter("Unexpected Error", "error");
-
+      console.error("Error:", error);
       setTimeout(() => {
+        snackbarEmitter("Unexpected Error", "error");
         setLoading(false);
       }, 2000);
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const handleChange = ({ target: { name, value } }) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-    console.log("Enter Data", formData);
-    e.preventDefault();
-    updateProfile();
+  const handleImageChange = ({ target: { files } }) => {
+    const file = files[0];
+    if (file) setProfileImage(file);
   };
 
-  const handleCancel = () => {
-    setFormData(initialFormData);
-  };
+  // Simplified cancel handler
+  const handleCancel = () => setFormData(initialFormData);
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        profileimage: file,
-      }));
-    }
-  };
+  const inputFields = [
+    { name: "firstname", placeholder: "First Name", value: formData.firstname },
+    { name: "lastname", placeholder: "Last Name", value: formData.lastname },
+    { name: "phone", placeholder: "Mobile Number", value: formData.phone },
+    { name: "email", placeholder: "Email Address", value: email },
+  ];
+
+  const addressFields = [
+    {
+      name: "address",
+      placeholder: "Address",
+      value: formData.address,
+      size: { xs: 12 },
+    },
+    {
+      name: "city",
+      placeholder: "City",
+      value: formData.city,
+      size: { xs: 12, md: 4 },
+    },
+    {
+      name: "state",
+      placeholder: "State",
+      value: formData.state,
+      size: { xs: 12, md: 4 },
+    },
+    {
+      name: "zipcode",
+      placeholder: "ZipCode",
+      value: formData.zipcode,
+      size: { xs: 12, md: 4 },
+    },
+  ];
 
   return (
-    <Navbar title={"Profile"}>
+    <Navbar title="Profile">
       <Box>
         <Card
           elevation={3}
-          sx={{
-            borderRadius: 4,
-            width: "auto",
-            p: { md: 6, xs: 1 },
-            backgroundColor: "#fff",
-          }}
+          sx={{ borderRadius: 4, p: { md: 6, xs: 1 }, backgroundColor: "#fff" }}
         >
           <Grid container spacing={2} component="form" onSubmit={handleSubmit}>
-            <Grid size={{ xs: 12 }}>
+
+
+            <Grid size={{ xs: 12 }} sx={{justifyContent:{xs:"center",md:"left"},display:"flex"}}>
               <Box
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
                 sx={{
                   width: 100,
                   height: 100,
@@ -176,15 +177,22 @@ const Profile = () => {
                   cursor: "pointer",
                   overflow: "hidden",
                   position: "relative",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
                 <label
                   htmlFor="profile-upload"
                   style={{ width: "100%", height: "100%", cursor: "pointer" }}
                 >
-                  {formData.profileimage ? (
+                  {profileImage ? (
                     <img
-                      src={URL.createObjectURL(formData.profileimage)}
+                      src={
+                        profileImage instanceof File
+                          ? URL.createObjectURL(profileImage)
+                          : profileImage
+                      }
                       alt="Profile"
                       style={{
                         width: "100%",
@@ -194,14 +202,7 @@ const Profile = () => {
                       }}
                     />
                   ) : (
-                    <Box
-                      display="flex"
-                      justifyContent="center"
-                      alignItems="center"
-                      sx={{ width: "100%", height: "100%" }}
-                    >
-                      <CameraAltIcon fontSize="large" />
-                    </Box>
+                    <CameraAltIcon fontSize="large" />
                   )}
                 </label>
                 <input
@@ -214,39 +215,16 @@ const Profile = () => {
               </Box>
             </Grid>
 
-            <Grid size={{ xs: 12, md: 6 }}>
-              <CustomTextField
-                name="firstname"
-                placeholder="First Name"
-                value={formData.firstname}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <CustomTextField
-                name="lastname"
-                placeholder="Last Name"
-                value={formData.lastname}
-                onChange={handleChange}
-              />
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 6 }}>
-              <CustomTextField
-                name="phone"
-                placeholder="Mobile Number"
-                value={formData.phone}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <CustomTextField
-                name="email"
-                placeholder="Email Address"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </Grid>
+            {inputFields.map((field) => (
+              <Grid key={field.name} size={{ xs: 12, md: 6 }}>
+                <CustomTextField
+                  name={field.name}
+                  placeholder={field.placeholder}
+                  value={field.value}
+                  onChange={handleChange}
+                />
+              </Grid>
+            ))}
 
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
@@ -260,117 +238,36 @@ const Profile = () => {
                 variant="outlined"
                 sx={{
                   "& .MuiOutlinedInput-root": {
-                    height: "50px",
+                    height: "45px",
                     borderRadius: "10px",
                   },
                 }}
               />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <FormControl fullWidth>
-                <InputLabel>Gender</InputLabel>
-                <Select
-                  name="gender"
-                  value={formData.gender}
-                  onChange={handleChange}
-                  label="Gender"
-                  sx={{
-                    height: "50px",
-                    borderRadius: "10px",
-                  }}
-                >
-                  <MenuItem value="male">Male</MenuItem>
-                  <MenuItem value="female">Female</MenuItem>
-                  <MenuItem value="other">Other</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid size={{ xs: 12 }}>
               <CustomTextField
-                name="address"
-                placeholder="Address"
-                value={formData.address}
+                select
+                required
+                placeholder="Gender"
+                name="gender"
+                value={formData.gender}
                 onChange={handleChange}
-              />
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 4 }}>
-              <FormControl fullWidth>
-                <InputLabel>City</InputLabel>
-                <Select
-                  name="city"
-                  value={formData.city}
-                  onChange={handleChange}
-                  label="City"
-                  sx={{
-                    height: "50px",
-                    borderRadius: "10px",
-                  }}
-                >
-                  <MenuItem value="New York">New York</MenuItem>
-                  <MenuItem value="Los Angeles">Los Angeles</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid size={{ xs: 12, md: 4 }}>
-              <FormControl fullWidth>
-                <InputLabel>State</InputLabel>
-                <Select
-                  name="state"
-                  value={formData.state}
-                  onChange={handleChange}
-                  label="State"
-                  sx={{
-                    height: "50px",
-                    borderRadius: "10px",
-                  }}
-                >
-                  <MenuItem value="NY">NY</MenuItem>
-                  <MenuItem value="CA">CA</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid size={{ xs: 12, md: 4 }}>
-              <FormControl fullWidth>
-                <InputLabel>ZIP Code</InputLabel>
-                <Select
-                  name="zipcode"
-                  value={formData.zipcode}
-                  onChange={handleChange}
-                  label="ZIP Code"
-                  sx={{
-                    height: "50px",
-                    borderRadius: "10px",
-                  }}
-                >
-                  <MenuItem value="10001">10001</MenuItem>
-                  <MenuItem value="90001">90001</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid
-              size={{ xs: 12 }}
-              display="flex"
-              justifyContent="flex-end"
-              gap={2}
-            >
-              <Button variant="outlined" sx={{ px: 4,width:"auto" }} onClick={handleCancel}>
-                Cancel
-              </Button>
-              <CustomButton
-                type="submit"
-                loading={loading}
-                bgColor="#EAB308"
-                borderRadius="10px"
-                sx={{
-                  px: 4,
-                  width: { xs: "auto", sm: "auto" },
-                }}
+                SelectProps={{ native: false }}
               >
-                Save
-              </CustomButton>
+                <MenuItem value="male">Male</MenuItem>
+                <MenuItem value="female">Female</MenuItem>
+                <MenuItem value="other">Other</MenuItem>
+              </CustomTextField>
+            </Grid>
+            {addressFields.map((field) => (
+              <Grid key={field.name} size={field.size}>
+                <CustomTextField name={field.name} placeholder={field.placeholder} value={field.value} onChange={handleChange}/>
+              </Grid>
+            ))}
+
+            <Grid size={{ xs: 12 }} display="flex" justifyContent="flex-end" gap={2}>
+              <Button variant="outlined" sx={{ px: 4, width: "auto" }} onClick={handleCancel}> Cancel </Button>
+              <CustomButton  type="submit" loading={loading} bgColor="#EAB308" borderRadius="10px" sx={{ px: 4, width: { xs: "auto", sm: "auto" } }}>Save </CustomButton>
             </Grid>
           </Grid>
         </Card>
