@@ -11,6 +11,7 @@ import Pricing from '../pages/admin/Pricing/pricing';
 import Profile from '../pages/admin/UserProfile/profile';
 import AddQuestion from '../pages/admin/syllabus/AddQuestion';
 import TrainingAdd from '../pages/admin/database/training/TrainingAdd';
+import ResetPassword from '../pages/admin/resetPassword/ResetPassword';
 
 const AdminRoute = () => {
 
@@ -23,6 +24,8 @@ const AdminRoute = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<AdminLogin />} />
+        <Route path="/admin/resetPassword" element={<ResetPassword />} />
+
         <Route element={<AuthRoute />}>
         <Route path="/admin/dashboard" element={<Dashboard />} />
         <Route path="/admin/trainingsyllabus" element={<TrainingSyllabus />} />
@@ -36,6 +39,7 @@ const AdminRoute = () => {
         <Route path="/admin/pricing" element={<Pricing />} />
         <Route path="/admin/profile" element={<Profile />} />
         </Route>
+        
       </Routes>
     </BrowserRouter>
   );
