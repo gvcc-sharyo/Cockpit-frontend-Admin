@@ -211,7 +211,7 @@ function Feedback() {
 
   return (
     <Navbar title={"Feedback"}>
-      <Grid container justifyContent="center">
+      <Grid container justifyContent="center" sx={{maxHeight: '100vh', overflowY: 'scroll'}}>
         {
           filteredReports.length > 0 && filteredReports.map((report, index) => (
             <Grid size={{ xs: 12, sm: 10, md: 10 }} >
