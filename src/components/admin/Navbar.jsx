@@ -12,6 +12,7 @@ import {
   ListItemIcon,
   ListItemText,
   Collapse,
+  Avatar
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -45,7 +46,7 @@ const Navbar = ({ title, children }) => {
       {/* Sidebar */}
       <Grid
         item
-        size={{ xs: sidebarOpen ? 8 : 0, md: 2, sm:4 }}
+        size={{ xs: sidebarOpen ? 8 : 0, md: 2, sm: 4 }}
         sx={{
           bgcolor: 'white',
           borderRight: '1px solid #ddd',
@@ -103,6 +104,24 @@ const Navbar = ({ title, children }) => {
               <ListItemText primary="Dashboard" />
             </ListItem>
 
+             <ListItem
+              button
+              onClick={() => handleNavigate('/admin/trainingsyllabus')}
+              sx={{
+                fontWeight: 'bold',
+                borderRadius: 1,
+                mb: 1,
+                bgcolor: isActive('/admin/trainingsyllabus') ? 'orange' : 'white',
+                color: isActive('/admin/trainingsyllabus') ? 'white' : 'black',
+                cursor: 'pointer',
+              }}
+            >
+              <ListItemIcon>
+                <img src="/images/syllabus.svg" alt="Syllabus" />
+              </ListItemIcon>
+              <ListItemText primary="Syllabus" />
+            </ListItem>
+
             {/* Database collapsible */}
             <ListItem
               button
@@ -129,11 +148,11 @@ const Navbar = ({ title, children }) => {
                   sx={{
                     pl: 4,
                     mb: 1,
-                    bgcolor: isActive('/admin/trainingsyllabus') ? 'orange' : 'white',
-                    color: isActive('/admin/trainingsyllabus') ? 'white' : 'black',
+                    bgcolor: isActive('/admin/trainingAdd') ? 'orange' : 'white',
+                    color: isActive('/admin/trainingAdd') ? 'white' : 'black',
                     cursor: 'pointer',
                   }}
-                  onClick={() => handleNavigate('/admin/trainingsyllabus')}
+                  onClick={() => handleNavigate('/admin/trainingAdd')}
                 >
                   <ListItemIcon>
                     <img src="/images/database.svg" alt="Training" />
@@ -158,6 +177,26 @@ const Navbar = ({ title, children }) => {
                 </ListItem>
               </List>
             </Collapse>
+
+            <ListItem
+              button
+              onClick={() => handleNavigate('/admin/pricing')}
+              sx={{
+                fontWeight: 'bold',
+                borderRadius: 1,
+                mb: 1,
+                bgcolor: isActive('/admin/pricing') ? 'orange' : 'white',
+                color: isActive('/admin/pricing') ? 'white' : 'black',
+                cursor: 'pointer',
+              }}
+            >
+              <ListItemIcon>
+                <img src="/images/donate.svg" alt="Pricing" />
+              </ListItemIcon>
+              <ListItemText primary="Pricing" />
+            </ListItem>
+           
+
           </List>
         </Box>
       </Grid>
@@ -203,13 +242,9 @@ const Navbar = ({ title, children }) => {
             </Box>
 
             {/* Admin text */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-              <Typography variant="caption" sx={{ fontWeight: 'bold', fontSize: '0.75rem' }}>
-                {adminData?.username || 'Admin'}
-              </Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem' }}>
-                {adminData?.role === 'super_admin' ? 'Super Admin' : 'Sub Admin'}
-              </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, cursor: 'pointer' }} onClick={() => handleNavigate('/admin/profile')}>
+              <Avatar sx={{ width: 25, height: 25, }}>A</Avatar>
+
             </Box>
           </Toolbar>
 
@@ -292,7 +327,7 @@ const Navbar = ({ title, children }) => {
             </Typography>
 
             {/* Right section */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', ml: '350px', gap: 2 }}>
               <Box
                 sx={{
                   display: 'flex',
@@ -318,15 +353,21 @@ const Navbar = ({ title, children }) => {
               <IconButton>
                 <NotificationsIcon />
               </IconButton>
-              <Box sx={{ textAlign: 'right' }}>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }} onClick={() => handleNavigate('/admin/profile')}>
+              <Avatar sx={{ width: 40, height: 40 }}>A</Avatar>
+              <Grid sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+
                 <Typography variant="body1">
                   {adminData?.username || 'Admin'}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
                   {adminData?.role === 'super_admin' ? 'Super Admin' : 'Sub Admin'}
                 </Typography>
-              </Box>
+              </Grid>
+
             </Box>
+
           </Toolbar>
         </AppBar>
 

@@ -1,15 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Grid,
-  TextField,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  Button,
-  Card,
-  Box,
-} from "@mui/material";
+import { Grid, TextField, MenuItem, Button, Card, Box } from "@mui/material";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { apiGet, apiPost } from "../../../api/axios";
 import Navbar from "../../../components/admin/Navbar";
@@ -36,15 +26,14 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [initialFormData, setInitialFormData] = useState(formData);
   const [profileImage, setProfileImage] = useState(null);
+  const [errors, setErrors] = useState({});
 
-  // Combined getProfile and useEffect into single function
   useEffect(() => {
     const getProfile = async () => {
       try {
         const {
           data: { data },
         } = await apiGet(`/admin/getAdmin?adminId=${adminId}`);
-        console.log("Fetched profile data:", data);
         const newFormData = {
           username: data.username || "",
           dob: data.dob?.split("T")[0] || "",
@@ -63,20 +52,44 @@ const Profile = () => {
         setProfileImage(data.profileimage);
         setEmail(data.email);
       } catch (error) {
-        console.error("Error fetching profile:", error);
         snackbarEmitter("Error fetching profile", "error");
       }
     };
     getProfile();
-  }, [adminId]); // Added adminId as dependency
+  }, [adminId]);
 
-  // Combined updateProfile and uploadImage into single submit handler
+  const validate = () => {
+    const errs = {};
+    if (!formData.firstname.trim()) errs.firstname = "First name is required";
+    if (!formData.lastname.trim()) errs.lastname = "Last name is required";
+    if (!formData.phone.trim()) {
+      errs.phone = "Phone number is required";
+    } else if (!/^\d{10}$/.test(formData.phone)) {
+      errs.phone = "Enter Valid Phone Number";
+    }
+
+    if (!email.trim()) errs.email = "Email is required";
+    if (!formData.dob) errs.dob = "Date of birth is required";
+    if (!formData.gender) errs.gender = "Gender is required";
+    if (!formData.address.trim()) errs.address = "Address is required";
+    if (!formData.city.trim()) errs.city = "City is required";
+    if (!formData.state.trim()) errs.state = "State is required";
+    if (!formData.zipcode.trim()) errs.zipcode = "Zip code is required";
+    return errs;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      snackbarEmitter("Please fill all required fields", "warning");
+      return;
+    }
+    setErrors({});
     setLoading(true);
 
     try {
-      // Upload image if present
       if (profileImage instanceof File) {
         const formDataImage = new FormData();
         formDataImage.append("image", profileImage);
@@ -87,9 +100,7 @@ const Profile = () => {
         setProfileImage(data.data.profileimage);
       }
 
-      // Update profile
       const payload = { adminId, ...formData, profileimage: profileImage };
-      console.log("Sending data:", payload);
       const { data } = await apiPost("/admin/updateAdmin", payload);
 
       setTimeout(() => {
@@ -99,10 +110,7 @@ const Profile = () => {
         );
         setLoading(false);
       }, 2000);
-
-      console.log("Profile updated:", data);
     } catch (error) {
-      console.error("Error:", error);
       setTimeout(() => {
         snackbarEmitter("Unexpected Error", "error");
         setLoading(false);
@@ -119,7 +127,6 @@ const Profile = () => {
     if (file) setProfileImage(file);
   };
 
-  // Simplified cancel handler
   const handleCancel = () => setFormData(initialFormData);
 
   const inputFields = [
@@ -164,9 +171,13 @@ const Profile = () => {
           sx={{ borderRadius: 4, p: { md: 6, xs: 1 }, backgroundColor: "#fff" }}
         >
           <Grid container spacing={2} component="form" onSubmit={handleSubmit}>
-
-
-            <Grid size={{ xs: 12 }} sx={{justifyContent:{xs:"center",md:"left"},display:"flex"}}>
+            <Grid
+              size={{ xs: 12 }}
+              sx={{
+                justifyContent: { xs: "center", md: "left" },
+                display: "flex",
+              }}
+            >
               <Box
                 sx={{
                   width: 100,
@@ -222,6 +233,9 @@ const Profile = () => {
                   placeholder={field.placeholder}
                   value={field.value}
                   onChange={handleChange}
+                  required
+                  error={!!errors[field.name]}
+                  helperText={errors[field.name]}
                 />
               </Grid>
             ))}
@@ -232,6 +246,7 @@ const Profile = () => {
                 placeholder="Date of Birth"
                 type="date"
                 name="dob"
+                required
                 value={formData.dob}
                 onChange={handleChange}
                 InputLabelProps={{ shrink: true }}
@@ -242,8 +257,11 @@ const Profile = () => {
                     borderRadius: "10px",
                   },
                 }}
+                error={!!errors.dob}
+                helperText={errors.dob}
               />
             </Grid>
+
             <Grid size={{ xs: 12, md: 6 }}>
               <CustomTextField
                 select
@@ -253,21 +271,52 @@ const Profile = () => {
                 value={formData.gender}
                 onChange={handleChange}
                 SelectProps={{ native: false }}
+                error={!!errors.gender}
+                helperText={errors.gender}
               >
                 <MenuItem value="male">Male</MenuItem>
                 <MenuItem value="female">Female</MenuItem>
                 <MenuItem value="other">Other</MenuItem>
               </CustomTextField>
             </Grid>
+
             {addressFields.map((field) => (
               <Grid key={field.name} size={field.size}>
-                <CustomTextField name={field.name} placeholder={field.placeholder} value={field.value} onChange={handleChange}/>
+                <CustomTextField
+                  required
+                  name={field.name}
+                  placeholder={field.placeholder}
+                  value={field.value}
+                  onChange={handleChange}
+                  error={!!errors[field.name]}
+                  helperText={errors[field.name]}
+                />
               </Grid>
             ))}
 
-            <Grid size={{ xs: 12 }} display="flex" justifyContent="flex-end" gap={2}>
-              <Button variant="outlined" sx={{ px: 4, width: "auto" }} onClick={handleCancel}> Cancel </Button>
-              <CustomButton  type="submit" loading={loading} bgColor="#EAB308" borderRadius="10px" sx={{ px: 4, width: { xs: "auto", sm: "auto" } }}>Save </CustomButton>
+            <Grid
+              size={{ xs: 12 }}
+              display="flex"
+              justifyContent="flex-end"
+              gap={2}
+            >
+              <CustomButton 
+                bgColor="#fff"
+                
+                borderRadius="10px"
+                sx={{ px: 4, width: { xs: "auto", sm: "auto" },color:"black" }}
+                >Cancel</CustomButton>
+                
+             
+              <CustomButton
+                type="submit"
+                loading={loading}
+                bgColor="#EAB308"
+                borderRadius="10px"
+                sx={{ px: 4, width: { xs: "auto", sm: "auto" } }}
+              >
+                Save
+              </CustomButton>
             </Grid>
           </Grid>
         </Card>

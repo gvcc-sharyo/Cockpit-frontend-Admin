@@ -68,6 +68,7 @@ function Feedback() {
   const [reports, setReports] = useState([]);
 
   const fetchReports = async () => {
+    setOpen(null);
     try {
       const response = await apiGet('/reports');
 
@@ -167,7 +168,7 @@ function Feedback() {
     }));
   };
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const handleUpdate = async () => {
 
     const req = {
@@ -206,7 +207,6 @@ function Feedback() {
         fetchReports();
       }, 1500)
 
-
     }
   };
 
@@ -223,27 +223,50 @@ function Feedback() {
     });
   }
 
-  const updateReport = async (report, status) => {
 
+   const [customLoading, setCustomLoading] = useState({
+    approveLoading: false,
+    declineLoading: false,
+  })
+
+  const updateReport = async (report, status, loadbutton) => {
+ 
     const req = {
       reportId: report._id,
       status: status
     }
 
-    setLoading(true);
+    if(loadbutton == 'a'){
+      setCustomLoading({
+        approveLoading: true,
+        declineLoading: false
+      })
+    } 
+    else{
+      setCustomLoading({
+        approveLoading: false,
+        declineLoading: true
+      })
+    }
 
     try {
      const response = await apiPost('/updateReport', req);
 
       setTimeout(() => {
-        setLoading(false);
+        setCustomLoading({
+          approveLoading: false,
+          declineLoading: false
+        })
         
         if(response.data.status === 200){
           snackbarEmitter('Report updated successfully', 'success');
               fetchReports();
         }
         else{
-          setLoading(false);
+          setCustomLoading({
+            approveLoading: false,
+            declineLoading: false
+          })
           snackbarEmitter(response.data.message, 'error');
           fetchReports();
         }
@@ -253,7 +276,10 @@ function Feedback() {
     }
     catch (error) {
       setTimeout(() => {
-        setLoading(false);
+        setCustomLoading({
+          approveLoading: false,
+          declineLoading: false
+        })
         snackbarEmitter('Something went wrong', 'error');
         fetchReports();
       }, 1500)
@@ -268,15 +294,15 @@ function Feedback() {
 
         {
           filteredReports.length > 0 && filteredReports.map((report, index) => (
-            <Grid size={{ xs: 10, sm: 10, md: 10 }} >
+            <Grid size={{ xs: 12, sm: 10, md: 10}} >
               {/* Toggle Box */}
               <Box sx={styles.toggleBox} onClick={() => setOpen(open === index ? null : index)}>
-                <Grid sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                  <Avatar>U</Avatar>
+                <Grid sx={{ display: "flex", alignItems: "center", justifyContent:'center', gap: 2 }}>
+                  <Avatar>{report.userId.username[0]}</Avatar>
                   <CustomTypography
                     fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
                     fontWeight={500}
-                    text=' User has reported a question on syllabus and chapter'
+                    text={`${report.userId.username} has reported a question on ${report.questionId.syllabus}`}
                     mb={0} />
                 </Grid>
 
@@ -287,7 +313,7 @@ function Feedback() {
 
               {/* Expandable Content */}
               <Collapse in={open === index} >
-                <Grid container spacing={2} mt={1} sx={{ justifyContent: "center", backgroundColor: '#F0F0F0' }}>
+                <Grid container spacing={2} mt={1} sx={{display:'flex', justifyContent: "center", backgroundColor: '#F0F0F0' }}>
                   {/* Question & Our Answer Box */}
                   <Grid size={{ xs: 8, sm: 10, md: 10 }}>
                     <Box sx={styles.sectionBox}>
@@ -339,14 +365,14 @@ function Feedback() {
                     </Box>
                   </Grid>
 
-                  <Box sx={styles.buttonGroup} mb={2}>
+                  <Grid container sx={styles.buttonGroup} mb={2} size={{ xs: 10, sm: 12, md: 12}} >
                     {/* <Button sx={styles.actionButton}>Approve</Button>
                     <Button sx={styles.actionButton}>Decline</Button>
                     <Button sx={styles.actionButton} onClick={() => handleModalOpen(report)}>Show question</Button> */}
-                     <CustomButton children='Approve' onClick={() => updateReport(report, 'resolved')} loading={loading} bgColor='#1E9609' sx={{ width: '30%' }} />
-                     <CustomButton children='Decline' onClick={() => updateReport(report, 'pending')} loading={loading} bgColor='red' sx={{ width: '30%' }} />
-                     <CustomButton children='Show question' onClick={() => handleModalOpen(report)} loading={loading} bgColor='#EAB308' sx={{ width: '40%' }} />
-                  </Box>
+                     <CustomButton children='Approve' onClick={() => updateReport(report, 'resolved','a')} loading={customLoading.approveLoading} bgColor='#1E9609' sx={{ width: { xs: '20%', sm: '20%', md: '20%'}, fontSize:{ xs: '10px', sm: '11px', md: '12px'} }} />
+                     <CustomButton children='Decline' onClick={() => updateReport(report, 'rejected', 'd')} loading={customLoading.declineLoading} bgColor='red' sx={{ width: { xs: '20%', sm: '20%', md: '20%'}, fontSize:{ xs: '10px', sm: '11px', md: '12px'} }} />
+                     <CustomButton children='Show question' onClick={() => handleModalOpen(report)} loading={false} bgColor='#EAB308' sx={{ width: { xs: '20%', sm: '20%', md: '20%'}, fontSize:{ xs: '10px', sm: '11px', md: '12px'} }} />
+                  </Grid>
                 </Grid>
 
                 {/* Action Buttons */}
