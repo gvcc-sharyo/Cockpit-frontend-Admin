@@ -125,7 +125,23 @@ function Dashboard() {
 
   useEffect(() => {
     fetchInstitute();
+    getDashboardDetails();
   }, []);
+  
+
+  const [dashboardDetails,setDashboardDetails] = useState();
+  
+  const getDashboardDetails = async () => {
+    try {
+      const response = await apiGet("/subscription/getTotalRevenue?adminId=${adminId}");
+      console.log(response);
+      setDashboardDetails(response.data.data);
+    } catch (error) {
+      console.error("Error fetching institutes:", error);
+    }
+  };
+
+
 
   const classes = {
     statsBox: {
