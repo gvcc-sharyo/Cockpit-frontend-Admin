@@ -16,7 +16,9 @@ import {
   CircularProgress,
   Snackbar,
   Alert,
-  Backdrop
+  Backdrop,
+  Dialog,
+  DialogContent
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -24,6 +26,8 @@ import { apiPost } from '../../../api/axios';
 import CustomTextField from '../../../components/admin/CustomTextField';
 import { snackbarEmitter } from '../../../components/admin/CustomSnackbar';
 import CustomButton from '../../../components/admin/CustomButton';
+import CloseIcon from '@mui/icons-material/Close';
+import { color } from 'chart.js/helpers';
 
 const styles = {
   containerBox: {
@@ -128,6 +132,8 @@ const styles = {
   },
 };
 
+
+
 function AdminLogin() {
   const [activeForm, setActiveForm] = useState('login');
 
@@ -174,7 +180,7 @@ function AdminLogin() {
     try {
       const response = await apiPost('/admin/loginAdmin', req);
       // console.log("Response :", response.data);
-      
+
       setTimeout(() => {
         setLoading(false);
 
@@ -218,7 +224,7 @@ function AdminLogin() {
         else {
           snackbarEmitter(response.data.message, 'error');
         }
-      },1500)
+      }, 1500)
 
 
     } catch (error) {
@@ -229,6 +235,49 @@ function AdminLogin() {
 
     }
   };
+
+  const [forgotDialogOpen, setForgotDialogOpen] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotError, setForgotError] = useState('');
+  const[forgotLoading, setForgotLoading] = useState(false);
+
+  const handleForgotPassword = async () => {
+    if (!forgotEmail) {
+      setForgotError('Email is required');
+      return;
+    } else if (!/\S+@\S+\.\S+/.test(forgotEmail)) {
+      setForgotError('Invalid email');
+      return;
+    }
+
+    setForgotError('');
+    setForgotLoading(true);
+
+    try {
+      const response = await apiPost('/admin/forgot-password', { email: forgotEmail });
+
+      setTimeout(() => {
+        setForgotLoading(false);    
+         if (response.data.status === 200) {
+          setForgotDialogOpen(false);
+          snackbarEmitter(response.data.message, 'success');
+          setForgotEmail('');
+   
+      } else {
+        snackbarEmitter(response.data.message, 'error');
+      }    
+      },1500)
+     
+
+    } catch (err) {
+      setTimeout(() => {
+        setForgotLoading(false);
+        snackbarEmitter('Something went wrong', 'error');
+      }, 1500);
+    }
+  };
+
+
 
 
   return (
@@ -295,7 +344,7 @@ function AdminLogin() {
 
                 <Grid container alignItems="center" gap={1} sx={styles.formGrid} mt={2} >
 
-                  <Typography variant="body2" sx={styles.secondaryText} gutterBottom>Forgot Password?</Typography>
+                  <Typography onClick={() => setForgotDialogOpen(true)} variant="body2" sx={{ ...styles.secondaryText, cursor: 'pointer' }} gutterBottom>Forgot Password?</Typography>
 
                   <CustomButton children='Board me' onClick={handleLogin} loading={loading} bgColor='#EAB308' borderRadius='50px' />
 
@@ -348,7 +397,7 @@ function AdminLogin() {
 
                 </Grid>
 
-                <CustomButton children='Register' onClick={handleRegister} loading={loading} bgColor='#EAB308' borderRadius='50px'/>
+                <CustomButton children='Register' onClick={handleRegister} loading={loading} bgColor='#EAB308' borderRadius='50px' />
 
               </>
             )}
@@ -356,6 +405,74 @@ function AdminLogin() {
           </Paper>
         </Grid>
       </Grid>
+
+      <Dialog open={forgotDialogOpen} onClose={() => setForgotDialogOpen(false)} maxWidth="xs" fullWidth
+        slotProps={
+          {
+            paper: {
+              sx: {
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                backdropFilter: 'blur(13px)',
+                borderRadius: '1rem',
+                color: 'white',
+              },
+            }
+          }
+        }
+      >
+        <DialogContent >
+          <IconButton
+            onClick={() => setForgotDialogOpen(false)}
+            sx={{ position: 'absolute', top: 10, right: 10, color: 'white' }}
+            size="small"
+          >
+            <CloseIcon />
+          </IconButton>
+
+          <Typography variant="h6" fontWeight="bold" color="white" mb={4} fontSize={{ xs: '18px', sm: '20px', md: '22px' }}>
+            Forgot password?
+          </Typography>
+          <Typography fontWeight="bold" color="white" mb={1} fontSize={{ xs: '14px', sm: '16px', md: '18px' }}>
+            Verify your email address
+          </Typography>
+          <Typography color="white" mb={3} fontSize={{ xs: '12px', sm: '13px' }}>
+            We will send you reset password link on this email
+          </Typography>
+
+          <Grid  >
+            <CustomTextField
+              label="Enter your email"
+              placeholder="Enter your email"
+              value={forgotEmail}
+              onChange={(e) => setForgotEmail(e.target.value)}
+              error={!!forgotError}
+              helperText={forgotError}
+              borderRadius="50px"
+            />
+
+            <Grid item sx={{ display: 'flex', justifyContent: 'center' }} mt={2}>
+
+              <CustomButton
+                children="Send"
+                onClick={handleForgotPassword}
+                loading={forgotLoading}
+                bgColor="#EAB308"
+                borderRadius="50px"
+                sx={{ width: { xs: '90%', md: '50%', sm: '60%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }}
+              />
+            </Grid>
+
+          </Grid>
+
+
+
+
+
+        </DialogContent>
+      </Dialog>
+
+
+
     </Box>
   );
 }
