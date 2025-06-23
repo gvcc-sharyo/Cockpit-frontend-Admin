@@ -109,6 +109,7 @@ const Profile = () => {
       }, 2000);
     }
   };
+  
   const handleChange = ({ target: { name, value } }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -245,6 +246,7 @@ const Profile = () => {
                 helperText={errors.dob}
               />
             </Grid>
+
             <Grid size={{ xs: 12, md: 6 }}>
               <CustomTextField
                 select

@@ -29,11 +29,15 @@ export const apiGetToken = async (endpoint,  userType='student', data) => {
 };
 
 export const apiPost = async (endpoint, data) => {
-  const headers = {
-    'Content-Type': 'application/json',
-  };
+  let headers = {};
+
+  if (!(data instanceof FormData)) {
+    headers['Content-Type'] = 'application/json';
+  }
+
   return await axios.post(`${BASE_URL}${endpoint}`, data, { headers });
 };
+
 
 export const apiPostToken = async (endpoint, data) => {
   const token = localStorage.getItem('adminToken');
