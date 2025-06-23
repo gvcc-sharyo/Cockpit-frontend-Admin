@@ -13,6 +13,7 @@ import CustomTextArea from "../../../components/admin/CustomTextArea";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import { apiGet, apiPost } from "../../../api/axios";
 import CustomButton from "../../../components/admin/CustomButton";
+import Training from "../../../components/admin/Training";
 
 function Feedback() {
   const [open, setOpen] = useState(null);
@@ -76,7 +77,7 @@ function Feedback() {
         snackbarEmitter('No reports found', 'info');
       }
       else if (response.data.status === 200) {
-        snackbarEmitter(response.data.message, 'success');
+        // snackbarEmitter(response.data.message, 'success');
         setReports(response.data.data);
       }
       else {
@@ -100,115 +101,30 @@ function Feedback() {
 
     setOpenModal(false);
     setFormData({
-      questionId: "",
-      question: "",
-      options: [
-        { id: 1, text: "", isCorrect: false },
-        { id: 2, text: "", isCorrect: false },
-      ],
-      explanation: "",
+      syllabus: "",
+      book: "",
+      chapter: "",
+      question: {
+        _id: "",
+        question: "",
+        options: [],
+        explanation: "",
+      }
     });
+    fetchReports();
   };
 
   const [formData, setFormData] = useState({
-    questionId: "",
-    question: "",
-    options: [
-      { id: 1, text: "", isCorrect: false },
-      { id: 2, text: "", isCorrect: false },
-    ],
-    explanation: "",
+    syllabus: "",
+    book: "",
+    chapter: "",
+    question: {
+      _id: "",
+      question: "",
+      options: [],
+      explanation: "",
+    }
   });
-  const [options, setOptions] = useState([1, 2]);
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-  const handleOptionTextChange = (index, value) => {
-    setFormData((prev) => {
-      const newOptions = [...prev.options];
-      newOptions[index] = { ...newOptions[index], text: value };
-      return { ...prev, options: newOptions };
-    });
-  };
-  const handleOptionCorrectChange = (value) => {
-    const index = parseInt(value.split("-")[1]);
-    setFormData((prev) => {
-      const newOptions = prev.options.map((option, i) => ({
-        ...option,
-        isCorrect: i === index,
-      }));
-      return { ...prev, options: newOptions };
-    });
-  };
-  const handleExplanationChange = (value) => {
-    setFormData((prev) => ({
-      ...prev,
-      explanation: value,
-    }));
-  };
-  const handleAddOption = () => {
-    const newId = options.length + 1;
-    setOptions((prev) => [...prev, newId]);
-    setFormData((prev) => ({
-      ...prev,
-      options: [...prev.options, { id: newId, text: "", isCorrect: false }],
-    }));
-  };
-  const handleDeleteOption = (indexToDelete) => {
-    setOptions((prev) => prev.filter((_, index) => index !== indexToDelete));
-    setFormData((prev) => ({
-      ...prev,
-      options: prev.options
-        .filter((_, index) => index !== indexToDelete)
-        .map((option, index) => ({ ...option, id: index + 1 })),
-    }));
-  };
-
-  const [loading, setLoading] = useState(false);
-  const handleUpdate = async () => {
-
-    const req = {
-      questionId: formData.questionId,
-      question: formData.question,
-      options: formData.options,
-      explanation: formData.explanation
-    }
-
-    setLoading(true);
-
-    try {
-      const response = await apiPost('/updateQuestion', req);
-
-      setTimeout(() => {
-        setLoading(false);
-        if (response.data.status === 200) {
-          snackbarEmitter(response.data.message, 'success');
-          handleModalClose();
-          fetchReports();
-        }
-        else {
-          snackbarEmitter(response.data.message, 'error');
-          handleModalClose();
-          fetchReports();
-        }
-      }, 1500)
-
-
-    } catch (error) {
-
-      setTimeout(() => {
-        setLoading(false);
-        snackbarEmitter('Something went wrong', 'error');
-        handleModalClose();
-        fetchReports();
-      }, 1500)
-
-    }
-  };
 
   const [openModal, setOpenModal] = useState(false);
 
@@ -216,33 +132,38 @@ function Feedback() {
   const handleModalOpen = (report) => {
     setOpenModal(true);
     setFormData({
-      questionId: report.questionId._id,
-      question: report.questionId.question,
-      options: report.questionId.options,
-      explanation: report.questionId.explanation,
+      syllabus: report.questionId.syllabus,
+      book: report.questionId.book,
+      chapter: report.questionId.chapter,
+      question: {
+        _id: report.questionId._id,
+        question: report.questionId.question,
+        options: report.questionId.options,
+        explanation: report.questionId.explanation,
+      },
     });
   }
 
 
-   const [customLoading, setCustomLoading] = useState({
+  const [customLoading, setCustomLoading] = useState({
     approveLoading: false,
     declineLoading: false,
   })
 
   const updateReport = async (report, status, loadbutton) => {
- 
+
     const req = {
       reportId: report._id,
       status: status
     }
 
-    if(loadbutton == 'a'){
+    if (loadbutton == 'a') {
       setCustomLoading({
         approveLoading: true,
         declineLoading: false
       })
-    } 
-    else{
+    }
+    else {
       setCustomLoading({
         approveLoading: false,
         declineLoading: true
@@ -250,19 +171,19 @@ function Feedback() {
     }
 
     try {
-     const response = await apiPost('/updateReport', req);
+      const response = await apiPost('/updateReport', req);
 
       setTimeout(() => {
         setCustomLoading({
           approveLoading: false,
           declineLoading: false
         })
-        
-        if(response.data.status === 200){
+
+        if (response.data.status === 200) {
           snackbarEmitter('Report updated successfully', 'success');
-              fetchReports();
+          fetchReports();
         }
-        else{
+        else {
           setCustomLoading({
             approveLoading: false,
             declineLoading: false
@@ -271,7 +192,7 @@ function Feedback() {
           fetchReports();
         }
 
-    
+
       }, 1500)
     }
     catch (error) {
@@ -286,24 +207,43 @@ function Feedback() {
     }
   }
 
-
+  // const time = new Date(createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
   return (
     <Navbar title={"Feedback"}>
       <Grid container justifyContent="center">
-
         {
           filteredReports.length > 0 && filteredReports.map((report, index) => (
-            <Grid size={{ xs: 12, sm: 10, md: 10}} >
+            <Grid size={{ xs: 12, sm: 10, md: 10 }} >
               {/* Toggle Box */}
               <Box sx={styles.toggleBox} onClick={() => setOpen(open === index ? null : index)}>
-                <Grid sx={{ display: "flex", alignItems: "center", justifyContent:'center', gap: 2 }}>
+                <Grid sx={{ display: "flex", alignItems: "center", gap: 2 }} >
                   <Avatar>{report.userId.username[0]}</Avatar>
-                  <CustomTypography
-                    fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
-                    fontWeight={500}
-                    text={`${report.userId.username} has reported a question on ${report.questionId.syllabus}`}
-                    mb={0} />
+                  <Box sx={{ display: "flex", flexDirection: "column", justifyContent: 'center' }} >
+
+                    <CustomTypography
+                      fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
+                      fontWeight={500}
+                      text={`${report.userId.username} has ${report.reason === '' ? 'reported a' : 'filed answer for a'}  question on ${report.questionId.syllabus}`}
+                      mb={0} />
+
+                    <CustomTypography
+                      fontSize={{ xs: '8px', sm: '10px', md: '10px' }}
+                      // fontWeight={400}
+                      color="gray"
+                      text={new Date(report.createdAt).toLocaleTimeString([], {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true
+                      })}
+                      mb={0}
+                    />
+                  </Box>
+
+
                 </Grid>
 
                 <IconButton>
@@ -313,7 +253,7 @@ function Feedback() {
 
               {/* Expandable Content */}
               <Collapse in={open === index} >
-                <Grid container spacing={2} mt={1} sx={{display:'flex', justifyContent: "center", backgroundColor: '#F0F0F0' }}>
+                <Grid container spacing={2} mt={1} sx={{ display: 'flex', justifyContent: "center", backgroundColor: '#F0F0F0' }}>
                   {/* Question & Our Answer Box */}
                   <Grid size={{ xs: 8, sm: 10, md: 10 }}>
                     <Box sx={styles.sectionBox}>
@@ -347,31 +287,35 @@ function Feedback() {
                   </Grid>
 
                   {/* Student Answer Box */}
-                  <Grid size={{ xs: 8, sm: 10, md: 10 }}>
-                    <Box sx={styles.sectionBox}>
-                      <CustomTypography
-                        fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
-                        color='orange'
-                        fontWeight={500}
-                        text='Student Answer'
-                        mb={0}
-                      />
+                  {
+                    report.reason !== '' &&
+                    <Grid size={{ xs: 8, sm: 10, md: 10 }}>
+                      <Box sx={styles.sectionBox}>
+                        <CustomTypography
+                          fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
+                          color='orange'
+                          fontWeight={500}
+                          text='Student Answer'
+                          mb={0}
+                        />
 
-                      <CustomTypography
-                        fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
-                        fontWeight={500}
-                        text={report.reason}
-                      />
-                    </Box>
-                  </Grid>
+                        <CustomTypography
+                          fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
+                          fontWeight={500}
+                          text={report.reason}
+                        />
+                      </Box>
+                    </Grid>
+                  }
 
-                  <Grid container sx={styles.buttonGroup} mb={2} size={{ xs: 10, sm: 12, md: 12}} >
+
+                  <Grid container sx={styles.buttonGroup} mb={2} size={{ xs: 10, sm: 12, md: 12 }} >
                     {/* <Button sx={styles.actionButton}>Approve</Button>
                     <Button sx={styles.actionButton}>Decline</Button>
                     <Button sx={styles.actionButton} onClick={() => handleModalOpen(report)}>Show question</Button> */}
-                     <CustomButton children='Approve' onClick={() => updateReport(report, 'resolved','a')} loading={customLoading.approveLoading} bgColor='#1E9609' sx={{ width: { xs: '20%', sm: '20%', md: '20%'}, fontSize:{ xs: '10px', sm: '11px', md: '12px'} }} />
-                     <CustomButton children='Decline' onClick={() => updateReport(report, 'rejected', 'd')} loading={customLoading.declineLoading} bgColor='red' sx={{ width: { xs: '20%', sm: '20%', md: '20%'}, fontSize:{ xs: '10px', sm: '11px', md: '12px'} }} />
-                     <CustomButton children='Show question' onClick={() => handleModalOpen(report)} loading={false} bgColor='#EAB308' sx={{ width: { xs: '20%', sm: '20%', md: '20%'}, fontSize:{ xs: '10px', sm: '11px', md: '12px'} }} />
+                    <CustomButton children='Approve' onClick={() => updateReport(report, 'resolved', 'a')} loading={customLoading.approveLoading} bgColor='#1E9609' sx={{ width: { xs: '20%', sm: '20%', md: '20%' }, fontSize: { xs: '10px', sm: '11px', md: '12px' } }} />
+                    <CustomButton children='Decline' onClick={() => updateReport(report, 'rejected', 'd')} loading={customLoading.declineLoading} bgColor='red' sx={{ width: { xs: '20%', sm: '20%', md: '20%' }, fontSize: { xs: '10px', sm: '11px', md: '12px' } }} />
+                    <CustomButton children='Show question' onClick={() => handleModalOpen(report)} loading={false} bgColor='#EAB308' sx={{ width: { xs: '20%', sm: '20%', md: '20%' }, fontSize: { xs: '10px', sm: '11px', md: '12px' } }} />
                   </Grid>
                 </Grid>
 
@@ -395,7 +339,7 @@ function Feedback() {
         </DialogTitle>
 
         <DialogContent dividers>
-          <Grid container spacing={2} sx={{ mt: 2, mb: 2 }}>
+          {/* <Grid container spacing={2} sx={{ mt: 2, mb: 2 }}>
             <Grid size={{ xs: 12, md: 12, sm:12 }}>
               <CustomTextArea
                 value={formData.question}
@@ -505,7 +449,8 @@ function Feedback() {
             }}
           >
             <CustomButton children='Update question' onClick={handleUpdate} loading={loading} bgColor='#EAB308' sx={{ width: '30%' }} />
-          </Box>
+          </Box> */}
+          <Training syllabusName={formData.syllabus} bookName={formData.book} chapterName={formData.chapter} question={formData.question} report={true} modalClose={handleModalClose} />
 
         </DialogContent>
       </Dialog>

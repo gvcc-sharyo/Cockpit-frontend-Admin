@@ -1,6 +1,6 @@
 import Navbar from "../../../components/admin/Navbar";
 import { useEffect, useState } from "react";
-import { apiGet,apiPostUpload } from "../../../api/axios";
+import { apiGet, apiPostUpload } from "../../../api/axios";
 import {
   Grid,
   Card,
@@ -21,7 +21,7 @@ import {
   CircularProgress,
   Backdrop
 } from "@mui/material";
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import CloseIcon from '@mui/icons-material/Close';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
@@ -40,14 +40,14 @@ function TrainingSyllabus() {
   const fetchSyllabus = async () => {
     try {
       const response = await apiGet('/getSyllabus');
-      setSyllabus(response.data.data);
+
 
       if (response.data.status === 200 && response.data.data.length === 0) {
         snackbarEmitter('No syllabus found', 'info');
       }
 
       else if (response.data.status === 200) {
-        snackbarEmitter(response.data.message, 'success');
+        setSyllabus(response.data.data);
       }
 
       else {
@@ -91,7 +91,7 @@ function TrainingSyllabus() {
   });
 
   const [loading, setLoading] = useState(false);
-  
+
   const handleAddSyllabus = async () => {
 
     const errors = {};
@@ -113,27 +113,27 @@ function TrainingSyllabus() {
     try {
 
       const response = await apiPostUpload('/addSyllabus', data);
- setTimeout(() => {
-  setLoading(false);
-    if (response.data.status === 200) {
-        snackbarEmitter(response.data.message, 'success');
-        fetchSyllabus();
-        handleModalClose();
+      setTimeout(() => {
+        setLoading(false);
+        if (response.data.status === 200) {
+          snackbarEmitter(response.data.message, 'success');
+          fetchSyllabus();
+          handleModalClose();
 
-      } else {
-        snackbarEmitter(response.data.message, 'error');
-        fetchSyllabus();
-        handleModalClose();
-      }
+        } else {
+          snackbarEmitter(response.data.message, 'error');
+          fetchSyllabus();
+          handleModalClose();
+        }
 
- }, 1500)
+      }, 1500)
 
     } catch (error) {
       setTimeout(() => {
         setLoading(false);
         snackbarEmitter('Something went wrong', 'error');
-      },1500);
-      
+      }, 1500);
+
 
     }
   };
@@ -254,8 +254,8 @@ function TrainingSyllabus() {
 
           </Grid>
 
-          <Grid  sx={{ display: 'flex', justifyContent: 'center' }}>
-              <CustomButton children='Add' onClick={handleAddSyllabus} loading={loading} bgColor='#EAB308' sx={{width:'20%'}} />
+          <Grid sx={{ display: 'flex', justifyContent: 'center' }}>
+            <CustomButton children='Add' onClick={handleAddSyllabus} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
           </Grid>
 
         </DialogContent>

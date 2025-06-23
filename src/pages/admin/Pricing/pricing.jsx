@@ -5,7 +5,6 @@ import { apiDelete, apiGet, apiPost } from "../../../api/axios";
 import CustomButton from "../../../components/admin/CustomButton";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import CustomTextField from "../../../components/admin/CustomTextField";
-
 const Pricing = () => {
   const [forms, setForms] = useState([{ planName: "", price: "", duration: "", isNew: true }]);
   const [errors, setErrors] = useState([{}]);
@@ -13,15 +12,12 @@ const Pricing = () => {
   const [loadingUpdateIndex, setLoadingUpdateIndex] = useState(null);
   const [confirmIndex, setConfirmIndex] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
-
   useEffect(() => { getPlanDetails(); }, []);
-
   const clearError = (index, field) => {
     const updated = [...errors];
     updated[index] = { ...updated[index], [field]: "" };
     setErrors(updated);
   };
-
   const handleChange = (index, field, value) => {
     // Enforce numeric input for price field
     if (field === "price" && value !== "" && !/^\d*$/.test(value)) {
@@ -32,7 +28,6 @@ const Pricing = () => {
     setForms(updatedForms);
     clearError(index, field);
   };
-
   const validate = ({ planName, price, duration }) => {
     const errs = {};
     if (!planName?.trim()) errs.planName = "Plan Name is required";
@@ -40,19 +35,16 @@ const Pricing = () => {
     if (!duration?.trim()) errs.duration = "Duration is required";
     return errs;
   };
-
   const setValidationErrors = (index, validationErrors) => {
     const updated = [...errors];
     updated[index] = validationErrors;
     setErrors(updated);
   };
-
   const handleSubmit = async (index) => {
     const form = forms[index];
     const validationErrors = validate(form);
     if (Object.keys(validationErrors).length) return setValidationErrors(index, validationErrors);
     setLoadingIndex(index);
-
     try {
       const payload = { planName: form.planName.trim(), price: parseInt(form.price), duration: form.duration.trim() };
       const { data } = await apiPost("/admin/createPricing", payload);
@@ -68,7 +60,6 @@ const Pricing = () => {
       setTimeout(() => setLoadingIndex(null), 2000);
     }
   };
-
   const getPlanDetails = async () => {
     try {
       const { data } = await apiGet("/admin/getPricing");
@@ -80,12 +71,10 @@ const Pricing = () => {
       snackbarEmitter("Something went wrong", "error");
     }
   };
-
   const handleAddPlan = () => {
     setForms([...forms, { planName: "", price: "", duration: "", isNew: true }]);
     setErrors([...errors, {}]);
   };
-
   const handleDelete = async (index) => {
     try {
       const res = await apiDelete("/admin/deletePricing", { pricingId: forms[index]?._id });
@@ -98,17 +87,14 @@ const Pricing = () => {
       snackbarEmitter(error?.message || "Delete failed", "error");
     }
   };
-
   const handleUpdate = async (index) => {
     const validationErrors = validate(forms[index]);
     if (Object.keys(validationErrors).length) return setValidationErrors(index, validationErrors);
     setLoadingUpdateIndex(index);
-
     try {
       const { _id, planName, price, duration, modules = [] } = forms[index];
       const res = await apiPost("/admin/updatePricing", { pricingId: _id, planName, price: Number(price), duration, modules });
       setTimeout(() => setLoadingUpdateIndex(snackbarEmitter(res.data.message, "success")), 2000);
-      
       const updatedForms = [...forms];
       updatedForms[index].isNew = false;
       setForms(updatedForms);
@@ -119,13 +105,11 @@ const Pricing = () => {
       setTimeout(() => setLoadingUpdateIndex(null), 2000);
     }
   };
-
   const fields = [
     { label: "Plan Name", placeholder: "Monthly Plan", valueKey: "planName", type: "text" },
     { label: "Plan Price", placeholder: "169", valueKey: "price", type: "text", inputMode: "numeric", pattern: "[0-9]*" },
     { label: "Plan Duration", placeholder: "1 month", valueKey: "duration", type: "text" },
   ];
-
   return (
     <Navbar title="Pricing">
       <Box>
@@ -177,5 +161,4 @@ const Pricing = () => {
     </Navbar>
   );
 };
-
 export default Pricing;

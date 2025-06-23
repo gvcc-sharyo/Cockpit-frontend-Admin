@@ -45,7 +45,6 @@ function TrainingChapter() {
                 snackbarEmitter('No books found', 'info');
             }
             else if (response.data.status === 200) {
-                snackbarEmitter(response.data.message, 'success');
                 const bookList = response.data.books;
                 setBooks(bookList);
 
@@ -73,7 +72,6 @@ function TrainingChapter() {
                 snackbarEmitter('No chapters found', 'info');
             }
             else if (response.data.status === 200) {
-                snackbarEmitter(response.data.message, 'success');
                 setChapters(response.data.chapters);
             }
             else {

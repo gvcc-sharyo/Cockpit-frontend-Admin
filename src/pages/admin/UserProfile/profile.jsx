@@ -6,7 +6,6 @@ import Navbar from "../../../components/admin/Navbar";
 import CustomTextField from "../../../components/admin/CustomTextField";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import CustomButton from "../../../components/admin/CustomButton";
-
 const Profile = () => {
   const adminId = localStorage.getItem("adminId");
   const [email, setEmail] = useState("");
@@ -27,7 +26,6 @@ const Profile = () => {
   const [initialFormData, setInitialFormData] = useState(formData);
   const [profileImage, setProfileImage] = useState(null);
   const [errors, setErrors] = useState({});
-
   useEffect(() => {
     const getProfile = async () => {
       try {
@@ -57,7 +55,6 @@ const Profile = () => {
     };
     getProfile();
   }, [adminId]);
-
   const validate = () => {
     const errs = {};
     if (!formData.firstname.trim()) errs.firstname = "First name is required";
@@ -67,7 +64,6 @@ const Profile = () => {
     } else if (!/^\d{10}$/.test(formData.phone)) {
       errs.phone = "Enter Valid Phone Number";
     }
-
     if (!email.trim()) errs.email = "Email is required";
     if (!formData.dob) errs.dob = "Date of birth is required";
     if (!formData.gender) errs.gender = "Gender is required";
@@ -77,7 +73,6 @@ const Profile = () => {
     if (!formData.zipcode.trim()) errs.zipcode = "Zip code is required";
     return errs;
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
@@ -88,7 +83,6 @@ const Profile = () => {
     }
     setErrors({});
     setLoading(true);
-
     try {
       if (profileImage instanceof File) {
         const formDataImage = new FormData();
@@ -99,10 +93,8 @@ const Profile = () => {
         );
         setProfileImage(data.data.profileimage);
       }
-
       const payload = { adminId, ...formData, profileimage: profileImage };
       const { data } = await apiPost("/admin/updateAdmin", payload);
-
       setTimeout(() => {
         snackbarEmitter(
           data.message,
@@ -117,25 +109,21 @@ const Profile = () => {
       }, 2000);
     }
   };
-
+  
   const handleChange = ({ target: { name, value } }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
   const handleImageChange = ({ target: { files } }) => {
     const file = files[0];
     if (file) setProfileImage(file);
   };
-
   const handleCancel = () => setFormData(initialFormData);
-
   const inputFields = [
     { name: "firstname", placeholder: "First Name", value: formData.firstname },
     { name: "lastname", placeholder: "Last Name", value: formData.lastname },
     { name: "phone", placeholder: "Mobile Number", value: formData.phone },
     { name: "email", placeholder: "Email Address", value: email },
   ];
-
   const addressFields = [
     {
       name: "address",
@@ -162,7 +150,6 @@ const Profile = () => {
       size: { xs: 12, md: 4 },
     },
   ];
-
   return (
     <Navbar title="Profile">
       <Box>
@@ -184,7 +171,7 @@ const Profile = () => {
                   height: 100,
                   border: "1px solid #ccc",
                   borderRadius: 2,
-                  backgroundColor: "#f5f5f5",
+                  backgroundColor: "#F5F5F5",
                   cursor: "pointer",
                   overflow: "hidden",
                   position: "relative",
@@ -225,7 +212,6 @@ const Profile = () => {
                 />
               </Box>
             </Grid>
-
             {inputFields.map((field) => (
               <Grid key={field.name} size={{ xs: 12, md: 6 }}>
                 <CustomTextField
@@ -239,7 +225,6 @@ const Profile = () => {
                 />
               </Grid>
             ))}
-
             <Grid size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
@@ -279,7 +264,6 @@ const Profile = () => {
                 <MenuItem value="other">Other</MenuItem>
               </CustomTextField>
             </Grid>
-
             {addressFields.map((field) => (
               <Grid key={field.name} size={field.size}>
                 <CustomTextField
@@ -293,21 +277,17 @@ const Profile = () => {
                 />
               </Grid>
             ))}
-
             <Grid
               size={{ xs: 12 }}
               display="flex"
               justifyContent="flex-end"
               gap={2}
             >
-              <CustomButton 
+              <CustomButton
                 bgColor="#fff"
-                
                 borderRadius="10px"
                 sx={{ px: 4, width: { xs: "auto", sm: "auto" },color:"black" }}
                 >Cancel</CustomButton>
-                
-             
               <CustomButton
                 type="submit"
                 loading={loading}
@@ -324,5 +304,4 @@ const Profile = () => {
     </Navbar>
   );
 };
-
 export default Profile;
