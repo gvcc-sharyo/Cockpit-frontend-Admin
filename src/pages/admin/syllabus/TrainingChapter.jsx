@@ -37,19 +37,26 @@ function TrainingChapter() {
     const location = useLocation();
     const syllabusTitle = location.state;
 
+
+    const [filteredBooks, setFilteredBooks] = useState([]);
+
+    const [selectedBook, setSelectedBook] = useState('');
+
     const fetchBooks = async () => {
         try {
             const response = await apiGet('/getBooks');
 
-            if (response.data.status === 200 && response.data.books.length === 0) {
-                snackbarEmitter('No books found', 'info');
-            }
-            else if (response.data.status === 200) {
+            if (response.data.status === 200) {
                 const bookList = response.data.books;
-                setBooks(bookList);
+                // setBooks(bookList);
+                const filterBooks = bookList.filter((book) => book.syllabus === syllabusTitle);
+                if (filterBooks.length === 0) {
+                    snackbarEmitter('No books found', 'info');
+                }
+                setFilteredBooks(filterBooks);
 
-                if (bookList.length > 0) {
-                    setSelectedBook(bookList[0].bookTitle);
+                if (filterBooks.length > 0) {
+                    setSelectedBook(filterBooks[0].bookTitle);
                 }
 
             }
@@ -62,7 +69,8 @@ function TrainingChapter() {
         }
     };
 
-    const [selectedBook, setSelectedBook] = useState('');
+
+
 
     const fetchChapters = async () => {
         try {
@@ -90,7 +98,7 @@ function TrainingChapter() {
         fetchChapters();
     }, [])
 
-    const filteredChapters = chapters.filter((chapter) => chapter.book === selectedBook);
+    const filteredChapters = chapters.filter((chapter) => chapter.book === selectedBook && chapter.syllabus === syllabusTitle);
 
     const [openModal, setOpenModal] = useState(false);
     const [bookName, setBookName] = useState([]);
@@ -176,6 +184,11 @@ function TrainingChapter() {
 
     const handleAddChapter = async () => {
 
+        if (!selectedBook) {
+            snackbarEmitter('Please select a book', 'error');
+            return;
+        }
+
         const errors = {};
 
         if (!formData.chapterno) errors.chapterno = 'Chapterno is required';
@@ -186,13 +199,17 @@ function TrainingChapter() {
 
         if (Object.keys(errors).length > 0) return;
 
+
         const req = {
             syllabus: syllabusTitle,
-            book: selectedBook,
+            book: selectedBook || '',
             chapterno: formData.chapterno,
             chaptername: formData.chaptername,
             status: formData.status
         };
+
+        console.log('req', req.book);
+
 
         // If editing, add chapterId to the request body
         if (isEditing) {
@@ -200,8 +217,8 @@ function TrainingChapter() {
             req.isactive = isActive;
 
             console.log('isActive', isActive);
-            
-        
+
+
         }
 
         setLoading(true);
@@ -250,7 +267,7 @@ function TrainingChapter() {
     //edit chapter
     const [isEditing, setIsEditing] = useState(false);
     const [chapterId, setChapterId] = useState('');
-    const[isActive, setIsActive] = useState(false);
+    const [isActive, setIsActive] = useState(false);
 
     const handleEditChapter = (chapter) => {
         setFormData({
@@ -260,7 +277,7 @@ function TrainingChapter() {
         });
         setChapterId(chapter._id); // or use other unique field if no ID
         setIsEditing(true);
-        setIsActive(chapter.isactive === true? true : false);
+        setIsActive(chapter.isactive === true ? true : false);
         setOpenChapterModal(true);
     };
 
@@ -269,13 +286,13 @@ function TrainingChapter() {
     const handleStatusModalClose = () => setOpenStatusModal(false);
 
     const handleStatusClick = (chapter) => {
-  setFormData({
+        setFormData({
             chapterno: chapter.chapterno,
             chaptername: chapter.chaptername,
             status: chapter.status,
         });
         setChapterId(chapter._id); // or use other unique field if no ID
-        setIsActive(chapter.isactive === true? false : true);
+        setIsActive(chapter.isactive === true ? false : true);
         setIsEditing(true);
         setOpenStatusModal(true);
     };
@@ -299,7 +316,7 @@ function TrainingChapter() {
                 <Box sx={{ maxWidth: '100%', overflowX: 'auto' }} mt={2}>
                     <Box sx={{ display: 'flex', gap: '15px', padding: '10px', width: 'max-content' }}>
                         {
-                            books.map((book) => (
+                            filteredBooks.map((book) => (
                                 <Box
                                     key={book.bookTitle}
                                     onClick={() => setSelectedBook(book.bookTitle)}
@@ -413,7 +430,7 @@ function TrainingChapter() {
                                                         py: 0.5,
                                                         minWidth: 'auto',
                                                     }}
-                                                    onClick={()=>  handleStatusClick(chapter)}
+                                                    onClick={() => handleStatusClick(chapter)}
                                                 >
                                                     {chapter.isactive === true ? 'Active' : 'Inactive'}
                                                 </Button>
@@ -553,7 +570,7 @@ function TrainingChapter() {
                         <Grid item>
                             <Grid container spacing={2} justifyContent="center">
                                 <Grid item>
-                                 
+
                                     <CustomButton children='Yes' onClick={handleAddChapter} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
                                 </Grid>
                                 <Grid item>

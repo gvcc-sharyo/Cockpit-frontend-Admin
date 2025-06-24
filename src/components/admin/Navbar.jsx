@@ -311,7 +311,7 @@ const Navbar = ({ title, children }) => {
               sx={{
                 fontWeight: 'bold',
                 borderRadius: 2,
-                mb: 1,
+                // mb: 1,
                 bgcolor: '#EAB308',
                 color: 'white',
                 cursor: 'pointer',
@@ -319,9 +319,11 @@ const Navbar = ({ title, children }) => {
                   color: 'black'
                 },
                 // mt:15
+                position:'fixed',
+                top:{xs:'80%',md:'80%',sm:'80%'},
+                width:{xs:'55%',md:'13%',sm:'25%'}
               }}
             >
-
 
               <ListItemIcon>
                 <img src="/images/Logout.svg" alt="" />
