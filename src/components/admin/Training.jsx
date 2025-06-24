@@ -116,8 +116,7 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
 
     setLoading(true);
     const isUpdate = !!question?._id;
-    const payload = isUpdate
-      ? {questionId: question._id,question: formData.question, options: formData.options,explanation: formData.explanation,} : formData;
+    const payload = isUpdate ? {questionId: question._id,question: formData.question, options: formData.options,explanation: formData.explanation,} : formData;
     // console.log("Submitting:", payload);
     try {
       const endpoint = isUpdate ? "/updateQuestion" : "/uploadQuestions";
@@ -154,6 +153,7 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
 
 
   const [syllabus, setSyllabus] = useState([]);
+
   const getSyllabus = async () => {
     try {
       const response = await apiGet("/getSyllabus");
@@ -173,39 +173,46 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
 
   const [book, setBook] = useState([]);
   const getBooks = async (syllabus = "") => {
-    try {
-      const response = await apiGet(syllabus? `/getBooks?syllabus=${encodeURIComponent(syllabus)}`: "/getBooks");
-      if (response.data.status === 200) {
-        const booksList = response.data.books.map((item) => item.bookTitle).filter(Boolean);
-        setBook(booksList);
-        // console.log("Response for Books :", response.data);
-      } else {
-        snackbarEmitter(response.data.message, "error");
-        setBook([]);
-      }
-    } catch (error) {
-      snackbarEmitter("Something went wrong", "error");
+  try {
+    const response = await apiGet("/getBooks");
+
+    if (response.data.status === 200) {
+      const booksList = response.data.books.filter(book => book.syllabusId?.title === syllabus).map(book => book.bookTitle).filter(Boolean);
+      setBook(booksList);
+      // console.log("Filtered Books:", booksList);
+    } else {
+      snackbarEmitter(response.data.message, "error");
       setBook([]);
     }
-  };
+  } catch (error) {
+    snackbarEmitter("Something went wrong", "error");
+    setBook([]);
+  }
+};
+
 
   const [chapters, setChapters] = useState([]);
+
+
   const getChapters = async (syllabus = "", book = "") => {
-    try {
-     const response = await apiGet(syllabus && book ? `/getChapters?syllabus=${encodeURIComponent(syllabus)}&book=${encodeURIComponent(book)}` : "/getChapters");
-      if (response.data.status === 200) {
-        const chapterList = response.data.chapters.map((item) => item.chaptername);
-        // console.log("Response for Chapters :", response.data);
-        setChapters(chapterList);
-      } else {
-        snackbarEmitter(response.data.message, "error");
-        setChapters([]);
-      }
-    } catch (error) {
-      snackbarEmitter("Something went wrong", "error");
+  try {
+    const response = await apiGet(syllabus && book  ? `/getChapters?syllabus=${encodeURIComponent(syllabus)}&book=${encodeURIComponent(book)}`: "/getChapters");
+
+    if (response.data.status === 200) {
+      const chapterList = response.data.chapters.filter(item =>item.book === book && item.chaptername).map(item => item.chaptername);
+
+      // console.log("Filtered Chapters:", chapterList);
+      setChapters(chapterList);
+    } else {
+      snackbarEmitter(response.data.message, "error");
       setChapters([]);
     }
-  };
+  } catch (error) {
+    snackbarEmitter("Something went wrong", "error");
+    setChapters([]);
+  }
+};
+
 
   useEffect(() => {getSyllabus(); getBooks();  getChapters(); }, []);
 
@@ -257,7 +264,7 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
     },
     textAreaWrapper: {
       width: "-webkit-fill-available",
-      marginLeft: "50px",
+      marginLeft: { xs: "20px", md: "100px" },
     },
     deleteButtonBox: {
       display: "flex",
@@ -273,7 +280,7 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
     solutionBox: { display: "flex", width: "100%", alignItems: "center" },
     solutionTextArea: {
       width: "-webkit-fill-available",
-      marginLeft: { xs: "20px", md: "50px" },
+      marginLeft: { xs: "10px", md: "100px" },
     },
     buttonGroup: {
       display: "flex",
@@ -285,7 +292,7 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
     },
     submitButton: {
       px: { xs: 2, sm: 4 },
-      width: { xs: "100%", sm: "auto" },
+      width: { xs: "60%", sm: "auto" },
     },
     cancelButton: {
       color: "#fff",

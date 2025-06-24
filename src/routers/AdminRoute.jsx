@@ -12,7 +12,6 @@ import Profile from '../pages/admin/UserProfile/profile';
 import AddQuestion from '../pages/admin/syllabus/AddQuestion';
 import TrainingAdd from '../pages/admin/database/training/TrainingAdd';
 import ResetPassword from '../pages/admin/resetPassword/ResetPassword';
-import Graph from '../pages/admin/dashboard/graph';
 
 const AdminRoute = () => {
 
@@ -39,7 +38,6 @@ const AdminRoute = () => {
         <Route path="/admin/notifications" element={<Notifications />} />
         <Route path="/admin/pricing" element={<Pricing />} />
         <Route path="/admin/profile" element={<Profile />} />
-        <Route path="/admin/graph" element={<Graph />} />
         </Route>
         
       </Routes>
