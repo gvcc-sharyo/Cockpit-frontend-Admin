@@ -67,7 +67,12 @@ function TrainingSyllabus() {
 
   const navigate = useNavigate();
   const handleClick = (item) => {
-    navigate('/admin/trainingChapter', { state: item.title });
+    navigate('/admin/trainingChapter',{
+      state: {
+        syllabusTitle: item.title,
+        syllabusId: item._id
+      }
+    });
   };
 
   const handleModalOpen = () => setOpenModal(true);
