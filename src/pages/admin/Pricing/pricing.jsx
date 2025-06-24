@@ -75,6 +75,8 @@ const Pricing = () => {
     setForms([...forms, { planName: "", price: "", duration: "", isNew: true }]);
     setErrors([...errors, {}]);
   };
+
+
   const handleDelete = async (index) => {
     try {
       const res = await apiDelete("/admin/deletePricing", { pricingId: forms[index]?._id });
@@ -87,6 +89,8 @@ const Pricing = () => {
       snackbarEmitter(error?.message || "Delete failed", "error");
     }
   };
+
+
   const handleUpdate = async (index) => {
     const validationErrors = validate(forms[index]);
     if (Object.keys(validationErrors).length) return setValidationErrors(index, validationErrors);
@@ -105,6 +109,9 @@ const Pricing = () => {
       setTimeout(() => setLoadingUpdateIndex(null), 2000);
     }
   };
+
+
+  
   const fields = [
     { label: "Plan Name", placeholder: "Monthly Plan", valueKey: "planName", type: "text" },
     { label: "Plan Price", placeholder: "169", valueKey: "price", type: "text", inputMode: "numeric", pattern: "[0-9]*" },

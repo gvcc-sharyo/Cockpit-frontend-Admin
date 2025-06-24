@@ -73,6 +73,9 @@ const Profile = () => {
     if (!formData.zipcode.trim()) errs.zipcode = "Zip code is required";
     return errs;
   };
+
+
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
