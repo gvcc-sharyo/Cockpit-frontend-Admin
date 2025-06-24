@@ -151,7 +151,7 @@ function TrainingSyllabus() {
 
     <Navbar title="Syllabus">
 
-      <Box >
+      <Box sx={{maxHeight: '100vh', overflowY: 'scroll'}}>
         <Box sx={{ display: 'flex', mb: 1, alignItems: 'center' }}>
           <Typography sx={{ flexGrow: 0.8, fontWeight: 'bold', fontSize: { xs: '14px', sm: '15px', md: '18px' } }}>List of Syllabus</Typography>
           <CustomButton children=' + Add syllabus' onClick={handleModalOpen} loading={false} bgColor='#EAB308' sx={{ width: { xs: '70%', md: '20%', sm: '30%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
@@ -165,20 +165,24 @@ function TrainingSyllabus() {
                   <Card sx={{ height: '100%', textAlign: 'center', cursor: 'pointer' }}
                     onClick={() => handleClick(item)}
                   >
+                    {console.log("item image",item.image)}                    
                     <CardMedia
                       component="img"
-                      image={item.image || "/placeholder.jpg"} // fallback if image is not available
+                      image={item.imageUrl} // fallback if image is not available
                       alt='image'
                       sx={{
-                        // height: 100,
+                        height: { xs: 55, sm: 70, md: 80 },
+                        width:{ xs: 55, sm: 70, md: 80 },
                         borderRadius: '50%',
                         objectFit: 'cover',
-                        // mx: 'auto',
+                        mx: { xs: 'auto', sm: '10px', md: '10px' },
                         mt: 2,
+
+                      //  ml:2
                       }}
                     />
                     <CardContent>
-                      <Typography sx={{ fontSize: { xs: '12px', sm: '14px', md: '14px' } }} component="div">
+                      <Typography sx={{ fontSize: { xs: '12px', sm: '14px', md: '14px', fontWeight: 'bold' } }} component="div">
                         {item.title}
                       </Typography>
                       <Typography sx={{ color: 'orange', fontWeight: 'bold', fontSize: { xs: '10px', sm: '12px', md: '12px' } }}>
