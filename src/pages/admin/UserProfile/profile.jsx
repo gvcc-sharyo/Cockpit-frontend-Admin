@@ -73,6 +73,9 @@ const Profile = () => {
     if (!formData.zipcode.trim()) errs.zipcode = "Zip code is required";
     return errs;
   };
+
+
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
@@ -109,6 +112,7 @@ const Profile = () => {
       }, 2000);
     }
   };
+  
   const handleChange = ({ target: { name, value } }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -245,6 +249,7 @@ const Profile = () => {
                 helperText={errors.dob}
               />
             </Grid>
+
             <Grid size={{ xs: 12, md: 6 }}>
               <CustomTextField
                 select
@@ -281,20 +286,9 @@ const Profile = () => {
               justifyContent="flex-end"
               gap={2}
             >
-              <CustomButton
-                bgColor="#fff"
-                borderRadius="10px"
-                sx={{ px: 4, width: { xs: "auto", sm: "auto" },color:"black" }}
-                >Cancel</CustomButton>
-              <CustomButton
-                type="submit"
-                loading={loading}
-                bgColor="#EAB308"
-                borderRadius="10px"
-                sx={{ px: 4, width: { xs: "auto", sm: "auto" } }}
-              >
-                Save
-              </CustomButton>
+              <CustomButton bgColor="#fff" borderRadius="10px" sx={{ px: 4, width: { xs: "auto", sm: "auto" }, color: "black", fontFamily: "Jost", fontWeight: 300, fontSize: "16px" }}>Cancel</CustomButton>
+
+              <CustomButton type="submit" loading={loading} bgColor="#EAB308" borderRadius="10px" sx={{ px: 4, width: { xs: "auto", sm: "auto" }, fontFamily: "Jost", fontWeight: 300, fontSize: "16px" }}>Save</CustomButton>
             </Grid>
           </Grid>
         </Card>

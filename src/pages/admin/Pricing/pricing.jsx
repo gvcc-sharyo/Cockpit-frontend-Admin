@@ -75,6 +75,8 @@ const Pricing = () => {
     setForms([...forms, { planName: "", price: "", duration: "", isNew: true }]);
     setErrors([...errors, {}]);
   };
+
+
   const handleDelete = async (index) => {
     try {
       const res = await apiDelete("/admin/deletePricing", { pricingId: forms[index]?._id });
@@ -87,6 +89,8 @@ const Pricing = () => {
       snackbarEmitter(error?.message || "Delete failed", "error");
     }
   };
+
+
   const handleUpdate = async (index) => {
     const validationErrors = validate(forms[index]);
     if (Object.keys(validationErrors).length) return setValidationErrors(index, validationErrors);
@@ -105,6 +109,9 @@ const Pricing = () => {
       setTimeout(() => setLoadingUpdateIndex(null), 2000);
     }
   };
+
+
+
   const fields = [
     { label: "Plan Name", placeholder: "Monthly Plan", valueKey: "planName", type: "text" },
     { label: "Plan Price", placeholder: "169", valueKey: "price", type: "text", inputMode: "numeric", pattern: "[0-9]*" },
@@ -134,19 +141,19 @@ const Pricing = () => {
                 </Grid>
               ))}
               <Grid size={{ xs: 12 }} textAlign="center">
-                <CustomButton onClick={() => formData.isNew ? handleSubmit(index) : handleUpdate(index)} loading={formData.isNew ? loadingIndex === index : loadingUpdateIndex === index} bgColor="#EAB308" borderRadius="10px" sx={{ px: 4, width: "auto" }}>
+                <CustomButton onClick={() => formData.isNew ? handleSubmit(index) : handleUpdate(index)} loading={formData.isNew ? loadingIndex === index : loadingUpdateIndex === index} bgColor="#EAB308" borderRadius="10px" sx={{ px: 4, width: "auto",whiteSpace: "nowrap", textTransform: "none", fontFamily: "Lexend", fontWeight: 300, fontSize: "16px"  }}>
                   {formData.isNew ? "Save" : "Update"}
                 </CustomButton>
               </Grid>
             </Grid>
             <Box sx={{ textAlign: { md: "right", xs: "center" }, mt: 2 }}>
-              <Button variant="text" color="primary" disabled={formData.isNew} onClick={() => { setConfirmIndex(index); setOpenDialog(true); }}>Delete</Button>
+              <Button variant="text" color="primary" disabled={formData.isNew} onClick={() => { setConfirmIndex(index); setOpenDialog(true); }} sx={{ textTransform: "none", fontFamily: "Jost", fontWeight: 500, fontSize: "14px" }}>Delete</Button>
             </Box>
           </Box>
         ))}
       </Box>
       <Box mt={4} textAlign={{ xs: "center", md: "right" }}>
-        <Button onClick={handleAddPlan} sx={{ bgcolor: "#EAB308", color: "#fff", borderRadius: 2, px: 4 }}>+ Add Plans</Button>
+       <Button onClick={handleAddPlan} sx={{ backgroundColor: "#EAB308", color: "white", borderRadius: "10px", whiteSpace: "nowrap", textTransform: "none", fontFamily: "Lexend", fontWeight: 300, fontSize: "16px" }}>+ Add Plans</Button>
       </Box>
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="xs">
         <DialogTitle>Confirm Deletion</DialogTitle>
@@ -154,8 +161,8 @@ const Pricing = () => {
           <Typography>Are you sure you want to delete this Pricing?</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)} variant="outlined">Cancel</Button>
-          <Button onClick={() => { handleDelete(confirmIndex); setOpenDialog(false); }} variant="contained" color="error">Delete</Button>
+          <Button onClick={() => setOpenDialog(false)} variant="outlined" sx={{textTransform:"none"}}>Cancel</Button>
+          <Button onClick={() => { handleDelete(confirmIndex); setOpenDialog(false); }} variant="contained" color="error" sx={{textTransform:"none"}}>Delete</Button>
         </DialogActions>
       </Dialog>
     </Navbar>

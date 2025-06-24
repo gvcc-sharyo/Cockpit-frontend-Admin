@@ -157,17 +157,17 @@ function TrainingQuestion() {
 
     const updateQuestion = async () => {
 
-       const req={
-        questionId: formData.questionID,
-        question: formData.question,
-        options: formData.options,
-        explanation: formData.explanation,
-        isactive: formData.isactive
-       }
-       
+        const req = {
+            questionId: formData.questionID,
+            question: formData.question,
+            options: formData.options,
+            explanation: formData.explanation,
+            isactive: formData.isactive
+        }
+
         console.log('is active', req.isactive);
-        
-        
+
+
 
         setLoading(true);
 
@@ -233,34 +233,16 @@ function TrainingQuestion() {
                         Questions
                     </Typography>
 
-                    <Box sx={{ display: 'flex', gap: 2 }}>
-                        <Button
-                            variant="outlined"
-                            sx={{
-                                backgroundColor: 'orange',
-                                color: 'white',
-                                fontSize: { xs: '10px', sm: '12px', md: '14px' },
-                                px: 1.5,
-                                py: 0.5,
-                            }}
-                            onClick={handleOpenUploadDialog}
-                        >
-                            Bulk Upload
-                        </Button>
-                        <Button
-                            onClick={handleAddClick}
-                            variant="outlined"
-                            sx={{
-                                backgroundColor: 'orange',
-                                color: 'white',
-                                fontSize: { xs: '10px', sm: '12px', md: '14px' },
-                                px: 1.5,
-                                py: 0.5,
-                            }}
-                        >
-                            + Add Questions
-                        </Button>
-                    </Box>
+                    <Grid size={{xs:7, md:4, sm:5}} sx={{ display: 'flex', gap: 2 }}>
+                        <Grid >
+                            <CustomButton children='Bulk upload' onClick={handleOpenUploadDialog} loading={false} bgColor='#EAB308' sx={{ width: { xs: '100%', md: '100%', sm: '100%' }, fontSize: { xs: '10px', md: '14px', sm: '14px' } }} />
+                        </Grid>
+
+                        <Grid >
+                            <CustomButton children='+ Add Questions' onClick={handleAddClick} loading={false} bgColor='#EAB308' sx={{ width: { xs: '100%', md: '100%', sm: '100%' }, fontSize: { xs: '10px', md: '14px', sm: '14px' } }} />
+                        </Grid>
+
+                    </Grid>
                 </Grid>
 
                 {/* Table Section */}

@@ -13,12 +13,16 @@ import {
   ListItemText,
   Collapse,
   Avatar,
-   Dialog,
+  Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Button
+  Button,
+  Autocomplete,
+  TextField,
+  Paper,
+  ListItemButton
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -30,6 +34,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { snackbarEmitter } from './CustomSnackbar';
 import { apiGet } from '../../api/axios';
 import CustomButton from './CustomButton';
+import CustomTypography from './CustomTypography';
 
 const Navbar = ({ title, children }) => {
   const navigate = useNavigate();
@@ -78,7 +83,7 @@ const Navbar = ({ title, children }) => {
     getProfile();
   }, []);
 
-    const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   // const navigate = useNavigate();
 
   const handleLogoutClick = () => {
@@ -95,6 +100,37 @@ const Navbar = ({ title, children }) => {
     navigate('/');
   };
 
+  const suggestionsList = [
+    { label: 'Dashboard', path: '/admin/dashboard' },
+    { label: 'Profile', path: '/admin/profile' },
+    { label: 'Feedback', path: '/admin/feedback' },
+    { label: 'Syllabus', path: '/admin/trainingsyllabus' },
+    { label: 'Training', path: '/admin/trainingAdd' },
+    { label: 'Pricing', path: '/admin/pricing' },
+  ];
+
+  const [query, setQuery] = useState('');
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setQuery(value);
+
+    if (value) {
+      const filtered = suggestionsList.filter((item) =>
+        item.label.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredSuggestions(filtered);
+    } else {
+      setFilteredSuggestions([]);
+    }
+  };
+
+  const handleSelect = (path) => {
+    navigate(path);
+    setQuery('');
+    setFilteredSuggestions([]);
+  };
 
   return (
     <Grid container sx={{ minHeight: '100vh' }}>
@@ -116,7 +152,7 @@ const Navbar = ({ title, children }) => {
           boxShadow: { xs: sidebarOpen ? '2px 0 5px rgba(0,0,0,0.3)' : 'none', md: 'none' },
         }}
       >
-        <Box sx={{ p: 2 }}>
+        <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', height: '90vh' }}>
           {/* Close button for mobile */}
           <Box
             sx={{
@@ -139,173 +175,181 @@ const Navbar = ({ title, children }) => {
             />
           </Box>
 
+          <Box sx={{ flexGrow: 4 }}>
+            <List>
+              {/* Dashboard */}
+              <ListItem
+                button
+                onClick={() => handleNavigate('/admin/dashboard')}
+                sx={{
+                  fontWeight: 'bold',
+                  borderRadius: 2,
+                  mb: 1,
+                  bgcolor: isActive('/admin/dashboard') ? '#EAB308' : 'white',
+                  color: isActive('/admin/dashboard') ? 'white' : 'black',
+                  cursor: 'pointer',
+                  ":hover": {
+                    color: 'black'
+                  }
+                }}
+              >
+                <ListItemIcon>
+                  <img src="/images/dashboard.svg" alt="Dashboard" />
+                </ListItemIcon>
+                <ListItemText primary="Dashboard" />
+              </ListItem>
+
+              <ListItem
+                button
+                onClick={() => handleNavigate('/admin/trainingsyllabus')}
+                sx={{
+                  fontWeight: 'bold',
+                  borderRadius: 2,
+                  mb: 1,
+                  bgcolor: isActive('/admin/trainingsyllabus') ? '#EAB308' : 'white',
+                  color: isActive('/admin/trainingsyllabus') ? 'white' : 'black',
+                  cursor: 'pointer',
+                  ":hover": {
+                    color: 'black'
+                  }
+                }}
+              >
+                <ListItemIcon>
+                  <img src="/images/syllabus.svg" alt="Syllabus" />
+                </ListItemIcon>
+                <ListItemText primary="Syllabus" />
+              </ListItem>
+
+              {/* Database collapsible */}
+              <ListItem
+                button
+                onClick={toggleDatabaseMenu}
+                sx={{
+                  fontWeight: 'bold',
+                  borderRadius: 1,
+                  mb: 1,
+                  cursor: 'pointer',
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: 40, mr: 1 }}> {/* Increase space here */}
+                  <img src="/images/database.svg" alt="Database" />
+                </ListItemIcon>
+                <ListItemText primary="Database" />
+                {openDatabase ? <ExpandLess sx={{ ml: 9 }} /> : <ExpandMore sx={{ ml: 9 }} />}
+              </ListItem>
+
+
+              <Collapse in={openDatabase} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                  <ListItem
+                    button
+                    sx={{
+                      pl: 4,
+                      mb: 1,
+                      borderRadius: 2,
+                      bgcolor: isActive('/admin/trainingAdd') ? '#EAB308' : 'white',
+                      color: isActive('/admin/trainingAdd') ? 'white' : 'black',
+                      cursor: 'pointer',
+                      ":hover": {
+                        color: 'black'
+                      }
+                    }}
+                    onClick={() => handleNavigate('/admin/trainingAdd')}
+                  >
+                    <ListItemIcon>
+                      <img src="/images/database.svg" alt="Training" />
+                    </ListItemIcon>
+                    <ListItemText primary="Training" />
+                  </ListItem>
+
+                  <ListItem
+                    button
+                    sx={{
+                      pl: 4,
+                      bgcolor: isActive('/admin/feedback') ? '#EAB308' : 'white',
+                      color: isActive('/admin/feedback') ? 'white' : 'black',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => handleNavigate('/admin/feedback')}
+                  >
+                    <ListItemIcon>
+                      <img src="/images/database.svg" alt="Feedback" />
+                    </ListItemIcon>
+                    <ListItemText primary="Feedback" />
+                  </ListItem>
+                </List>
+              </Collapse>
+
+              <ListItem
+                button
+                onClick={() => handleNavigate('/admin/pricing')}
+                sx={{
+                  fontWeight: 'bold',
+                  borderRadius: 2,
+                  mb: 1,
+                  bgcolor: isActive('/admin/pricing') ? '#EAB308' : 'white',
+                  color: isActive('/admin/pricing') ? 'white' : 'black',
+                  cursor: 'pointer',
+                  ":hover": {
+                    color: 'black'
+                  },
+
+                }}
+              >
+                <ListItemIcon>
+                  <img src="/images/donate.svg" alt="Pricing" />
+                </ListItemIcon>
+                <ListItemText primary="Pricing" />
+              </ListItem>
+            </List>
+          </Box>
+
           <List>
-            {/* Dashboard */}
-            <ListItem
-              button
-              onClick={() => handleNavigate('/admin/dashboard')}
-              sx={{
-                fontWeight: 'bold',
-                borderRadius: 2,
-                mb: 1,
-                bgcolor: isActive('/admin/dashboard') ? '#EAB308' : 'white',
-                color: isActive('/admin/dashboard') ? 'white' : 'black',
-                cursor: 'pointer',
-                ":hover": {
-                  color: 'black'
-                }
-              }}
-            >
-              <ListItemIcon>
-                <img src="/images/dashboard.svg" alt="Dashboard" />
-              </ListItemIcon>
-              <ListItemText primary="Dashboard" />
-            </ListItem>
-
-            <ListItem
-              button
-              onClick={() => handleNavigate('/admin/trainingsyllabus')}
-              sx={{
-                fontWeight: 'bold',
-                borderRadius: 2,
-                mb: 1,
-                bgcolor: isActive('/admin/trainingsyllabus') ? '#EAB308' : 'white',
-                color: isActive('/admin/trainingsyllabus') ? 'white' : 'black',
-                cursor: 'pointer',
-                ":hover": {
-                  color: 'black'
-                }
-              }}
-            >
-              <ListItemIcon>
-                <img src="/images/syllabus.svg" alt="Syllabus" />
-              </ListItemIcon>
-              <ListItemText primary="Syllabus" />
-            </ListItem>
-
-            {/* Database collapsible */}
-            <ListItem
-              button
-              onClick={toggleDatabaseMenu}
-              sx={{
-                fontWeight: 'bold',
-                borderRadius: 1,
-                mb: 1,
-                cursor: 'pointer',
-              }}
-            >
-              <ListItemIcon sx={{ minWidth: 40, mr: 1 }}> {/* Increase space here */}
-                <img src="/images/database.svg" alt="Database" />
-              </ListItemIcon>
-              <ListItemText primary="Database" />
-              {openDatabase ? <ExpandLess /> : <ExpandMore />}
-            </ListItem>
-
-
-            <Collapse in={openDatabase} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
-                <ListItem
-                  button
-                  sx={{
-                    pl: 4,
-                    mb: 1,
-                    borderRadius: 2,
-                    bgcolor: isActive('/admin/trainingAdd') ? '#EAB308' : 'white',
-                    color: isActive('/admin/trainingAdd') ? 'white' : 'black',
-                    cursor: 'pointer',
-                    ":hover": {
-                      color: 'black'
-                    }
-                  }}
-                  onClick={() => handleNavigate('/admin/trainingAdd')}
-                >
-                  <ListItemIcon>
-                    <img src="/images/database.svg" alt="Training" />
-                  </ListItemIcon>
-                  <ListItemText primary="Training" />
-                </ListItem>
-
-                <ListItem
-                  button
-                  sx={{
-                    pl: 4,
-                    bgcolor: isActive('/admin/feedback') ? '#EAB308' : 'white',
-                    color: isActive('/admin/feedback') ? 'white' : 'black',
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => handleNavigate('/admin/feedback')}
-                >
-                  <ListItemIcon>
-                    <img src="/images/database.svg" alt="Feedback" />
-                  </ListItemIcon>
-                  <ListItemText primary="Feedback" />
-                </ListItem>
-              </List>
-            </Collapse>
-
-            <ListItem
-              button
-              onClick={() => handleNavigate('/admin/pricing')}
-              sx={{
-                fontWeight: 'bold',
-                borderRadius: 2,
-                mb: 1,
-                bgcolor: isActive('/admin/pricing') ? '#EAB308' : 'white',
-                color: isActive('/admin/pricing') ? 'white' : 'black',
-                cursor: 'pointer',
-                ":hover": {
-                  color: 'black'
-                },
-                                
-              }}
-            >
-              <ListItemIcon>
-                <img src="/images/donate.svg" alt="Pricing" />
-              </ListItemIcon>
-              <ListItemText primary="Pricing" />
-            </ListItem>
-
             <ListItem
               button
               onClick={handleLogoutClick}
               sx={{
                 fontWeight: 'bold',
                 borderRadius: 2,
-                mb: 1,
-                bgcolor:'#EAB308',
+                // mb: 1,
+                bgcolor: '#EAB308',
                 color: 'white',
                 cursor: 'pointer',
                 ":hover": {
                   color: 'black'
                 },
                 // mt:15
+                position:'fixed',
+                top:{xs:'80%',md:'80%',sm:'80%'},
+                width:{xs:'55%',md:'13%',sm:'25%'}
               }}
             >
+
               <ListItemIcon>
                 <img src="/images/Logout.svg" alt="" />
               </ListItemIcon>
-              <ListItemText primary="Logout"  />
+              <ListItemText primary="Logout" />
             </ListItem>
           </List>
         </Box>
       </Grid>
 
-       <Dialog
+      <Dialog
         open={open}
         onClose={handleClose}
         aria-labelledby="logout-dialog-title"
         aria-describedby="logout-dialog-description"
-        // fullWidth
+      // fullWidth
       >
         <DialogTitle id="logout-dialog-title">Confirm Logout</DialogTitle>
         <DialogContent>
           <DialogContentText id="logout-dialog-description">
-           Do you want to logout?
+            Do you want to logout?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-                <CustomButton children='Cancel' onClick={handleClose}  bgColor='#BF0000' sx={{ width: { xs: '50%', md: '30%', sm: '30%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
-          <CustomButton children='Logout' onClick={confirmLogout}  bgColor='#EAB308' sx={{ width: { xs: '50%', md: '30%', sm: '30%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
+          <CustomButton children='Cancel' onClick={handleClose} bgColor='#BF0000' sx={{ width: { xs: '50%', md: '30%', sm: '30%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
+          <CustomButton children='Logout' onClick={confirmLogout} bgColor='#EAB308' sx={{ width: { xs: '50%', md: '30%', sm: '30%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
         </DialogActions>
       </Dialog>
 
@@ -391,20 +435,48 @@ const Navbar = ({ title, children }) => {
                 px: 1,
                 py: 0.5,
                 borderRadius: '5px',
-                width: 140, // increased width to fit icon + text
+                width: 140, 
                 fontSize: '0.75rem',
                 flexShrink: 0,
               }}
             >
               <SearchIcon sx={{ fontSize: 16, mr: 0.5 }} />
-              <InputBase
-                placeholder="Search..."
-                sx={{
-                  fontSize: '0.75rem',
-                  // width: '100%',
-                }}
-                inputProps={{ 'aria-label': 'search' }}
-              />
+                <InputBase
+                  placeholder="Search..."
+                  value={query}
+                  onChange={handleChange}
+                  sx={{ fontSize: '0.75rem', width: '100%' }}
+                  inputProps={{ 'aria-label': 'search' }}
+                />
+
+                {filteredSuggestions.length > 0 && (
+                  <Paper
+                    sx={{
+                      position: 'absolute',
+                      top: '100%',
+                      // left: '50%',
+                      // right: 0,
+                      zIndex: 1,
+                      mt: 0.5,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: 3,
+                      borderRadius: 1,
+                      width: { xs: '40%', sm: '20%' },
+                    }}
+                  >
+                    <List dense>
+                      {filteredSuggestions.map((item) => (
+                        <ListItemButton key={item.label} onClick={() => handleSelect(item.path)}>
+                          <CustomTypography text={item.label} />
+                        </ListItemButton>
+                      ))}
+                    </List>
+                  </Paper>
+                )}
+
+
+
             </Box>
 
             {/* Notification icon */}
@@ -450,12 +522,39 @@ const Navbar = ({ title, children }) => {
                 <SearchIcon sx={{ fontSize: '20px', mr: 0.5 }} />
                 <InputBase
                   placeholder="Search..."
-                  sx={{
-                    fontSize: '0.75rem',
-                    // width: '100%',
-                  }}
+                  value={query}
+                  onChange={handleChange}
+                  sx={{ fontSize: '0.75rem', width: '100%' }}
                   inputProps={{ 'aria-label': 'search' }}
                 />
+
+                {filteredSuggestions.length > 0 && (
+                  <Paper
+                    sx={{
+                      position: 'absolute',
+                      top: '100%',
+                      // left: '50%',
+                      // right: 0,
+                      zIndex: 1,
+                      mt: 0.5,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: 3,
+                      borderRadius: 1,
+                      width: '20%',
+                     
+                    }}
+                  >
+                    <List dense>
+                      {filteredSuggestions.map((item) => (
+                        <ListItemButton  key={item.label} onClick={() => handleSelect(item.path)}>
+                          <CustomTypography text={item.label} />
+                        </ListItemButton>
+                      ))}
+                    </List>
+                  </Paper>
+                )}
+
               </Box>
               {/* <IconButton>
                 <NotificationsIcon />

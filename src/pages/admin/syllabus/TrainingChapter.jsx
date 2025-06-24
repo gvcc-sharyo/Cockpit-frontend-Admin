@@ -35,34 +35,45 @@ function TrainingChapter() {
     const [books, setBooks] = useState([]);
     const [chapters, setChapters] = useState([]);
     const location = useLocation();
-    const syllabusTitle = location.state;
+    const {syllabusTitle, syllabusId} = location.state;
 
-    const fetchBooks = async () => {
-        try {
-            const response = await apiGet('/getBooks');
 
-            if (response.data.status === 200 && response.data.books.length === 0) {
-                snackbarEmitter('No books found', 'info');
-            }
-            else if (response.data.status === 200) {
-                const bookList = response.data.books;
-                setBooks(bookList);
-
-                if (bookList.length > 0) {
-                    setSelectedBook(bookList[0].bookTitle);
-                }
-
-            }
-            else {
-                snackbarEmitter(response.data.message, 'error');
-            }
-
-        } catch (error) {
-            snackbarEmitter('Something went wrong', 'error');
-        }
-    };
+    const [filteredBooks, setFilteredBooks] = useState([]);
 
     const [selectedBook, setSelectedBook] = useState('');
+
+   const fetchBooks = async () => {
+    try {
+        const response = await apiGet('/getBooks');
+
+        if (response.data.status === 200) {
+            const bookList = response.data.books;
+
+            // Step 1: Filter books that have a syllabusId field
+            const booksWithSyllabus = bookList.filter(book => book.syllabusId);
+
+            // Step 2: Filter those books by matching syllabusTitle
+            const filterBooks = booksWithSyllabus.filter(book => book.syllabusId.title === syllabusTitle);
+
+            if (filterBooks.length === 0) {
+                snackbarEmitter('No books found', 'info');
+            }
+
+            setFilteredBooks(filterBooks);
+
+            if (filterBooks.length > 0) {
+                setSelectedBook(filterBooks[0].bookTitle);
+            }
+
+        } else {
+            snackbarEmitter(response.data.message, 'error');
+        }
+
+    } catch (error) {
+        snackbarEmitter('Something went wrong', 'error');
+    }
+};
+
 
     const fetchChapters = async () => {
         try {
@@ -78,8 +89,6 @@ function TrainingChapter() {
                 snackbarEmitter(response.data.message, 'error');
             }
 
-
-
         } catch (error) {
             console.error('Error fetching syllabus:', error);
         }
@@ -90,7 +99,7 @@ function TrainingChapter() {
         fetchChapters();
     }, [])
 
-    const filteredChapters = chapters.filter((chapter) => chapter.book === selectedBook);
+    const filteredChapters = chapters.filter((chapter) => chapter.book === selectedBook && chapter.syllabus === syllabusTitle);
 
     const [openModal, setOpenModal] = useState(false);
     const [bookName, setBookName] = useState([]);
@@ -130,7 +139,7 @@ function TrainingChapter() {
         setLoading(true);
 
         try {
-            const response = await apiPost('/addBooks', { bookTitle: bookName });
+            const response = await apiPost('/addBooks', { bookTitle: bookName , syllabusId: syllabusId});
 
             setTimeout(() => {
                 setLoading(false);
@@ -175,16 +184,23 @@ function TrainingChapter() {
     });
 
     const handleAddChapter = async () => {
+        console.log("add chapter api called");
+
+        if (!selectedBook) {
+            snackbarEmitter('Please select a book', 'error');
+            return;
+        }
 
         const errors = {};
 
         if (!formData.chapterno) errors.chapterno = 'Chapterno is required';
         if (!formData.chaptername) errors.chaptername = 'Chaptername is required';
-        if (!formData.status) errors.status = 'Status is required';
+        // if (!formData.status) errors.status = 'Status is required';
 
         setFormErrors(errors);
 
         if (Object.keys(errors).length > 0) return;
+
 
         const req = {
             syllabus: syllabusTitle,
@@ -194,14 +210,17 @@ function TrainingChapter() {
             status: formData.status
         };
 
+        console.log('req', req.book);
+
+
         // If editing, add chapterId to the request body
         if (isEditing) {
             req.chapterId = chapterId;
             req.isactive = isActive;
 
             console.log('isActive', isActive);
-            
-        
+
+
         }
 
         setLoading(true);
@@ -250,7 +269,7 @@ function TrainingChapter() {
     //edit chapter
     const [isEditing, setIsEditing] = useState(false);
     const [chapterId, setChapterId] = useState('');
-    const[isActive, setIsActive] = useState(false);
+    const [isActive, setIsActive] = useState(false);
 
     const handleEditChapter = (chapter) => {
         setFormData({
@@ -260,7 +279,7 @@ function TrainingChapter() {
         });
         setChapterId(chapter._id); // or use other unique field if no ID
         setIsEditing(true);
-        setIsActive(chapter.isactive === true? true : false);
+        setIsActive(chapter.isactive === true ? true : false);
         setOpenChapterModal(true);
     };
 
@@ -269,13 +288,13 @@ function TrainingChapter() {
     const handleStatusModalClose = () => setOpenStatusModal(false);
 
     const handleStatusClick = (chapter) => {
-  setFormData({
+        setFormData({
             chapterno: chapter.chapterno,
             chaptername: chapter.chaptername,
             status: chapter.status,
         });
         setChapterId(chapter._id); // or use other unique field if no ID
-        setIsActive(chapter.isactive === true? false : true);
+        setIsActive(chapter.isactive === true ? false : true);
         setIsEditing(true);
         setOpenStatusModal(true);
     };
@@ -299,7 +318,7 @@ function TrainingChapter() {
                 <Box sx={{ maxWidth: '100%', overflowX: 'auto' }} mt={2}>
                     <Box sx={{ display: 'flex', gap: '15px', padding: '10px', width: 'max-content' }}>
                         {
-                            books.map((book) => (
+                            filteredBooks.map((book) => (
                                 <Box
                                     key={book.bookTitle}
                                     onClick={() => setSelectedBook(book.bookTitle)}
@@ -403,7 +422,7 @@ function TrainingChapter() {
                                                 {chapter.chaptername}
                                             </TableCell>
                                             <TableCell>
-                                                <Button
+                                                {/* <Button
                                                     variant="contained"
                                                     sx={{
                                                         backgroundColor: chapter.isactive === true ? '#109CF1' : 'red',
@@ -413,10 +432,11 @@ function TrainingChapter() {
                                                         py: 0.5,
                                                         minWidth: 'auto',
                                                     }}
-                                                    onClick={()=>  handleStatusClick(chapter)}
+                                                    onClick={() => handleStatusClick(chapter)}
                                                 >
                                                     {chapter.isactive === true ? 'Active' : 'Inactive'}
-                                                </Button>
+                                                </Button> */}
+                                                 <CustomButton children= {chapter.isactive === true ? 'Active' : 'Inactive'} onClick={()=> handleStatusClick(chapter)} loading={false} bgColor={chapter.isactive === true ? '#109CF1' : '#D61508'} sx={{ width: { xs: '20%', sm: '20%', md: '20%' }, fontSize: { xs: '10px', sm: '11px', md: '12px' }, }} />
                                             </TableCell>
                                             <TableCell>
                                                 <IconButton size="small" onClick={() => handleEditChapter(chapter)}>
@@ -553,7 +573,7 @@ function TrainingChapter() {
                         <Grid item>
                             <Grid container spacing={2} justifyContent="center">
                                 <Grid item>
-                                 
+
                                     <CustomButton children='Yes' onClick={handleAddChapter} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
                                 </Grid>
                                 <Grid item>

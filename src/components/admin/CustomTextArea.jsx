@@ -5,7 +5,6 @@ import {
 } from "@mui/icons-material";
 import { Box, Button, IconButton, TextField } from "@mui/material";
 import { useState } from "react";
-// import PropTypes from "prop-types";
 
 function CustomTextArea({
   value = "",
@@ -14,22 +13,29 @@ function CustomTextArea({
   rows = 4,
   disabled = false,
 }) {
-  // State for text formatting
+  // Text formatting state
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderlined, setIsUnderlined] = useState(false);
 
-  // Handle text input changes
+  // Handle text input change
   const handleChange = (event) => {
     if (onChange) {
       onChange(event);
     }
   };
 
-  // Toggle formatting states
+  // Formatting toggles
   const toggleBold = () => setIsBold((prev) => !prev);
   const toggleItalic = () => setIsItalic((prev) => !prev);
   const toggleUnderline = () => setIsUnderlined((prev) => !prev);
+
+  // Reset all formatting to normal
+  const resetFormatting = () => {
+    setIsBold(false);
+    setIsItalic(false);
+    setIsUnderlined(false);
+  };
 
   return (
     <Box
@@ -41,6 +47,7 @@ function CustomTextArea({
         flexGrow: 1,
       }}
     >
+      {/* Formatting Toolbar */}
       <Box
         sx={{
           display: "flex",
@@ -50,7 +57,8 @@ function CustomTextArea({
           p: 1,
         }}
       >
-        <Button sx={{ color: "#000" }}>Normal</Button>
+       <Button sx={{ color: "#000", textTransform: "none" }} onClick={resetFormatting}>Normal</Button>
+
         <IconButton size="small" onClick={toggleBold}>
           <FormatBold sx={{ color: isBold ? "#000" : "#ccc" }} />
         </IconButton>
@@ -62,6 +70,7 @@ function CustomTextArea({
         </IconButton>
       </Box>
 
+      {/* Text Input Area */}
       <TextField
         placeholder={placeholder}
         multiline
@@ -87,14 +96,5 @@ function CustomTextArea({
     </Box>
   );
 }
-
-// Optional PropTypes for type checking
-// CustomTextArea.propTypes = {
-//   value: PropTypes.string,
-//   onChange: PropTypes.func,
-//   placeholder: PropTypes.string,
-//   rows: PropTypes.number,
-//   disabled: PropTypes.bool,
-// };
 
 export default CustomTextArea;

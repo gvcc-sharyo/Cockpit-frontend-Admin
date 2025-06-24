@@ -211,7 +211,7 @@ function Feedback() {
 
   return (
     <Navbar title={"Feedback"}>
-      <Grid container justifyContent="center">
+      <Grid container justifyContent="center" sx={{maxHeight: '100vh', overflowY: 'scroll'}}>
         {
           filteredReports.length > 0 && filteredReports.map((report, index) => (
             <Grid size={{ xs: 12, sm: 10, md: 10 }} >
@@ -314,7 +314,7 @@ function Feedback() {
                     <Button sx={styles.actionButton}>Decline</Button>
                     <Button sx={styles.actionButton} onClick={() => handleModalOpen(report)}>Show question</Button> */}
                     <CustomButton children='Approve' onClick={() => updateReport(report, 'resolved', 'a')} loading={customLoading.approveLoading} bgColor='#1E9609' sx={{ width: { xs: '20%', sm: '20%', md: '20%' }, fontSize: { xs: '10px', sm: '11px', md: '12px' } }} />
-                    <CustomButton children='Decline' onClick={() => updateReport(report, 'rejected', 'd')} loading={customLoading.declineLoading} bgColor='red' sx={{ width: { xs: '20%', sm: '20%', md: '20%' }, fontSize: { xs: '10px', sm: '11px', md: '12px' } }} />
+                    <CustomButton children='Decline' onClick={() => updateReport(report, 'rejected', 'd')} loading={customLoading.declineLoading} bgColor='#CB1D02' sx={{ width: { xs: '20%', sm: '20%', md: '20%' }, fontSize: { xs: '10px', sm: '11px', md: '12px' } }} />
                     <CustomButton children='Show question' onClick={() => handleModalOpen(report)} loading={false} bgColor='#EAB308' sx={{ width: { xs: '20%', sm: '20%', md: '20%' }, fontSize: { xs: '10px', sm: '11px', md: '12px' } }} />
                   </Grid>
                 </Grid>
