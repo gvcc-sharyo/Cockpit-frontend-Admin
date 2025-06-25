@@ -101,7 +101,7 @@ const handleSubmit = async (e) => {
 
     if (data.status === 200) {
       setTimeout(() => {
-        snackbarEmitter("Admin updated successfully", "success");
+        snackbarEmitter(data.message, "success");
         setLoading(false);
       }, 2000);
     } else {
