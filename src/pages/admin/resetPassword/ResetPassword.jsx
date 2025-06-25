@@ -8,7 +8,7 @@ import {
     IconButton,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { apiPost } from '../../../api/axios';
 import CustomTextField from '../../../components/admin/CustomTextField';
 import CustomButton from '../../../components/admin/CustomButton';
@@ -68,10 +68,12 @@ function ResetPassword() {
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
-    const location = useLocation();
 
-    const queryParams = new URLSearchParams(location.search);
-    const token = queryParams.get('token') || 'token123';
+    // const queryParams = new URLSearchParams(location.search);
+    // const token = queryParams.get('token') || 'token123';
+
+    const params = useParams();
+    const token = params.token;
 
     const validate = () => {
         const errs = {};
@@ -91,7 +93,7 @@ function ResetPassword() {
         if (!validate()) return;
 
         if (!token) {
-            snackbarEmitter('Missing token', 'error');
+            snackbarEmitter('Server error', 'error');
             return;
         }
 
@@ -131,7 +133,8 @@ function ResetPassword() {
                         <Typography sx={styles.heading}>Reset password</Typography>
 
                         <Typography sx={styles.secondaryText}>
-                            Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                            Create a new password. Ensure it differs from
+                            previous ones for security
                         </Typography>
 
                         <CustomTextField

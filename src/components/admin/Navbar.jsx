@@ -56,6 +56,7 @@ const Navbar = ({ title, children }) => {
   };
 
   const [adminData, setAdminData] = useState({
+    profileimage: "",
     username: "",
     role: "",
   });
@@ -66,6 +67,7 @@ const Navbar = ({ title, children }) => {
 
       if (response.data.status === 200) {
         setAdminData({
+          profileimage: response.data.data.profileimage,
           username: response.data.data.username,
           role: response.data.data.role,
         });
@@ -167,7 +169,7 @@ const Navbar = ({ title, children }) => {
           </Box>
 
           {/* Logo */}
-          <Box sx={{ textAlign: 'center', mb: 3 }}>
+          <Box sx={{ textAlign: 'center', mb: 3, cursor: 'pointer'}} onClick={() => handleNavigate('/admin/dashboard')}>
             <img
               src="/images/logo.png"
               alt="Logo"
@@ -395,7 +397,11 @@ const Navbar = ({ title, children }) => {
 
             {/* Admin text */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, cursor: 'pointer' }} onClick={() => handleNavigate('/admin/profile')}>
-              <Avatar sx={{ width: 25, height: 25, }}>{adminData.username.charAt(0).toUpperCase()}</Avatar>
+              <Avatar sx={{ width: 25, height: 25, }}
+              src={adminData.profileimage}
+              >
+                {adminData.username.charAt(0).toUpperCase()}
+              </Avatar>
             </Box>
           </Toolbar>
 
@@ -561,7 +567,10 @@ const Navbar = ({ title, children }) => {
               </IconButton> */}
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }} onClick={() => handleNavigate('/admin/profile')}>
-              <Avatar sx={{ width: 40, height: 40 }}>{adminData.username.charAt(0).toUpperCase()}</Avatar>
+              <Avatar sx={{ width: 40, height: 40 }}
+                 src={adminData.profileimage}
+              >
+                {adminData.username.charAt(0).toUpperCase()}</Avatar>
               <Grid sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
                 <Typography variant="body1">

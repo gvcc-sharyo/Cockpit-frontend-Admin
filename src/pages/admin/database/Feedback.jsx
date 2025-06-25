@@ -14,9 +14,16 @@ import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import { apiGet, apiPost } from "../../../api/axios";
 import CustomButton from "../../../components/admin/CustomButton";
 import Training from "../../../components/admin/Training";
+import { useLocation } from "react-router-dom";
 
 function Feedback() {
-  const [open, setOpen] = useState(null);
+
+  const location = useLocation();
+  const {reportID} = location.state || {};
+
+  console.log('reportId', reportID);
+  
+
 
   const styles = {
     toggleBox: {
@@ -69,7 +76,7 @@ function Feedback() {
   const [reports, setReports] = useState([]);
 
   const fetchReports = async () => {
-    setOpen(null);
+    
     try {
       const response = await apiGet('/reports');
 
@@ -84,8 +91,6 @@ function Feedback() {
         snackbarEmitter(response.data.message, 'error');
       }
 
-
-
     } catch (error) {
       snackbarEmitter('Something went wrong', 'error');
     }
@@ -96,6 +101,14 @@ function Feedback() {
   }, [])
 
   const filteredReports = reports.filter((report) => report.status === 'pending');
+
+  const [open, setOpen] = useState(null);
+
+  useEffect(() => {
+  if (reportID) {
+    setOpen(reportID);
+  } 
+}, [reportID ]);  
 
   const handleModalClose = () => {
 
@@ -216,7 +229,7 @@ function Feedback() {
           filteredReports.length > 0 && filteredReports.map((report, index) => (
             <Grid size={{ xs: 12, sm: 10, md: 10 }} >
               {/* Toggle Box */}
-              <Box sx={styles.toggleBox} onClick={() => setOpen(open === index ? null : index)}>
+              <Box sx={styles.toggleBox} onClick={() => setOpen(open === report._id ? null : report._id)}>
                 <Grid sx={{ display: "flex", alignItems: "center", gap: 2 }} >
                   <Avatar>{report.userId.username[0]}</Avatar>
                   <Box sx={{ display: "flex", flexDirection: "column", justifyContent: 'center' }} >
@@ -252,7 +265,7 @@ function Feedback() {
               </Box>
 
               {/* Expandable Content */}
-              <Collapse in={open === index} >
+              <Collapse in={open === report._id} >
                 <Grid container spacing={2} mt={1} sx={{ display: 'flex', justifyContent: "center", backgroundColor: '#F0F0F0' }}>
                   {/* Question & Our Answer Box */}
                   <Grid size={{ xs: 8, sm: 10, md: 10 }}>
