@@ -8,14 +8,14 @@ import CustomButton from "./CustomButton";
 import { snackbarEmitter } from "./CustomSnackbar";
 import CustomTextField from "./CustomTextField";
 
-function Training({syllabusName,bookName,chapterName, question, report = false, modalClose,}) {
-
+function Training({ syllabusName, bookName, chapterName, question, report = false, modalClose }) {
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [options, setOptions] = useState([1, 2]);
   const [formData, setFormData] = useState({
-    syllabus: syllabusName || "",
-    book: bookName || "",
-    chapter: chapterName || "",
+    syllabus: syllabusName || location.state?.syllabusName || "",
+    book: bookName || location.state?.bookName || "",
+    chapter: chapterName || location.state?.chapterName || "",
     question: question?.question || "",
     options: question?.options || [
       { id: 1, text: "", isCorrect: false },
@@ -48,24 +48,26 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
   // =================== Input Handlers ===================
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value, ...(name === "syllabus" ? { book: "", chapter: "" } : name === "book" ? { chapter: "" } : {}) }));
-    setErrors((prev) => ({...prev, [name]: undefined,}));
-   
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+      ...(name === "syllabus" ? { book: "", chapter: "" } : name === "book" ? { chapter: "" } : {}),
+    }));
+    setErrors((prev) => ({ ...prev, [name]: undefined }));
     if (name === "syllabus") {
       getBooks(value);
       setBook([]);
-      setChapters([]); 
+      setChapters([]);
     }
-   
     if (name === "book") {
       getChapters(formData.syllabus, value);
-      setChapters([]); 
+      setChapters([]);
     }
   };
 
   const handleExplanationChange = (value) => {
-    setFormData((prev) => ({ ...prev, explanation: value, }));
-    setErrors((prev) => ({ ...prev,explanation: undefined,}));
+    setFormData((prev) => ({ ...prev, explanation: value }));
+    setErrors((prev) => ({ ...prev, explanation: undefined }));
   };
 
   // =================== Option Handlers ===================
@@ -75,28 +77,37 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
       newOptions[index] = { ...newOptions[index], text: value };
       return { ...prev, options: newOptions };
     });
-
-    setErrors((prev) => ({...prev,[`option_${index}`]: undefined,}));
+    setErrors((prev) => ({ ...prev, [`option_${index}`]: undefined }));
   };
 
   const handleOptionCorrectChange = (value) => {
     const index = parseInt(value.split("-")[1]);
     setFormData((prev) => {
-      const newOptions = prev.options.map((option, i) => ({ ...option,isCorrect: i === index,}));
+      const newOptions = prev.options.map((option, i) => ({
+        ...option,
+        isCorrect: i === index,
+      }));
       return { ...prev, options: newOptions };
     });
-    setErrors((prev) => ({ ...prev,correct: undefined,}));
+    setErrors((prev) => ({ ...prev, correct: undefined }));
   };
 
   const handleAddOption = () => {
     const newId = options.length + 1;
     setOptions((prev) => [...prev, newId]);
-    setFormData((prev) => ({...prev,options: [...prev.options, { id: newId, text: "", isCorrect: false }],}));
+    setFormData((prev) => ({
+      ...prev,
+      options: [...prev.options, { id: newId, text: "", isCorrect: false }],
+    }));
   };
 
   const handleDeleteOption = (indexToDelete) => {
     setOptions((prev) => prev.filter((_, index) => index !== indexToDelete));
-    setFormData((prev) => ({...prev,options: prev.options.filter((_, index) => index !== indexToDelete).map((option, index) => ({ ...option, id: index + 1 })),
+    setFormData((prev) => ({
+      ...prev,
+      options: prev.options
+        .filter((_, index) => index !== indexToDelete)
+        .map((option, index) => ({ ...option, id: index + 1 })),
     }));
     setErrors((prev) => {
       const newErrors = { ...prev };
@@ -116,8 +127,8 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
 
     setLoading(true);
     const isUpdate = !!question?._id;
-    const payload = isUpdate ? {questionId: question._id,question: formData.question, options: formData.options,explanation: formData.explanation,} : formData;
-    // console.log("Submitting:", payload);
+    const payload = isUpdate ? { questionId: question._id, question: formData.question, options: formData.options, explanation: formData.explanation } : formData;
+
     try {
       const endpoint = isUpdate ? "/updateQuestion" : "/uploadQuestions";
       const response = await apiPost(endpoint, payload);
@@ -129,12 +140,22 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
           if (report === true) {
             modalClose();
           } else {
-           navigate("/admin/trainingQuestion", { state: { syllabusName: formData.syllabus, bookName: formData.book, chapterName: formData.chapter } });
+            navigate("/admin/trainingQuestion", { state: { syllabusName: formData.syllabus, bookName: formData.book, chapterName: formData.chapter } });
 
           }
 
           if (!isUpdate) {
-           setFormData({ syllabus: "", book: "", chapter: "", question: "", options: [{ id: 1, text: "", isCorrect: false }, { id: 2, text: "", isCorrect: false }], explanation: "" });
+            setFormData({
+              syllabus: "",
+              book: "",
+              chapter: "",
+              question: "",
+              options: [
+                { id: 1, text: "", isCorrect: false },
+                { id: 2, text: "", isCorrect: false },
+              ],
+              explanation: "",
+            });
             setErrors({});
           }
         }, 1500);
@@ -150,10 +171,27 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
     }
   };
 
-
+  const handleCancel = () => {
+    setFormData({
+      syllabus: syllabusName || location.state?.syllabusName || "",
+      book: bookName || location.state?.bookName || "",
+      chapter: chapterName || location.state?.chapterName || "",
+      question: question?.question || "",
+      options: question?.options || [
+        { id: 1, text: "", isCorrect: false },
+        { id: 2, text: "", isCorrect: false },
+      ],
+      explanation: question?.explanation || "",
+    });
+    setErrors({});
+    setOptions(
+      question?.options?.length
+        ? question.options.map((_, index) => index + 1)
+        : [1, 2]
+    );
+  };
 
   const [syllabus, setSyllabus] = useState([]);
-
   const getSyllabus = async () => {
     try {
       const response = await apiGet("/getSyllabus");
@@ -161,11 +199,9 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
         const titles = response.data.data.map((item) => item.title).filter(Boolean);
         setSyllabus(titles);
         // console.log("Response for Syllabus :", response.data);
-      } else {
-        snackbarEmitter(response.data.message, "error");
-      }
+      } 
     } catch (error) {
-      snackbarEmitter("Something went wrong", "error");
+       snackbarEmitter(response.data.message, "error");
     }
   };
 
@@ -173,56 +209,55 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
 
   const [book, setBook] = useState([]);
   const getBooks = async (syllabus = "") => {
-  try {
-    const response = await apiGet("/getBooks");
-
-    if (response.data.status === 200) {
-      const booksList = response.data.books.filter(book => book.syllabusId?.title === syllabus).map(book => book.bookTitle).filter(Boolean);
-      setBook(booksList);
-      // console.log("Filtered Books:", booksList);
-    } else {
-      snackbarEmitter(response.data.message, "error");
+    try {
+      const response = await apiGet(syllabus ? `/getBooks?syllabus=${encodeURIComponent(syllabus)}` : "/getBooks");
+      if (response.data.status === 200) {
+        const booksList = response.data.books.filter(item => !syllabus || (item.syllabusId && item.syllabusId.title === syllabus)).map(item => item.bookTitle).filter(Boolean);
+        setBook(booksList);
+        // console.log("Response for Books :", response.data);
+      } 
+    } catch (error) {
+      snackbarEmitter("Something went wrong", "error");
       setBook([]);
     }
-  } catch (error) {
-    snackbarEmitter("Something went wrong", "error");
-    setBook([]);
-  }
-};
-
+  };
 
   const [chapters, setChapters] = useState([]);
-
-
   const getChapters = async (syllabus = "", book = "") => {
-  try {
-    const response = await apiGet(syllabus && book  ? `/getChapters?syllabus=${encodeURIComponent(syllabus)}&book=${encodeURIComponent(book)}`: "/getChapters");
-
-    if (response.data.status === 200) {
-      const chapterList = response.data.chapters.filter(item =>item.book === book && item.chaptername).map(item => item.chaptername);
-
-      // console.log("Filtered Chapters:", chapterList);
-      setChapters(chapterList);
-    } else {
-      snackbarEmitter(response.data.message, "error");
+    try {
+      const response = await apiGet(syllabus && book ? `/getChapters?syllabus=${encodeURIComponent(syllabus)}&book=${encodeURIComponent(book)}` : "/getChapters");
+      if (response.data.status === 200) {
+        const chapterList = response.data.chapters.filter(item => !syllabus || !book || (item.syllabus === syllabus && item.book === book)).map(item => item.chaptername).filter(Boolean);
+        setChapters(chapterList);
+        // console.log("Response for Chapters :", response.data);
+      }
+    } catch (error) {
+      snackbarEmitter("Something went wrong", "error");
       setChapters([]);
     }
-  } catch (error) {
-    snackbarEmitter("Something went wrong", "error");
-    setChapters([]);
-  }
-};
+  };
 
 
-  useEffect(() => {getSyllabus(); getBooks();  getChapters(); }, []);
+  useEffect(() => {
+    getSyllabus();
+    if (syllabusName || location.state?.syllabusName) {
+      const initialSyllabus = syllabusName || location.state?.syllabusName;
+      getBooks(initialSyllabus);
+      if (bookName || location.state?.bookName) {
+        getChapters(initialSyllabus, bookName || location.state?.bookName);
+      } else {
+        setChapters([]);
+      }
+    } else {
+      getBooks();
+      getChapters();
+    }
+  }, [syllabusName, bookName, location.state]);
 
-  const data = [
-  { label: "Syllabus", name: "syllabus", value: formData.syllabus, onChange: handleInputChange, error: !!errors.syllabus, helperText: errors.syllabus, options: syllabus, disabled: report },
-  { label: "Book", name: "book", value: formData.book, onChange: handleInputChange, error: !!errors.book, helperText: errors.book, options: book, disabled: report || !formData.syllabus },
-  { label: "Chapter", name: "chapter", value: formData.chapter, onChange: handleInputChange, error: !!errors.chapter, helperText: errors.chapter, options: chapters, disabled: report || !formData.book }
-];
-
-
+ const data = [{ label: "Syllabus", name: "syllabus", value: formData.syllabus, onChange: handleInputChange, error: !!errors.syllabus, helperText: errors.syllabus, options: syllabus, disabled: report }, 
+               { label: "Book", name: "book", value: formData.book, onChange: handleInputChange, error: !!errors.book, helperText: errors.book, options: book, disabled: report || !formData.syllabus }, 
+               { label: "Chapter", name: "chapter", value: formData.chapter, onChange: handleInputChange, error: !!errors.chapter, helperText: errors.chapter, options: chapters, disabled: report || !formData.book }
+              ];
 
 
   const styles = {
@@ -232,7 +267,7 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
       color: "white",
       borderRadius: "10px",
       whiteSpace: "nowrap",
-      textTransform:"none",
+      textTransform: "none",
       fontFamily: "Lexend",
       fontWeight: 300,
       fontSize: "16px",
@@ -252,7 +287,7 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
       color: "white",
       borderRadius: "10px",
       whiteSpace: "nowrap",
-      textTransform:"none",
+      textTransform: "none",
       fontFamily: "Lexend",
       fontWeight: 300,
       fontSize: "16px",
@@ -279,7 +314,6 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
       display: "flex",
       justifyContent: "flex-end",
       mb: 1,
-      
     },
     deleteButton: {
       padding: 0,
@@ -289,7 +323,6 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
       fontFamily: "Jost",
       fontSize: "14px",
     },
-
     errorText: { color: "#d32f2f", fontSize: "0.75rem", mt: 1 },
     solutionBox: { display: "flex", width: "100%", alignItems: "center" },
     solutionTextArea: {
@@ -307,28 +340,22 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
     submitButton: {
       px: { xs: 2, sm: 4 },
       width: { xs: "60%", sm: "auto" },
-      textTransform:"none",
+      textTransform: "none",
       backgroundColor: "#EAB308",
       color: "white",
       borderRadius: "10px",
       whiteSpace: "nowrap",
-      textTransform:"none",
       fontFamily: "Lexend",
       fontWeight: 300,
       fontSize: "16px",
     },
     cancelButton: {
       color: "#fff",
-    
       backgroundColor: "#BF0000",
       borderRadius: "10px",
       px: { xs: 2, sm: 4 },
-      textTransform:"none",
-    
-      color: "white",
-      borderRadius: "10px",
+      textTransform: "none",
       whiteSpace: "nowrap",
-     
       fontFamily: "Lexend",
       fontWeight: 300,
       fontSize: "16px",
@@ -336,13 +363,11 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
   };
 
   return (
-
-
     <>
       <Grid container spacing={2}>
         {data.map((field, index) => (
           <Grid key={index} size={{ xs: 12, md: 4 }}>
-            <CustomTextField label={field.label} required select placeholder={field.label} name={field.name} value={field.value} onChange={field.onChange} error={field.error} helperText={field.helperText} SelectProps={{ native: false }} disabled={field.disabled}>
+           <CustomTextField label={field.label} required select placeholder={field.label} name={field.name} value={field.value} onChange={field.onChange} error={field.error} helperText={field.helperText} SelectProps={{ native: false }} disabled={field.disabled} >
               {field.options.map((item, idx) => (
                 <MenuItem key={idx} value={item}>
                   {item}
@@ -351,62 +376,55 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
             </CustomTextField>
           </Grid>
         ))}
-
         <Grid size={{ xs: 12 }}>
           <Box sx={styles.addImageBox}>
-            <Button variant="contained" sx={styles.addImageButton}>+Add Image</Button>
+            {/* <Button variant="contained" sx={styles.addImageButton}>+Add Image</Button> */}
           </Box>
         </Grid>
       </Grid>
-
       <Grid container spacing={2} sx={styles.questionAreaGrid}>
         <Grid size={{ xs: 12, md: 12 }}>
-          <CustomTextArea value={formData.question} onChange={(e) => handleInputChange({ target: { name: "question", value: e.target.value },})} error={!!errors.question} helperText={errors.question}/>
+          <CustomTextArea value={formData.question} onChange={(e) => handleInputChange({ target: { name: "question", value: e.target.value } })} error={!!errors.question} helperText={errors.question} />
         </Grid>
       </Grid>
-
       <Divider sx={styles.divider} />
-
       <Box sx={styles.optionsHeaderBox}>
-        <CustomTypography text="Selected Correct Options" />
+        <CustomTypography text="Select Correct Option" />
         <CustomTypography text="Choices" />
         <Box sx={styles.addOptionBox}>
-          <Button onClick={handleAddOption} variant="contained" fullWidth sx={styles.addOptionButton}>+Add Option</Button>
+          <Button onClick={handleAddOption} variant="contained" fullWidth sx={styles.addOptionButton} > +Add Option</Button>
         </Box>
       </Box>
-
-      <FormControl fullWidth sx={styles.radioFormControl}  error={!!errors.correct}>
+      <FormControl fullWidth sx={styles.radioFormControl} error={!!errors.correct}>
         <RadioGroup onChange={(e) => handleOptionCorrectChange(e.target.value)}>
           {formData.options.map((option, index) => (
             <Box key={option.id} sx={styles.optionItemBox}>
               <Radio value={`option-${index}`} checked={option.isCorrect} sx={styles.radio} />
               <Box sx={styles.textAreaWrapper}>
                 <Box sx={styles.deleteButtonBox}>
-                  <Button variant="text" color="primary" onClick={() => handleDeleteOption(index)} sx={styles.deleteButton} >
-                    Delete
-                  </Button>
+                  <Button variant="text" color="primary" onClick={() => handleDeleteOption(index)} sx={styles.deleteButton}>Delete</Button>
                 </Box>
                 <CustomTextArea value={option.text} onChange={(e) => handleOptionTextChange(index, e.target.value)} error={!!errors[`option_${index}`]} helperText={errors[`option_${index}`]} />
-
               </Box>
             </Box>
           ))}
         </RadioGroup>
         {!!errors.correct && <Box sx={styles.errorText}>{errors.correct}</Box>}
       </FormControl>
-
       <Divider sx={styles.dividerWithMargin} />
-
       <Box sx={styles.solutionBox}>
         <CustomTypography text="Solution" />
         <Box sx={styles.solutionTextArea}>
-          <CustomTextArea value={formData.explanation} onChange={(e) => handleExplanationChange(e.target.value)} error={!!errors.explanation} helperText={errors.explanation} />
+         <CustomTextArea value={formData.explanation} onChange={(e) => handleExplanationChange(e.target.value)} error={!!errors.explanation} helperText={errors.explanation} />
         </Box>
       </Box>
-
       <Box sx={styles.buttonGroup}>
-        <CustomButton onClick={handleSubmit} loading={loading} bgColor="#EAB308" borderRadius="10px" sx={styles.submitButton}>{question?._id ? "Update Question" : "Add Question"}</CustomButton>
-        <Button variant="outlined" sx={styles.cancelButton}> Cancel</Button>
+        <CustomButton onClick={handleSubmit}  loading={loading} bgColor="#EAB308" borderRadius="10px" sx={styles.submitButton}>
+          {question?._id ? "Update Question" : "Add Question"}
+        </CustomButton>
+        <Button variant="outlined" onClick={handleCancel} sx={styles.cancelButton}>
+          Cancel
+        </Button>
       </Box>
     </>
   );
