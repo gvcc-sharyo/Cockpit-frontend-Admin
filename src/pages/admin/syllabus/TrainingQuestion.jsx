@@ -89,11 +89,15 @@ function TrainingQuestion() {
         }
     };
 
+    const [bulkLoad, setBulkLoad] = useState(false);
+
     const handleUpload = async () => {
         if (!selectedFile) {
             snackbarEmitter('File not selected', 'warning');
             return;
         }
+
+        setBulkLoad(true);
 
         try {
 
@@ -103,19 +107,27 @@ function TrainingQuestion() {
             formData.append('book', bookName);
             formData.append('chapter', chapterName);
 
-            await apiPostUpload('/uploadQuestionsBulk', formData);
+            const response = await apiPostUpload('/uploadQuestionsBulk', formData);
 
-            if (response.data.status === 200) {
-                snackbarEmitter(response.data.message, 'success');
-                handleCloseUploadDialog();
-            }
-            else {
-                snackbarEmitter(response.data.message, 'error');
-                handleCloseUploadDialog();
-            }
+            setTimeout(() => {
+                setBulkLoad(false);
+                if (response.data.status === 200) {
+                    snackbarEmitter(response.data.message, 'success');
+                    handleCloseUploadDialog();
+                }
+                else {
+                    snackbarEmitter(response.data.message, 'error');
+                    handleCloseUploadDialog();
+                }
+                fetchQuestions();
+
+            }, 1500);
+
 
         } catch (error) {
+
             snackbarEmitter('Something went wrong', 'error');
+            fetchQuestions();
         }
     };
 
@@ -233,7 +245,7 @@ function TrainingQuestion() {
                         Questions
                     </Typography>
 
-                    <Grid size={{xs:7, md:4, sm:5}} sx={{ display: 'flex', gap: 2 }}>
+                    <Grid size={{ xs: 7, md: 4, sm: 5 }} sx={{ display: 'flex', gap: 2 }}>
                         <Grid >
                             <CustomButton children='Bulk upload' onClick={handleOpenUploadDialog} loading={false} bgColor='#EAB308' sx={{ width: { xs: '100%', md: '100%', sm: '100%' }, fontSize: { xs: '10px', md: '14px', sm: '14px' } }} />
                         </Grid>
@@ -334,16 +346,18 @@ function TrainingQuestion() {
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button
+                    {/* <Button
                         variant="contained"
                         sx={{ backgroundColor: 'orange', color: 'white' }}
                         onClick={handleUpload}
                     >
                         Upload
-                    </Button>
-                    <Button onClick={handleCloseUploadDialog} >
+                    </Button> */}
+                    <CustomButton children='Upload' onClick={handleUpload} loading={bulkLoad} bgColor='#EAB308' sx={{ width: { xs: '90%', md: '50%', sm: '60%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
+                    {/* <Button onClick={handleCloseUploadDialog} >
                         Cancel
-                    </Button>
+                    </Button> */}
+                    <CustomButton children='Cancel' onClick={handleCloseUploadDialog} loading={false} bgColor='#EAB308' sx={{ width: { xs: '90%', md: '50%', sm: '60%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
                 </DialogActions>
             </Dialog>
 
