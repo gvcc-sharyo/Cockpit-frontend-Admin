@@ -196,7 +196,7 @@ function Training({ syllabusName, bookName, chapterName, question, report = fals
     try {
       const response = await apiGet("/getSyllabus");
       if (response.data.status === 200) {
-        const titles = response.data.data.map((item) => item.title).filter(Boolean);
+       const titles = [...new Set(response.data.data.map(item => item.title).filter(Boolean))];
         setSyllabus(titles);
         // console.log("Response for Syllabus :", response.data);
       } 
@@ -384,6 +384,7 @@ function Training({ syllabusName, bookName, chapterName, question, report = fals
       </Grid>
       <Grid container spacing={2} sx={styles.questionAreaGrid}>
         <Grid size={{ xs: 12, md: 12 }}>
+          <CustomTypography text="Question" />
           <CustomTextArea value={formData.question} onChange={(e) => handleInputChange({ target: { name: "question", value: e.target.value } })} error={!!errors.question} helperText={errors.question} />
         </Grid>
       </Grid>

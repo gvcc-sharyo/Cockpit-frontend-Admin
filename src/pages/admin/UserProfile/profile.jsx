@@ -6,6 +6,7 @@ import Navbar from "../../../components/admin/Navbar";
 import CustomTextField from "../../../components/admin/CustomTextField";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import CustomButton from "../../../components/admin/CustomButton";
+
 const Profile = () => {
   const adminId = localStorage.getItem("adminId");
   const [email, setEmail] = useState("");
@@ -26,6 +27,7 @@ const Profile = () => {
   const [initialFormData, setInitialFormData] = useState(formData);
   const [profileImage, setProfileImage] = useState(null);
   const [errors, setErrors] = useState({});
+
   useEffect(() => {
     const getProfile = async () => {
       try {
@@ -55,6 +57,7 @@ const Profile = () => {
     };
     getProfile();
   }, [adminId]);
+
   const validate = () => {
     const errs = {};
     if (!formData.firstname.trim()) errs.firstname = "First name is required";
@@ -73,55 +76,57 @@ const Profile = () => {
     if (!formData.zipcode.trim()) errs.zipcode = "Zip code is required";
     return errs;
   };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const validationErrors = validate();
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+    snackbarEmitter("Please fill all required fields", "warning");
+    return;
+  }
+  setErrors({});
+  setLoading(true);
+  try {
+    let uploadedImageUrl = profileImage;
 
-
-  
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      snackbarEmitter("Please fill all required fields", "warning");
-      return;
+    if (profileImage instanceof File) {
+      const formDataImage = new FormData();
+      formDataImage.append("image", profileImage);
+      const { data } = await apiPost(`/admin/uploadAdminImage?adminId=${adminId}`, formDataImage);
+      uploadedImageUrl = data.data.profileimage;
     }
-    setErrors({});
-    setLoading(true);
-    try {
-      if (profileImage instanceof File) {
-        const formDataImage = new FormData();
-        formDataImage.append("image", profileImage);
-        const { data } = await apiPost(
-          `/admin/uploadAdminImage?adminId=${adminId}`,
-          formDataImage
-        );
-        setProfileImage(data.data.profileimage);
-      }
-      const payload = { adminId, ...formData, profileimage: profileImage };
-      const { data } = await apiPost("/admin/updateAdmin", payload);
+
+    const payload = { adminId, ...formData, profileimage: uploadedImageUrl };
+    const { data } = await apiPost("/admin/updateAdmin", payload);
+
+    if (data.status === 200) {
       setTimeout(() => {
-        snackbarEmitter(
-          data.message,
-          data.status === 200 ? "success" : "warning"
-        );
+        snackbarEmitter(data.message, "success");
         setLoading(false);
       }, 2000);
-    } catch (error) {
+    } else {
       setTimeout(() => {
-        snackbarEmitter("Unexpected Error", "error");
+        snackbarEmitter(data.message, "warning");
         setLoading(false);
       }, 2000);
     }
-  };
-  
+  } catch (error) {
+    setLoading(false);
+    snackbarEmitter("Unexpected Error", "error");
+  }
+};
+
+
   const handleChange = ({ target: { name, value } }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
   const handleImageChange = ({ target: { files } }) => {
     const file = files[0];
     if (file) setProfileImage(file);
   };
-  const handleCancel = () => setFormData(initialFormData);
 
+  const handleCancel = () => setFormData(initialFormData);
 
   const inputFields = [
     { name: "firstname", placeholder: "First Name", value: formData.firstname },
@@ -129,66 +134,89 @@ const Profile = () => {
     { name: "phone", placeholder: "Mobile Number", value: formData.phone },
     { name: "email", placeholder: "Email Address", value: email },
   ];
+
   const addressFields = [
-    {
-      name: "address",
-      placeholder: "Address",
-      value: formData.address,
-      size: { xs: 12 },
+  { name: "address", placeholder: "Address", value: formData.address, size: { xs: 12 } },
+  { name: "city", placeholder: "City", value: formData.city, size: { xs: 12, md: 4 } },
+  { name: "state", placeholder: "State", value: formData.state, size: { xs: 12, md: 4 } },
+  { name: "zipcode", placeholder: "ZipCode", value: formData.zipcode, size: { xs: 12, md: 4 } }
+];
+
+
+  const styles = {
+    card: {
+      borderRadius: 4,
+      p: { md: 6, xs: 1 },
+      backgroundColor: "#fff",
     },
-    {
-      name: "city",
-      placeholder: "City",
-      value: formData.city,
-      size: { xs: 12, md: 4 },
+    profileImageContainer: {
+      justifyContent: { xs: "center", md: "left" },
+      display: "flex",
     },
-    {
-      name: "state",
-      placeholder: "State",
-      value: formData.state,
-      size: { xs: 12, md: 4 },
+    profileImageBox: {
+      width: 100,
+      height: 100,
+      border: "1px solid #ccc",
+      borderRadius: 2,
+      backgroundColor: "#F5F5F5",
+      cursor: "pointer",
+      overflow: "hidden",
+      position: "relative",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
     },
-    {
-      name: "zipcode",
-      placeholder: "ZipCode",
-      value: formData.zipcode,
-      size: { xs: 12, md: 4 },
+    profileImageLabel: {
+      width: "100%",
+      height: "100%",
+      cursor: "pointer",
     },
-  ];
+    profileImage: {
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+      borderRadius: "8px",
+    },
+    dobTextField: {
+      "& .MuiOutlinedInput-root": {
+        height: "45px",
+        borderRadius: "10px",
+      },
+    },
+    buttonsContainer: {
+      display: "flex",
+      justifyContent: "flex-end",
+      gap: 2,
+    },
+    cancelButton: {
+      backgroundColor: "#fff",
+      borderRadius: "10px",
+      px: 4,
+      width: { xs: "auto", sm: "auto" },
+      color: "black",
+      fontFamily: "Jost",
+      fontWeight: 300,
+      fontSize: "16px",
+      textTransform: "none",
+      "&:hover": { backgroundColor: "#fff" },
+    },
+    saveButton: {
+      px: 4,
+      width: { xs: "auto", sm: "auto" },
+      fontFamily: "Jost",
+      fontWeight: 300,
+      fontSize: "16px",
+    },
+  };
+
   return (
     <Navbar title="Profile">
       <Box>
-        <Card
-          elevation={3}
-          sx={{ borderRadius: 4, p: { md: 6, xs: 1 }, backgroundColor: "#fff" }}
-        >
+        <Card elevation={3} sx={styles.card}>
           <Grid container spacing={2} component="form" onSubmit={handleSubmit}>
-            <Grid
-              size={{ xs: 12 }}
-              sx={{
-                justifyContent: { xs: "center", md: "left" },
-                display: "flex",
-              }}
-            >
-              <Box
-                sx={{
-                  width: 100,
-                  height: 100,
-                  border: "1px solid #ccc",
-                  borderRadius: 2,
-                  backgroundColor: "#F5F5F5",
-                  cursor: "pointer",
-                  overflow: "hidden",
-                  position: "relative",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <label
-                  htmlFor="profile-upload"
-                  style={{ width: "100%", height: "100%", cursor: "pointer" }}
-                >
+            <Grid size={{ xs: 12 }} sx={styles.profileImageContainer}>
+              <Box sx={styles.profileImageBox}>
+                <label htmlFor="profile-upload" style={styles.profileImageLabel}>
                   {profileImage ? (
                     <img
                       src={
@@ -197,73 +225,26 @@ const Profile = () => {
                           : profileImage
                       }
                       alt="Profile"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        borderRadius: "8px",
-                      }}
+                      style={styles.profileImage}
                     />
                   ) : (
                     <CameraAltIcon fontSize="large" />
                   )}
                 </label>
-                <input
-                  type="file"
-                  id="profile-upload"
-                  accept="image/*"
-                  style={{ display: "none" }}
-                  onChange={handleImageChange}
-                />
+                <input type="file" id="profile-upload" accept="image/*" style={{ display: "none" }} onChange={handleImageChange} />
+
               </Box>
             </Grid>
             {inputFields.map((field) => (
               <Grid key={field.name} size={{ xs: 12, md: 6 }}>
-                <CustomTextField
-                  name={field.name}
-                  placeholder={field.placeholder}
-                  value={field.value}
-                  onChange={handleChange}
-                  required
-                  error={!!errors[field.name]}
-                  helperText={errors[field.name]}
-                />
+               <CustomTextField name={field.name} placeholder={field.placeholder} value={field.value} onChange={handleChange} required error={!!errors[field.name]} helperText={errors[field.name]} />
               </Grid>
             ))}
             <Grid size={{ xs: 12, md: 6 }}>
-              <TextField
-                fullWidth
-                placeholder="Date of Birth"
-                type="date"
-                name="dob"
-                required
-                value={formData.dob}
-                onChange={handleChange}
-                InputLabelProps={{ shrink: true }}
-                variant="outlined"
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    height: "45px",
-                    borderRadius: "10px",
-                  },
-                }}
-                error={!!errors.dob}
-                helperText={errors.dob}
-              />
+             <TextField fullWidth placeholder="Date of Birth" type="date" name="dob" required value={formData.dob} onChange={handleChange} InputLabelProps={{ shrink: true }} variant="outlined" sx={styles.dobTextField} error={!!errors.dob} helperText={errors.dob} />
             </Grid>
-
             <Grid size={{ xs: 12, md: 6 }}>
-              <CustomTextField
-                select
-                required
-                placeholder="Gender"
-                name="gender"
-                value={formData.gender}
-                onChange={handleChange}
-                SelectProps={{ native: false }}
-                error={!!errors.gender}
-                helperText={errors.gender}
-              >
+              <CustomTextField select required placeholder="Gender" name="gender" value={formData.gender} onChange={handleChange} SelectProps={{ native: false }} error={!!errors.gender} helperText={errors.gender}>  
                 <MenuItem value="male">Male</MenuItem>
                 <MenuItem value="female">Female</MenuItem>
                 <MenuItem value="other">Other</MenuItem>
@@ -271,27 +252,12 @@ const Profile = () => {
             </Grid>
             {addressFields.map((field) => (
               <Grid key={field.name} size={field.size}>
-                <CustomTextField
-                  required
-                  name={field.name}
-                  placeholder={field.placeholder}
-                  value={field.value}
-                  onChange={handleChange}
-                  error={!!errors[field.name]}
-                  helperText={errors[field.name]}
-                />
+                <CustomTextField required name={field.name} placeholder={field.placeholder} value={field.value} onChange={handleChange} error={!!errors[field.name]} helperText={errors[field.name]} />
               </Grid>
             ))}
-            <Grid
-              size={{ xs: 12 }}
-              display="flex"
-              justifyContent="flex-end"
-              gap={2}
-            >
-              <Button variant="contained" onClick={handleCancel} sx={{ backgroundColor: "#fff", borderRadius: "10px", px: 4, width: { xs: "auto", sm: "auto" }, color: "black", fontFamily: "Jost", fontWeight: 300, fontSize: "16px", textTransform: "none", '&:hover': { backgroundColor: "#fff" } }}>Cancel</Button>
-
-
-              <CustomButton type="submit" loading={loading} bgColor="#EAB308" borderRadius="10px" sx={{ px: 4, width: { xs: "auto", sm: "auto" }, fontFamily: "Jost", fontWeight: 300, fontSize: "16px" }}>Save</CustomButton>
+            <Grid size={{ xs: 12 }} sx={styles.buttonsContainer}>
+              <Button variant="contained" onClick={handleCancel} sx={styles.cancelButton} >Cancel </Button>
+              <CustomButton type="submit" loading={loading} bgColor="#EAB308" borderRadius="10px" sx={styles.saveButton} >  Save </CustomButton>
             </Grid>
           </Grid>
         </Card>
@@ -299,4 +265,5 @@ const Profile = () => {
     </Navbar>
   );
 };
+
 export default Profile;
