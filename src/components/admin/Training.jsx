@@ -45,6 +45,7 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
     return Object.keys(newErrors).length === 0;
   };
 
+
   // =================== Input Handlers ===================
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -63,6 +64,7 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
     }
   };
 
+  
   const handleExplanationChange = (value) => {
     setFormData((prev) => ({ ...prev, explanation: value, }));
     setErrors((prev) => ({ ...prev,explanation: undefined,}));
@@ -194,13 +196,14 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
 
   const [book, setBook] = useState([]);
   const getBooks = async (syllabus = "") => {
+    const isUpdate = !!question?._id;
   try {
     const response = await apiGet("/getBooks");
 
     if (response.data.status === 200) {
-      const booksList = response.data.books.filter(book => book.syllabusId?.title === syllabus).map(book => book.bookTitle).filter(Boolean);
+      const booksList = (isUpdate ? response.data.books : response.data.books.filter(book => book.syllabusId?.title === syllabus)).map(book => book.bookTitle).filter(Boolean);
       setBook(booksList);
-       console.log(response.data);
+      console.log(response.data);
       // console.log("Filtered Books:", booksList);
     } else {
       snackbarEmitter(response.data.message, "error");
@@ -217,13 +220,12 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
 
 
   const getChapters = async (syllabus = "", book = "") => {
-  try {
-    const response = await apiGet(syllabus && book  ? `/getChapters?syllabus=${encodeURIComponent(syllabus)}&book=${encodeURIComponent(book)}`: "/getChapters");
-
+     const isUpdate = !!question?._id;
+     try {
+      const response = await apiGet(syllabus && book  ? `/getChapters?syllabus=${encodeURIComponent(syllabus)}&book=${encodeURIComponent(book)}`: "/getChapters");
     if (response.data.status === 200) {
       console.log(response.data);
-      const chapterList = response.data.chapters.filter(item =>item.book === book && item.chaptername).map(item => item.chaptername);
-
+      const chapterList = (isUpdate ? response.data.chapters.map(item => item.chaptername).filter(Boolean) : response.data.chapters.filter(item => item.book === book && item.chaptername).map(item => item.chaptername));
       // console.log("Filtered Chapters:", chapterList);
       setChapters(chapterList);
     } else {
