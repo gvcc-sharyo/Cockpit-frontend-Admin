@@ -430,5 +430,3 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
 }
 
 export default Training;
-
-

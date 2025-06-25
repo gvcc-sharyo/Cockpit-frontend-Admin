@@ -28,12 +28,14 @@ import { snackbarEmitter } from '../../../components/admin/CustomSnackbar';
 import CustomButton from '../../../components/admin/CustomButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { color } from 'chart.js/helpers';
+import './adminLogin.css';
 
 const styles = {
   containerBox: {
     minHeight: '100vh',
     backgroundImage: 'url(/public/images/signin.svg)',
     backgroundSize: 'cover',
+    // objectFit: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     display: 'flex',
@@ -276,9 +278,6 @@ function AdminLogin() {
       }, 1500);
     }
   };
-
-
-
 
   return (
     <Box sx={styles.containerBox}>
