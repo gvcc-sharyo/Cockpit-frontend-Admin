@@ -387,7 +387,7 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
       <Divider sx={styles.divider} />
 
       <Box sx={styles.optionsHeaderBox}>
-        <CustomTypography text="Selected Correct Options" />
+        <CustomTypography text="Select Correct Option" />
         <CustomTypography text="Choices" />
         <Box sx={styles.addOptionBox}>
           <Button onClick={handleAddOption} variant="contained" fullWidth sx={styles.addOptionButton}>+Add Option</Button>
