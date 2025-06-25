@@ -384,6 +384,7 @@ function Training({ syllabusName, bookName, chapterName, question, report = fals
       </Grid>
       <Grid container spacing={2} sx={styles.questionAreaGrid}>
         <Grid size={{ xs: 12, md: 12 }}>
+          <CustomTypography text="Question" />
           <CustomTextArea value={formData.question} onChange={(e) => handleInputChange({ target: { name: "question", value: e.target.value } })} error={!!errors.question} helperText={errors.question} />
         </Grid>
       </Grid>
