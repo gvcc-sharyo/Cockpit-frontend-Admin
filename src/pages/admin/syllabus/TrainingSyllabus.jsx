@@ -159,7 +159,7 @@ function TrainingSyllabus() {
 
       <Box sx={{ maxHeight: '100vh', overflowY: 'scroll' }}>
         <Box sx={{ display: 'flex', mb: 1, alignItems: 'center', justifyContent: 'space-between' }}>
-          <CustomTypography text='List of syllabus' fontWeight='800' fontSize={{ xs: '14px', sm: '18px', md: '18px' }} />
+          <CustomTypography text='List of syllabus' fontWeight='600' fontSize={{ xs: '14px', sm: '18px', md: '18px' }} />
           <CustomButton children=' + Add syllabus' onClick={handleModalOpen} loading={false} bgColor='#EAB308' sx={{ width: { xs: '50%', md: '20%', sm: '30%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
         </Box>
 

@@ -20,7 +20,7 @@ import {
   Dialog,
   DialogContent
 } from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { Opacity, Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { apiPost } from '../../../api/axios';
 import CustomTextField from '../../../components/admin/CustomTextField';
@@ -29,6 +29,7 @@ import CustomButton from '../../../components/admin/CustomButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { color } from 'chart.js/helpers';
 import './adminLogin.css';
+import CustomTypography from '../../../components/admin/CustomTypography';
 
 const styles = {
   containerBox: {
@@ -66,6 +67,7 @@ const styles = {
     cursor: 'pointer',
     backgroundColor: activeForm ? '#EAB308' : 'none',
     borderRadius: '50px',
+    textTransform: 'none'
   }),
   centeredBox: {
     display: 'flex',
@@ -241,8 +243,11 @@ function AdminLogin() {
   const [forgotDialogOpen, setForgotDialogOpen] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
   const [forgotError, setForgotError] = useState('');
-  const[forgotLoading, setForgotLoading] = useState(false);
+  const [forgotLoading, setForgotLoading] = useState(false);
 
+  const handleForgotClick = () => {
+    setForgotDialogOpen(true);
+  }
   const handleForgotPassword = async () => {
     if (!forgotEmail) {
       setForgotError('Email is required');
@@ -259,17 +264,17 @@ function AdminLogin() {
       const response = await apiPost('/admin/forgot-password', { email: forgotEmail });
 
       setTimeout(() => {
-        setForgotLoading(false);    
-         if (response.data.status === 200) {
+        setForgotLoading(false);
+        if (response.data.status === 200) {
           setForgotDialogOpen(false);
           snackbarEmitter(response.data.message, 'success');
           setForgotEmail('');
-   
-      } else {
-        snackbarEmitter(response.data.message, 'error');
-      }    
-      },1500)
-     
+
+        } else {
+          snackbarEmitter(response.data.message, 'error');
+        }
+      }, 1500)
+
 
     } catch (err) {
       setTimeout(() => {
@@ -297,9 +302,8 @@ function AdminLogin() {
               </Button>
             </Box>
 
-            <Typography variant="body2" align="center" sx={styles.secondaryText}>
-              Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-            </Typography>
+
+            <CustomTypography text="Your gateway to the skies - manage your pilot profile & access training resources and management." sx={{ mt: 4, mb: 2 }} />
 
             {activeForm === 'login' && (
               <>
@@ -343,7 +347,8 @@ function AdminLogin() {
 
                 <Grid container alignItems="center" gap={1} sx={styles.formGrid} mt={2} >
 
-                  <Typography onClick={() => setForgotDialogOpen(true)} variant="body2" sx={{ ...styles.secondaryText, cursor: 'pointer' }} gutterBottom>Forgot Password?</Typography>
+                  {/* <Typography onClick={() => setForgotDialogOpen(true)} variant="body2" sx={{ ...styles.secondaryText, cursor: 'pointer' }} gutterBottom>Forgot Password?</Typography> */}
+                  <CustomTypography text='Forgot Password?' onClick={handleForgotClick} sx={{ cursor: 'pointer' }} />
 
                   <CustomButton children='Board me' onClick={handleLogin} loading={loading} bgColor='#EAB308' borderRadius='50px' />
 
@@ -428,16 +433,10 @@ function AdminLogin() {
             <CloseIcon />
           </IconButton>
 
-          <Typography variant="h6" fontWeight="bold" color="white" mb={4} fontSize={{ xs: '18px', sm: '20px', md: '22px' }}>
-            Forgot password?
-          </Typography>
-          <Typography fontWeight="bold" color="white" mb={1} fontSize={{ xs: '14px', sm: '16px', md: '18px' }}>
-            Verify your email address
-          </Typography>
-          <Typography color="white" mb={3} fontSize={{ xs: '12px', sm: '13px' }}>
-            We will send you reset password link on this email
-          </Typography>
+          <CustomTypography text="Forgot password?" fontSize={{ xs: '20px', sm: '22px', md: '22px' }} sx={{ mb: 4 }} fontWeight={600} />
+          <CustomTypography text="Verify your email address" fontSize={{ xs: '16px', sm: '18px', md: '18px' }} sx={{ mb: 2 }} fontWeight={600} />
 
+          <CustomTypography text="We will send you reset password link on this email"  fontSize={{ xs: '12px', sm: '14px', md: '14px' }} sx={{ mb: 4 ,}}  />
           <Grid  >
             <CustomTextField
               label="Enter your email"

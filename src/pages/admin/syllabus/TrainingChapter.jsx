@@ -30,6 +30,7 @@ import EditSquareIcon from '@mui/icons-material/EditSquare';
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import CustomTextField from "../../../components/admin/CustomTextField";
 import CustomButton from "../../../components/admin/CustomButton";
+import CustomTypography from "../../../components/admin/CustomTypography";
 
 function TrainingChapter() {
     const [books, setBooks] = useState([]);
@@ -305,39 +306,28 @@ function TrainingChapter() {
 
             <Grid container sx={{ flexDirection: 'column', position: "relative", backgroundColor: '#f8f9fa', padding: '10px' }} >
 
-                <Grid size={{ xs: 12, md: 12, sm: 12 }} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', }} >
-                    <Grid size={{ xs: 6, md: 12, sm: 10 }}>
-                        <Typography sx={{ fontSize: { xs: '16px', md: '22px', sm: '20px' } }} gutterBottom >Books for {syllabusTitle}</Typography>
+                <Grid container sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', }} >
+                    <Grid size={{ xs: 6, md: 8, sm: 6 }}>
+                        <CustomTypography text={`Books for ${syllabusTitle}`} fontSize={{ xs: '16px', sm: '18px', md: '18px' }} sx={{ mb: 2 }} fontWeight={600} />
                     </Grid>
 
-                    <Grid size={{ xs: 6, md: 6, sm: 6 }}>
-                        <CustomButton children=' + Add books' onClick={handleModalOpen} loading={false} bgColor='#EAB308' sx={{ width: { xs: '90%', md: '50%', sm: '60%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
-                    </Grid>
+                    {/* <Grid size={{ xs: 6, md: 4, sm: 4 }}> */}
+                        <CustomButton children=' + Add books' onClick={handleModalOpen} loading={false} bgColor='#EAB308' sx={{ width: { xs: '45%', md: '15%', sm: '20%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
+                    {/* </Grid> */}
                 </Grid>
 
                 <Box sx={{ maxWidth: '100%', overflowX: 'auto' }} mt={2}>
                     <Box sx={{ display: 'flex', gap: '15px', padding: '10px', width: 'max-content' }}>
                         {
                             filteredBooks.map((book) => (
-                                <Box
-                                    key={book.bookTitle}
-                                    onClick={() => setSelectedBook(book.bookTitle)}
-                                    sx={{
-                                        minWidth: { xs: '100px', md: '150px', sm: '120px' },
-                                        padding: '7px',
-                                        textAlign: 'center',
-                                        cursor: 'pointer',
-                                        backgroundColor: selectedBook === book.bookTitle ? '#FFEBAB' : '#fff',
-                                        border: '1px solid #ccc',
-                                        boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.1)',
-                                        borderRadius: '10px',
-                                        fontWeight: 'bold',
-                                        flexShrink: 0,
-                                        fontSize: { xs: '12px', md: '14px', sm: '14px' }
-                                    }}
-                                >
-                                    {book.bookTitle}
-                                </Box>
+                                <>
+                                <CustomButton children={book.bookTitle} onClick={() => setSelectedBook(book.bookTitle)} loading={false} bgColor={selectedBook === book.bookTitle ? '#FFEBAB' : '#fff'} 
+                                sx={{color:'black', px:3, py:1, width: { xs: '45%', md: '45%', sm: '25%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} 
+                                 />
+                                 
+                                </>
+                             
+                              
                             ))
                         }
                     </Box>
@@ -364,12 +354,13 @@ function TrainingChapter() {
                         size={{ xs: 12, md: 12, sm: 12 }}
 
                     >
-                        <Typography
+                        {/* <Typography
                             sx={{ fontSize: { xs: '16px', sm: '20px', md: '22px' } }}
                             gutterBottom
                         >
                             Chapters of {selectedBook}
-                        </Typography>
+                        </Typography> */}
+                        <CustomTypography text={`Books for ${selectedBook}`} fontSize={{ xs: '16px', sm: '18px', md: '18px' }} sx={{ mb: 2 }} fontWeight={600} />
 
                         <CustomButton children=' + Add chapters' onClick={handleChapterModalOpen} loading={false} bgColor='#EAB308' sx={{ width: { xs: '70%', md: '20%', sm: '30%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
 
@@ -390,24 +381,16 @@ function TrainingChapter() {
                                 <TableHead>
                                     <TableRow>
                                         <TableCell>
-                                            <Typography fontWeight="bold" sx={{ fontSize: { xs: '12px', md: '14px' } }}>
-                                                Chapter No
-                                            </Typography>
+                                             <CustomTypography text="Chapter No" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
                                         </TableCell>
                                         <TableCell>
-                                            <Typography fontWeight="bold" sx={{ fontSize: { xs: '12px', md: '14px' } }}>
-                                                Chapter Name
-                                            </Typography>
+                                               <CustomTypography text="Chapter Name" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
                                         </TableCell>
                                         <TableCell>
-                                            <Typography fontWeight="bold" sx={{ fontSize: { xs: '12px', md: '14px' } }}>
-                                                Status
-                                            </Typography>
+                                             <CustomTypography text="Status" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
                                         </TableCell>
                                         <TableCell>
-                                            <Typography fontWeight="bold" sx={{ fontSize: { xs: '12px', md: '14px' } }}>
-                                                Action
-                                            </Typography>
+                                           <CustomTypography text="Action" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
                                         </TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -419,7 +402,8 @@ function TrainingChapter() {
                                         >
                                             <TableCell>{index + 1}</TableCell>
                                             <TableCell onClick={() => handleChapterClick(chapter)}>
-                                                {chapter.chaptername}
+                                                {/* {chapter.chaptername} */}
+                                                  <CustomTypography text={chapter.chaptername} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={400} />
                                             </TableCell>
                                             <TableCell>
                                                 {/* <Button
@@ -459,7 +443,7 @@ function TrainingChapter() {
 
             <Dialog open={openModal} onClose={handleModalClose} maxWidth="sm">
                 <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Add Book</Typography>
+                       <CustomTypography text="Add book" fontSize={{ xs: '16px', sm: '18px', md: '18px' }} mb={0} fontWeight={600} />
                     <IconButton onClick={handleModalClose}>
                         <CloseIcon />
                     </IconButton>
@@ -491,7 +475,7 @@ function TrainingChapter() {
 
             <Dialog open={openChapterModal} onClose={handleChapterModalClose} maxWidth="sm">
                 <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Add Chapters</Typography>
+                        <CustomTypography text="Add chapters" fontSize={{ xs: '16px', sm: '18px', md: '18px' }} mb={0} fontWeight={600} />
                     <IconButton onClick={handleChapterModalClose}>
                         <CloseIcon />
                     </IconButton>
@@ -556,7 +540,7 @@ function TrainingChapter() {
 
             <Dialog open={openStatusModal} onClose={handleStatusModalClose} maxWidth="md">
                 <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Status update</Typography>
+                        <CustomTypography text="Status update" fontSize={{ xs: '16px', sm: '18px', md: '18px' }} mb={0} fontWeight={600} />
                     <IconButton onClick={handleStatusModalClose}>
                         <CloseIcon />
                     </IconButton>
@@ -566,9 +550,7 @@ function TrainingChapter() {
 
                     <Grid container sx={{ display: 'flex', alignItems: 'center', gap: 3 }} >
                         <Grid item>
-                            <Typography sx={{ fontSize: '16px' }}>
-                                Do you want to change the status?
-                            </Typography>
+                               <CustomTypography text="Do you want to change the status" fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={400} />
                         </Grid>
                         <Grid item>
                             <Grid container spacing={2} justifyContent="center">
@@ -581,6 +563,7 @@ function TrainingChapter() {
                                         variant="outlined"
                                         color="secondary"
                                         onClick={handleStatusModalClose}
+                                        sx={{backgroundColor:'#BF0000', color:'white'}}
                                     >
                                         No
                                     </Button>
