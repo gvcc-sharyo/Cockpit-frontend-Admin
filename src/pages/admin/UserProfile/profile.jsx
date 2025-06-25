@@ -121,6 +121,8 @@ const Profile = () => {
     if (file) setProfileImage(file);
   };
   const handleCancel = () => setFormData(initialFormData);
+
+
   const inputFields = [
     { name: "firstname", placeholder: "First Name", value: formData.firstname },
     { name: "lastname", placeholder: "Last Name", value: formData.lastname },
@@ -286,7 +288,8 @@ const Profile = () => {
               justifyContent="flex-end"
               gap={2}
             >
-              <CustomButton bgColor="#fff" borderRadius="10px" sx={{ px: 4, width: { xs: "auto", sm: "auto" }, color: "black", fontFamily: "Jost", fontWeight: 300, fontSize: "16px" }}>Cancel</CustomButton>
+              <Button variant="contained" onClick={handleCancel} sx={{ backgroundColor: "#fff", borderRadius: "10px", px: 4, width: { xs: "auto", sm: "auto" }, color: "black", fontFamily: "Jost", fontWeight: 300, fontSize: "16px", textTransform: "none", '&:hover': { backgroundColor: "#fff" } }}>Cancel</Button>
+
 
               <CustomButton type="submit" loading={loading} bgColor="#EAB308" borderRadius="10px" sx={{ px: 4, width: { xs: "auto", sm: "auto" }, fontFamily: "Jost", fontWeight: 300, fontSize: "16px" }}>Save</CustomButton>
             </Grid>

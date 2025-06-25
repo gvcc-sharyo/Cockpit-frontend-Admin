@@ -105,7 +105,9 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
     });
   };
 
+
   // =================== Submit Handler ===================
+
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
@@ -150,6 +152,25 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
     }
   };
 
+  const handleCancel = () => {
+  setFormData({
+    syllabus: syllabusName || "",
+    book: bookName || "",
+    chapter: chapterName || "",
+    question: question?.question || "",
+    options: question?.options || [
+      { id: 1, text: "", isCorrect: false },
+      { id: 2, text: "", isCorrect: false },
+    ],
+    explanation: question?.explanation || "",
+  });
+  setErrors({});
+  setOptions(
+    question?.options?.length
+      ? question.options.map((_, index) => index + 1)
+      : [1, 2]
+  );
+};
 
 
   const [syllabus, setSyllabus] = useState([]);
@@ -179,6 +200,7 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
     if (response.data.status === 200) {
       const booksList = response.data.books.filter(book => book.syllabusId?.title === syllabus).map(book => book.bookTitle).filter(Boolean);
       setBook(booksList);
+       console.log(response.data);
       // console.log("Filtered Books:", booksList);
     } else {
       snackbarEmitter(response.data.message, "error");
@@ -199,6 +221,7 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
     const response = await apiGet(syllabus && book  ? `/getChapters?syllabus=${encodeURIComponent(syllabus)}&book=${encodeURIComponent(book)}`: "/getChapters");
 
     if (response.data.status === 200) {
+      console.log(response.data);
       const chapterList = response.data.chapters.filter(item =>item.book === book && item.chaptername).map(item => item.chaptername);
 
       // console.log("Filtered Chapters:", chapterList);
@@ -312,23 +335,17 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
       color: "white",
       borderRadius: "10px",
       whiteSpace: "nowrap",
-      textTransform:"none",
       fontFamily: "Lexend",
       fontWeight: 300,
       fontSize: "16px",
     },
     cancelButton: {
-      color: "#fff",
-    
+      color: "#fff",    
       backgroundColor: "#BF0000",
       borderRadius: "10px",
       px: { xs: 2, sm: 4 },
-      textTransform:"none",
-    
-      color: "white",
-      borderRadius: "10px",
-      whiteSpace: "nowrap",
-     
+      textTransform:"none",      
+      whiteSpace: "nowrap",     
       fontFamily: "Lexend",
       fontWeight: 300,
       fontSize: "16px",
@@ -354,7 +371,7 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
 
         <Grid size={{ xs: 12 }}>
           <Box sx={styles.addImageBox}>
-            <Button variant="contained" sx={styles.addImageButton}>+Add Image</Button>
+            {/* <Button variant="contained" sx={styles.addImageButton}>+Add Image</Button> */}
           </Box>
         </Grid>
       </Grid>
@@ -406,7 +423,7 @@ function Training({syllabusName,bookName,chapterName, question, report = false, 
 
       <Box sx={styles.buttonGroup}>
         <CustomButton onClick={handleSubmit} loading={loading} bgColor="#EAB308" borderRadius="10px" sx={styles.submitButton}>{question?._id ? "Update Question" : "Add Question"}</CustomButton>
-        <Button variant="outlined" sx={styles.cancelButton}> Cancel</Button>
+        <Button variant="outlined" onClick={handleCancel} sx={styles.cancelButton}> Cancel</Button>
       </Box>
     </>
   );
