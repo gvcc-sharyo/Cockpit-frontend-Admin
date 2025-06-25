@@ -31,6 +31,8 @@ function Dashboard() {
     }
   };
 
+   const filteredReports = reports.filter((report) => report.status === 'pending');
+
 
 
 
@@ -73,8 +75,8 @@ function Dashboard() {
 
   const navigate = useNavigate();
 
-  const handleNavigate = (route) => {
-    navigate(route);
+  const handleNavigate = (route, reportID) => {
+    navigate(route, { state: {reportID} });
   };
 
   const classes = {
@@ -177,7 +179,7 @@ function Dashboard() {
             <Grid size={{ xs: 10, md: 12,lg:5 }}>
               <Box sx={classes.reportBox}>
                 <Typography sx={classes.reportTitle}>Report</Typography>
-                {reports.map((report, index) => (
+                {filteredReports.map((report, index) => (
                   <Box mt={2}>
                     <Typography sx={classes.reportName}>
                       {report.userId.username}
@@ -188,7 +190,7 @@ function Dashboard() {
                       </Typography>
                       <Typography
                         sx={classes.replyText}
-                        onClick={() => handleNavigate(`/admin/feedback`)}
+                        onClick={() => handleNavigate(`/admin/feedback`, report._id)}
                       >
                         Reply
                       </Typography>
