@@ -272,7 +272,7 @@ function TrainingQuestion() {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    {['Ques. No', 'Questions', 'Category Name', 'Active', 'Action'].map((label) => (
+                                    {['Ques. No', 'Questions', 'Category Name', 'Status', 'Action'].map((label) => (
                                         <TableCell key={label}>
                                             <Typography fontWeight="bold" sx={{ fontSize: { xs: '12px', md: '14px' } }}>
                                                 {label}
@@ -288,7 +288,7 @@ function TrainingQuestion() {
                                         <TableCell>{question.question}</TableCell>
                                         <TableCell>General</TableCell>
                                         <TableCell>
-                                            <Button
+                                            {/* <Button
                                                 variant="contained"
                                                 sx={{
                                                     backgroundColor: question.isactive === true ? '#109CF1' : 'red',
@@ -301,7 +301,8 @@ function TrainingQuestion() {
                                                 onClick={() => handleStatusClick(question)}
                                             >
                                                 {question.isactive === true ? 'Active' : 'Inactive'}
-                                            </Button>
+                                            </Button> */}
+                                              <CustomButton children= {question.isactive === true ? 'Active' : 'Inactive'} onClick={()=> handleStatusClick(question)} loading={false} bgColor={question.isactive === true ? '#109CF1' : '#D61508'} sx={{ width: { xs: '20%', sm: '20%', md: '20%' }, fontSize: { xs: '10px', sm: '11px', md: '12px' }, }} />
                                         </TableCell>
                                         <TableCell>
                                             <IconButton size="small" onClick={() => handleEditClick(question)}>

@@ -102,6 +102,10 @@ function Feedback() {
 
   const filteredReports = reports.filter((report) => report.status === 'pending');
 
+  if(filteredReports.length === 0) {
+    snackbarEmitter('No pending reports found', 'info');
+  }
+    
   const [open, setOpen] = useState(null);
 
   useEffect(() => {

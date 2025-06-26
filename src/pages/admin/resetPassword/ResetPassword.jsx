@@ -69,11 +69,8 @@ function ResetPassword() {
 
     const navigate = useNavigate();
 
-    // const queryParams = new URLSearchParams(location.search);
-    // const token = queryParams.get('token') || 'token123';
-
-    const params = useParams();
-    const token = params.token;
+     const { token } = useParams();
+    const cleanedToken = token.startsWith(':') ? token.substring(1) : token;
 
     const validate = () => {
         const errs = {};
@@ -101,7 +98,7 @@ function ResetPassword() {
 
         try {
             const response = await apiPost('admin/reset-password', {
-                token,
+                token: cleanedToken,
                 newPassword: form.password,
             });
 
@@ -138,7 +135,7 @@ function ResetPassword() {
                         </Typography>
 
                         <CustomTextField
-                            label="Password"
+                            label="New Password"
                             type={showPassword ? 'text' : 'password'}
                             value={form.password}
                             error={!!errors.password}
