@@ -148,6 +148,7 @@ function AdminLogin() {
   const [registerErrors, setRegisterErrors] = useState({});
 
   const [showPassword, setShowPassword] = useState(false);
+  const [showRegPassword, setShowRegPassword] = useState(false);
 
   const navigate = useNavigate();
 
@@ -174,6 +175,7 @@ function AdminLogin() {
   };
 
   const [loading, setLoading] = useState(false);
+
   const handleLogin = async () => {
     // e.preventDefault();
     if (!validateLoginForm()) return;
@@ -193,7 +195,7 @@ function AdminLogin() {
           localStorage.setItem('adminToken', response.data.token);
           localStorage.setItem('adminId', response.data.data._id);
           setLoginForm({ email: '', password: '' });
-          navigate('/admin/dashboard');
+          navigate('/');
         } else {
           snackbarEmitter(response.data.message, 'error');
         }
@@ -337,7 +339,7 @@ function AdminLogin() {
                       endAdornment: (
                         <InputAdornment position="end">
                           <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                            {showPassword ? <Visibility /> : <VisibilityOff /> }
                           </IconButton>
                         </InputAdornment>
                       ),
@@ -391,12 +393,22 @@ function AdminLogin() {
                   <CustomTextField
                     label='Password'
                     name="password"
+                    type={showRegPassword ? 'text' : 'password'}
                     value={registerForm.password}
                     onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
                     placeholder="Access Key"
                     error={!!registerErrors.password}
                     helperText={registerErrors.password}
                     borderRadius='50px'
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton onClick={() => setShowRegPassword(!showRegPassword)} edge="end">
+                            {showRegPassword ? <Visibility /> : <VisibilityOff /> }
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
                   />
 
                 </Grid>
