@@ -70,7 +70,8 @@ function TrainingSyllabus() {
     navigate('/admin/trainingChapter',{
       state: {
         syllabusTitle: item.title,
-        syllabusId: item._id
+        syllabusId: item._id,
+        category: item.category
       }
     });
   };
@@ -257,6 +258,7 @@ function TrainingSyllabus() {
                 select
               >
                 <MenuItem value="General">General</MenuItem>
+                <MenuItem value="Instrument">Instrument</MenuItem>
                 <MenuItem value="Radio">Radio</MenuItem>
               </CustomTextField>
             </Grid>

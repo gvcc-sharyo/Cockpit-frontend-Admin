@@ -36,7 +36,7 @@ function TrainingChapter() {
     const [books, setBooks] = useState([]);
     const [chapters, setChapters] = useState([]);
     const location = useLocation();
-    const {syllabusTitle, syllabusId} = location.state;
+    const {syllabusTitle, syllabusId, category} = location.state;
 
 
     const [filteredBooks, setFilteredBooks] = useState([]);
@@ -259,6 +259,7 @@ function TrainingChapter() {
     const handleChapterClick = (chapter) => {
         navigate('/admin/trainingQuestion', {
             state: {
+                category: category,
                 syllabusName: chapter.syllabus,
                 bookName: chapter.book,
                 chapterName: chapter.chaptername,
@@ -360,7 +361,7 @@ function TrainingChapter() {
                         >
                             Chapters of {selectedBook}
                         </Typography> */}
-                        <CustomTypography text={`Books for ${selectedBook}`} fontSize={{ xs: '16px', sm: '18px', md: '18px' }} sx={{ mb: 2 }} fontWeight={600} />
+                        <CustomTypography text={`Chapters for ${selectedBook}`} fontSize={{ xs: '16px', sm: '18px', md: '18px' }} sx={{ mb: 2 }} fontWeight={600} />
 
                         <CustomButton children=' + Add chapters' onClick={handleChapterModalOpen} loading={false} bgColor='#EAB308' sx={{ width: { xs: '70%', md: '20%', sm: '30%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
 

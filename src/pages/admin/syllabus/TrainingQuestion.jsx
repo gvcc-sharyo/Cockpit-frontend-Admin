@@ -27,13 +27,14 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import CustomButton from "../../../components/admin/CustomButton";
 import CloseIcon from '@mui/icons-material/Close';
+import CustomTypography from "../../../components/admin/CustomTypography";
 
 function TrainingQuestion() {
 
     const [questions, setQuestions] = useState([]);
 
     const location = useLocation();
-    const { syllabusName, bookName, chapterName } = location.state || {};
+    const { category, syllabusName, bookName, chapterName } = location.state || {};
 
     const fetchQuestions = async () => {
         try {
@@ -224,6 +225,14 @@ function TrainingQuestion() {
                     padding: '10px',
                 }}
             >
+
+                <Grid sx={{ display: 'flex', alignItems: 'center' , gap: '10px'}} mb={2}>
+                    <CustomTypography text={syllabusName}  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }}} />
+                    <CustomTypography text='>' sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }}} />
+                    <CustomTypography  text={bookName}  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }}} />
+                    <CustomTypography  text='>'  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }}} />
+                    <CustomTypography text={chapterName} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }}} />
+                </Grid>
                 {/* Header Buttons */}
                 <Grid
                     container
@@ -235,6 +244,7 @@ function TrainingQuestion() {
                         mb: 2,
                     }}
                 >
+
                     <Typography
                         sx={{
                             fontSize: { xs: '16px', sm: '20px', md: '22px' },
@@ -246,6 +256,7 @@ function TrainingQuestion() {
                     </Typography>
 
                     <Grid size={{ xs: 7, md: 4, sm: 5 }} sx={{ display: 'flex', gap: 2 }}>
+
                         <Grid >
                             <CustomButton children='Bulk upload' onClick={handleOpenUploadDialog} loading={false} bgColor='#EAB308' sx={{ width: { xs: '100%', md: '100%', sm: '100%' }, fontSize: { xs: '10px', md: '14px', sm: '14px' } }} />
                         </Grid>
@@ -286,7 +297,7 @@ function TrainingQuestion() {
                                     <TableRow key={index} sx={{ borderBottom: '1px solid #e0e0e0' }}>
                                         <TableCell>{index + 1}</TableCell>
                                         <TableCell>{question.question}</TableCell>
-                                        <TableCell>General</TableCell>
+                                        <TableCell>{category}</TableCell>
                                         <TableCell>
                                             {/* <Button
                                                 variant="contained"
@@ -302,7 +313,7 @@ function TrainingQuestion() {
                                             >
                                                 {question.isactive === true ? 'Active' : 'Inactive'}
                                             </Button> */}
-                                              <CustomButton children= {question.isactive === true ? 'Active' : 'Inactive'} onClick={()=> handleStatusClick(question)} loading={false} bgColor={question.isactive === true ? '#109CF1' : '#D61508'} sx={{ width: { xs: '20%', sm: '20%', md: '20%' }, fontSize: { xs: '10px', sm: '11px', md: '12px' }, }} />
+                                            <CustomButton children={question.isactive === true ? 'Active' : 'Inactive'} onClick={() => handleStatusClick(question)} loading={false} bgColor={question.isactive === true ? '#109CF1' : '#D61508'} sx={{ width: { xs: '20%', sm: '20%', md: '20%' }, fontSize: { xs: '10px', sm: '11px', md: '12px' }, }} />
                                         </TableCell>
                                         <TableCell>
                                             <IconButton size="small" onClick={() => handleEditClick(question)}>
@@ -358,7 +369,7 @@ function TrainingQuestion() {
                     {/* <Button onClick={handleCloseUploadDialog} >
                         Cancel
                     </Button> */}
-                    <CustomButton children='Cancel' onClick={handleCloseUploadDialog} loading={false} bgColor='#EAB308' sx={{ width: { xs: '90%', md: '50%', sm: '60%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
+                    <CustomButton children='Cancel' onClick={handleCloseUploadDialog} loading={false} bgColor='#CB1D02' sx={{ width: { xs: '90%', md: '50%', sm: '60%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
                 </DialogActions>
             </Dialog>
 
