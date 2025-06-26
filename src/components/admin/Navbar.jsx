@@ -235,7 +235,7 @@ const Navbar = ({ title, children }) => {
                 <ListItemIcon sx={{ minWidth: 40, mr: 1 }}> {/* Increase space here */}
                   <img src="/images/database.svg" alt="Database" />
                 </ListItemIcon>
-                <CustomTypography text='Dashboard' color= {'#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
+                <CustomTypography text='Database' color= {'#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
                 {openDatabase ? <ExpandLess sx={{ color:'#8F95B2'}} /> : <ExpandMore sx={{ color:'#8F95B2'}} />}
               </ListItem>
 
