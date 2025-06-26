@@ -171,7 +171,7 @@ const Navbar = ({ title, children }) => {
           {/* Logo */}
           <Box sx={{ textAlign: 'center', mb: 3, cursor: 'pointer'}} onClick={() => handleNavigate('/admin/dashboard')}>
             <img
-              src="/images/logo.png"
+              src="/images/full logo.svg"
               alt="Logo"
               style={{ width: '100px', height: 'auto', marginBottom: '10px' }}
             />
@@ -388,7 +388,7 @@ const Navbar = ({ title, children }) => {
             {/* Logo center */}
             <Box sx={{ flexGrow: 1, textAlign: 'center' }}>
               <img
-                src="/images/logo.png"
+                src="/images/full logo.svg"
                 alt="Logo"
                 style={{ width: '80px', height: 'auto' }}
               />

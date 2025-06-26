@@ -24,7 +24,7 @@ const AdminRoute = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<AdminLogin />} />
-        <Route path="/admin/resetpassword/:token" element={<ResetPassword />} />
+        <Route path="/resetpassword/:token" element={<ResetPassword />} />
         
         <Route element={<AuthRoute />}>
         <Route path="/admin/dashboard" element={<Dashboard />} />
