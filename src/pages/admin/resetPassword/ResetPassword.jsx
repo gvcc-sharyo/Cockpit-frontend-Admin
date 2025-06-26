@@ -70,7 +70,11 @@ function ResetPassword() {
     const navigate = useNavigate();
 
      const { token } = useParams();
+     console.log('reset token', token);
+     
     const cleanedToken = token.startsWith(':') ? token.substring(1) : token;
+
+    console.log('cleaned token', cleanedToken);
 
     const validate = () => {
         const errs = {};
@@ -101,13 +105,13 @@ function ResetPassword() {
                 token: cleanedToken,
                 newPassword: form.password,
             });
-
+            
             setTimeout(() => {
                 setLoading(false);
 
                 if (response.data.status === 200) {
                     snackbarEmitter(response.data.message, 'success');
-                    navigate('/'); // Redirect after success
+                    navigate('/adminlogin'); // Redirect after success
                 } else {
                     snackbarEmitter(response.data.message, 'error');
                 }
