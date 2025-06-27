@@ -13,6 +13,7 @@ import { apiPost } from '../../../api/axios';
 import CustomTextField from '../../../components/admin/CustomTextField';
 import CustomButton from '../../../components/admin/CustomButton';
 import { snackbarEmitter } from '../../../components/admin/CustomSnackbar';
+import CustomTypography from '../../../components/admin/CustomTypography';
 
 const styles = {
     containerBox: {
@@ -64,7 +65,8 @@ const styles = {
 function ResetPassword() {
     const [form, setForm] = useState({ password: '', confirmPassword: '' });
     const [errors, setErrors] = useState({});
-    const [showPassword, setShowPassword] = useState(false);
+    const [showPassword1, setShowPassword1] = useState(false);
+    const [showPassword2, setShowPassword2] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
@@ -75,6 +77,7 @@ function ResetPassword() {
     const cleanedToken = token.startsWith(':') ? token.substring(1) : token;
 
     console.log('cleaned token', cleanedToken);
+    console.log('cleaned token type', typeof cleanedToken);
 
     const validate = () => {
         const errs = {};
@@ -91,6 +94,7 @@ function ResetPassword() {
     };
 
     const handleUpdatePassword = async () => {
+
         if (!validate()) return;
 
         if (!token) {
@@ -101,7 +105,7 @@ function ResetPassword() {
         setLoading(true);
 
         try {
-            const response = await apiPost('admin/reset-password', {
+            const response = await apiPost('/admin/reset-password', {
                 token: cleanedToken,
                 newPassword: form.password,
             });
@@ -131,16 +135,14 @@ function ResetPassword() {
             <Grid container>
                 <Grid item size={{ xs: 12, sm: 10, md: 10 }} sx={styles.gridBox}>
                     <Paper elevation={10} sx={styles.cardPaper}>
-                        <Typography sx={styles.heading}>Reset password</Typography>
+                        {/* <Typography sx={styles.heading}>Reset Password</Typography> */}
+                         <CustomTypography text="Reset Password" fontSize={{ xs: '20px', sm: '22px', md: '22px' }} sx={{ mb: 2, textAlign: 'center' }} fontWeight={600} />
 
-                        <Typography sx={styles.secondaryText}>
-                            Create a new password. Ensure it differs from
-                            previous ones for security
-                        </Typography>
+                         <CustomTypography text="Create a new password. Ensure it differs from previous ones for security" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} sx={{ mb: 2}} fontWeight={600} />
 
                         <CustomTextField
                             label="New Password"
-                            type={showPassword ? 'text' : 'password'}
+                            type={showPassword1 ? 'text' : 'password'}
                             value={form.password}
                             error={!!errors.password}
                             helperText={errors.password}
@@ -151,11 +153,11 @@ function ResetPassword() {
                                 endAdornment: (
                                     <InputAdornment position="end">
                                         <IconButton
-                                            onClick={() => setShowPassword(!showPassword)}
+                                            onClick={() => setShowPassword1(!showPassword1)}
                                             edge="end"
                                             sx={{ color: 'grey' }}
                                         >
-                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            {showPassword1 ? <Visibility /> :<VisibilityOff /> }
                                         </IconButton>
                                     </InputAdornment>
                                 ),
@@ -165,7 +167,7 @@ function ResetPassword() {
                         <Box mt={2}>
                             <CustomTextField
                                 label="Confirm Password"
-                                type={showPassword ? 'text' : 'password'}
+                                type={showPassword2 ? 'text' : 'password'}
                                 value={form.confirmPassword}
                                 error={!!errors.confirmPassword}
                                 helperText={errors.confirmPassword}
@@ -176,11 +178,11 @@ function ResetPassword() {
                                     endAdornment: (
                                         <InputAdornment position="end">
                                             <IconButton
-                                                onClick={() => setShowPassword(!showPassword)}
+                                                onClick={() => setShowPassword2(!showPassword2)}
                                                 edge="end"
                                                 sx={{ color: 'grey' }}
                                             >
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                {showPassword2 ? <Visibility /> : <VisibilityOff /> }
                                             </IconButton>
                                         </InputAdornment>
                                     ),

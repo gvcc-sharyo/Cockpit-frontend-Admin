@@ -1,4 +1,3 @@
-import React, { useRef } from "react";
 import Navbar from "../../../components/admin/Navbar";
 import { Box, Grid, Typography } from "@mui/material";
 import InstituteTable from "../../../components/admin/InstituteTable";
@@ -19,22 +18,19 @@ function Dashboard() {
     try {
       const response = await apiGet("/reports");
 
-      if (response.data.status === 200 && response.data.data.length === 0) {
-        snackbarEmitter("No reports found", "info");
-      } else if (response.data.status === 200) {
-        setReports(response.data.data);
-      } else {
+      if (response.data.status === 200 ) {
+        const filteredReports = response.data.data.filter((report) => report.status === 'pending');
+        console.log("filteredReports", filteredReports);
+        
+        setReports(filteredReports);
+      } 
+       else {
         snackbarEmitter(response.data.message, "error");
       }
     } catch (error) {
       snackbarEmitter("Something went wrong", "error");
     }
   };
-
-   const filteredReports = reports.filter((report) => report.status === 'pending');
-
-
-
 
   const [totals, setTotals] = useState([]);
 
@@ -179,13 +175,18 @@ function Dashboard() {
             <Grid size={{ xs: 10, md: 12,lg:5 }}>
               <Box sx={classes.reportBox}>
                 <CustomTypography text='Report' fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={600} />
-                {filteredReports.map((report, index) => (
+                { reports.length === 0 ?
+                 <CustomTypography text='No pending reports' fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} /> 
+
+                 :
+                
+                reports.map((report, index) => (
                   <Box mt={2}>
-                    <CustomTypography text={report.userId.username} fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
+                    <CustomTypography text={report?.userId?.username} fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
                     <Box sx={classes.reportLine}>
-                       <CustomTypography text={` Has reported a question on ${report.questionId.syllabus}`} color='#718096' fontSize={{ xs: '10px', sm: '12px', md: '12px' }} mb={0} fontWeight={400} />
+                       <CustomTypography text={` Has reported a question on ${report?.questionId?.syllabus}`} color='#718096' fontSize={{ xs: '10px', sm: '12px', md: '12px' }} mb={0} fontWeight={400} />
      
-                      <CustomTypography text='Reply' onClick={() => handleNavigate(`/admin/feedback`, report._id)} color='#EAB308' fontSize={{ xs: '10px', sm: '12px', md: '12px' }} mb={0} fontWeight={600} sx={{ cursor: 'pointer' }} />
+                      <CustomTypography text='Reply' onClick={() => handleNavigate(`/admin/feedback`, report?._id)} color='#EAB308' fontSize={{ xs: '10px', sm: '12px', md: '12px' }} mb={0} fontWeight={600} sx={{ cursor: 'pointer' }} />
                     </Box>
                   </Box>
                 ))}

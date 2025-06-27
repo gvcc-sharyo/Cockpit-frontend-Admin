@@ -293,7 +293,7 @@ function TrainingQuestion() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {filteredQuestions.map((question, index) => (
+                                {filteredQuestions.length > 0 && filteredQuestions.map((question, index) => (
                                     <TableRow key={index} sx={{ borderBottom: '1px solid #e0e0e0' }}>
                                         <TableCell>{index + 1}</TableCell>
                                         <TableCell>{question.question}</TableCell>
