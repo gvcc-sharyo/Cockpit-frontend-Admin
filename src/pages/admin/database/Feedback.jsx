@@ -19,10 +19,10 @@ import { useLocation } from "react-router-dom";
 function Feedback() {
 
   const location = useLocation();
-  const {reportID} = location.state || {};
+  const { reportID } = location.state || {};
 
   console.log('reportId', reportID);
-  
+
 
 
   const styles = {
@@ -76,16 +76,18 @@ function Feedback() {
   const [reports, setReports] = useState([]);
 
   const fetchReports = async () => {
-    
+
     try {
       const response = await apiGet('/reports');
 
-      if (response.data.status === 200 && response.data.data.length === 0) {
-        snackbarEmitter('No reports found', 'info');
-      }
-      else if (response.data.status === 200) {
-        // snackbarEmitter(response.data.message, 'success');
-        setReports(response.data.data);
+      if (response.data.status === 200) {
+        const filteredReports = response.data.data.filter((report) => report.status === 'pending');
+        if (filteredReports.length === 0) {
+          snackbarEmitter('No pending reports found', 'info');
+        } else {
+          setReports(filteredReports);
+        }
+
       }
       else {
         snackbarEmitter(response.data.message, 'error');
@@ -100,19 +102,14 @@ function Feedback() {
     fetchReports();
   }, [])
 
-  const filteredReports = reports.filter((report) => report.status === 'pending');
 
-  if(filteredReports.length === 0) {
-    snackbarEmitter('No pending reports found', 'info');
-  }
-    
   const [open, setOpen] = useState(null);
 
   useEffect(() => {
-  if (reportID) {
-    setOpen(reportID);
-  } 
-}, [reportID ]);  
+    if (reportID) {
+      setOpen(reportID);
+    }
+  }, [reportID]);
 
   const handleModalClose = () => {
 
@@ -228,27 +225,27 @@ function Feedback() {
 
   return (
     <Navbar title={"Feedback"}>
-      <Grid container justifyContent="center" sx={{maxHeight: '100vh', overflowY: 'scroll'}}>
+      <Grid container justifyContent="center" sx={{ maxHeight: '100vh', overflowY: 'scroll' }}>
         {
-          filteredReports.length > 0 && filteredReports.map((report, index) => (
+          reports.map((report, index) => (
             <Grid size={{ xs: 12, sm: 10, md: 10 }} >
               {/* Toggle Box */}
-              <Box sx={styles.toggleBox} onClick={() => setOpen(open === report._id ? null : report._id)}>
+              <Box sx={styles.toggleBox} onClick={() => setOpen(open === report?._id ? null : report?._id)}>
                 <Grid sx={{ display: "flex", alignItems: "center", gap: 2 }} >
-                  <Avatar>{report.userId.username[0]}</Avatar>
+                  <Avatar>{report?.userId?.username[0]}</Avatar>
                   <Box sx={{ display: "flex", flexDirection: "column", justifyContent: 'center' }} >
 
                     <CustomTypography
                       fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
                       fontWeight={500}
-                      text={`${report.userId.username} has ${report.reason === '' ? 'reported a' : 'filed answer for a'}  question on ${report.questionId.syllabus}`}
+                      text={`${report?.userId?.username} has ${report?.reason === '' ? 'reported a' : 'filed answer for a'}  question on ${report?.questionId?.syllabus}`}
                       mb={0} />
 
                     <CustomTypography
                       fontSize={{ xs: '8px', sm: '10px', md: '10px' }}
                       // fontWeight={400}
                       color="gray"
-                      text={new Date(report.createdAt).toLocaleTimeString([], {
+                      text={new Date(report?.createdAt).toLocaleTimeString([], {
                         day: '2-digit',
                         month: 'short',
                         year: 'numeric',
@@ -269,7 +266,7 @@ function Feedback() {
               </Box>
 
               {/* Expandable Content */}
-              <Collapse in={open === report._id} >
+              <Collapse in={open === report?._id} >
                 <Grid container spacing={2} mt={1} sx={{ display: 'flex', justifyContent: "center", backgroundColor: '#F0F0F0' }}>
                   {/* Question & Our Answer Box */}
                   <Grid size={{ xs: 8, sm: 10, md: 10 }}>
@@ -284,7 +281,7 @@ function Feedback() {
                       <CustomTypography
                         fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
                         fontWeight={500}
-                        text={report.questionId.question}
+                        text={report?.questionId?.question}
                         mb={0} />
 
                       <CustomTypography
@@ -298,14 +295,14 @@ function Feedback() {
                       <CustomTypography
                         fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
                         fontWeight={500}
-                        text={report.questionId.explanation}
+                        text={report?.questionId?.explanation}
                         mb={0} />
                     </Box>
                   </Grid>
 
                   {/* Student Answer Box */}
                   {
-                    report.reason !== '' &&
+                    report?.reason !== '' &&
                     <Grid size={{ xs: 8, sm: 10, md: 10 }}>
                       <Box sx={styles.sectionBox}>
                         <CustomTypography
@@ -319,7 +316,7 @@ function Feedback() {
                         <CustomTypography
                           fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
                           fontWeight={500}
-                          text={report.reason}
+                          text={report?.reason}
                         />
                       </Box>
                     </Grid>

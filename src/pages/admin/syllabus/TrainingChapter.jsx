@@ -320,7 +320,7 @@ function TrainingChapter() {
                 <Box sx={{ maxWidth: '100%', overflowX: 'auto' }} mt={2}>
                     <Box sx={{ display: 'flex', gap: '15px', padding: '10px', width: 'max-content' }}>
                         {
-                            filteredBooks.map((book) => (
+                          filteredBooks.length > 0 &&  filteredBooks.map((book) => (
                                 <>
                                 <CustomButton children={book.bookTitle} onClick={() => setSelectedBook(book.bookTitle)} loading={false} bgColor={selectedBook === book.bookTitle ? '#FFEBAB' : '#fff'} 
                                 sx={{color:'black', px:3, py:1, width: { xs: '45%', md: '45%', sm: '25%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} 
@@ -396,7 +396,7 @@ function TrainingChapter() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {filteredChapters.map((chapter, index) => (
+                                    { filteredChapters.length > 0 && filteredChapters.map((chapter, index) => (
                                         <TableRow
                                             key={index}
                                             sx={{ borderBottom: '1px solid #e0e0e0', cursor: 'pointer' }}
