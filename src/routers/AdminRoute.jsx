@@ -12,7 +12,6 @@ import Profile from '../pages/admin/UserProfile/profile';
 import AddQuestion from '../pages/admin/syllabus/AddQuestion';
 import TrainingAdd from '../pages/admin/database/training/TrainingAdd';
 import ResetPassword from '../pages/admin/resetPassword/ResetPassword';
-import InstitutionDetail from '../pages/admin/institute/InstitutionDetail';
 
 const AdminRoute = () => {
 
