@@ -94,7 +94,6 @@ function TrainingSyllabus() {
 
   const [formErrors, setFormErrors] = useState({
     title: '',
-    category: '',
   });
 
   const [loading, setLoading] = useState(false);
@@ -104,7 +103,6 @@ function TrainingSyllabus() {
     const errors = {};
 
     if (!formData.title) errors.title = 'Title is required';
-    if (!formData.category) errors.category = 'Category is required';
 
     setFormErrors(errors);
 
@@ -253,14 +251,8 @@ function TrainingSyllabus() {
                 value={formData.category}
                 onChange={handleInputChange}
                 placeholder="Category"
-                error={!!formErrors.category}
-                helperText={formErrors.category}
-                select
-              >
-                <MenuItem value="General">General</MenuItem>
-                <MenuItem value="Instrument">Instrument</MenuItem>
-                <MenuItem value="Radio">Radio</MenuItem>
-              </CustomTextField>
+              />
+             
             </Grid>
 
           </Grid>
