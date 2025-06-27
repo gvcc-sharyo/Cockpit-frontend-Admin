@@ -30,6 +30,12 @@ const CustomTextField = ({
           "& .MuiInputBase-input": {
             padding: "0 14px",
           },
+          '& input::-ms-reveal': {
+            display: 'none',
+          },
+          '& input::-ms-clear': {
+            display: 'none',
+          },
         }}
         {...rest}
       />
