@@ -40,6 +40,8 @@ const Pricing = () => {
     updated[index] = validationErrors;
     setErrors(updated);
   };
+
+
   const handleSubmit = async (index) => {
     const form = forms[index];
     const validationErrors = validate(form);
@@ -50,7 +52,7 @@ const Pricing = () => {
       const { data } = await apiPost("/admin/createPricing", payload);
       const updatedForms = [...forms];
       updatedForms[index] = { ...form, isNew: false, _id: data.data._id };
-      updatedForms.push({ planName: "", price: "", duration: "", isNew: true });
+      // updatedForms.push({ planName: "", price: "", duration: "", isNew: true });
       setForms(updatedForms);
       setErrors([...errors.slice(0, index + 1), {}, ...errors.slice(index + 1)]);
       snackbarEmitter(data.message, "success");
@@ -60,6 +62,8 @@ const Pricing = () => {
       setTimeout(() => setLoadingIndex(null), 2000);
     }
   };
+
+  
   const getPlanDetails = async () => {
     try {
       const { data } = await apiGet("/admin/getPricing");
@@ -71,6 +75,8 @@ const Pricing = () => {
       snackbarEmitter("Something went wrong", "error");
     }
   };
+
+
   const handleAddPlan = () => {
     setForms([...forms, { planName: "", price: "", duration: "", isNew: true }]);
     setErrors([...errors, {}]);
