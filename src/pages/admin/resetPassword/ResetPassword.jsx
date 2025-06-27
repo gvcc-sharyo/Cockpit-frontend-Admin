@@ -132,8 +132,25 @@ function ResetPassword() {
 
     return (
         <Box sx={styles.containerBox}>
-            <Grid container>
-                <Grid item size={{ xs: 12, sm: 10, md: 10 }} sx={styles.gridBox}>
+            <Grid container sx={{display: 'flex', justifyContent: 'center', }}>
+                <Box
+                          sx={{
+                            position: 'absolute',
+                            top: { xs: 10, md: 15 },
+                            left: { xs: 10, md: 45 },
+                          }}
+                        >
+                          <Box
+                            component="img"
+                            src="/public/images/full logo.svg"
+                            alt="logo"
+                            sx={{
+                              height: { xs: 40, sm: 60, md: 90 }, // Responsive height
+                              width: 'auto',
+                            }}
+                          />
+                        </Box>
+                <Grid item size={{ xs: 11, sm: 10, md: 10 }} sx={styles.gridBox}>
                     <Paper elevation={10} sx={styles.cardPaper}>
                         {/* <Typography sx={styles.heading}>Reset Password</Typography> */}
                          <CustomTypography text="Reset Password" fontSize={{ xs: '20px', sm: '22px', md: '22px' }} sx={{ mb: 2, textAlign: 'center' }} fontWeight={600} />
