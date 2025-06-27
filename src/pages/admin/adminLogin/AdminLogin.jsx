@@ -30,6 +30,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { color } from 'chart.js/helpers';
 import './adminLogin.css';
 import CustomTypography from '../../../components/admin/CustomTypography';
+import { left } from '@popperjs/core';
 
 const styles = {
   containerBox: {
@@ -45,6 +46,7 @@ const styles = {
   gridBox: {
     display: 'flex',
     alignItems: 'center',
+
   },
   cardPaper: {
     padding: '2rem',
@@ -52,9 +54,8 @@ const styles = {
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
     backdropFilter: 'blur(10px)',
     color: '#fff',
-    width: '100%',
+    width: 'auto',
     maxWidth: '500px',
-    marginTop: { xs: '10px', md: 0 }
   },
   toggleButton: (activeForm) => ({
     border: 'none',
@@ -288,12 +289,29 @@ function AdminLogin() {
 
   return (
     <Box sx={styles.containerBox}>
-      <Grid container>
-        <Grid item size={{ xs: 12, sm: 8, md: 10 }} sx={styles.gridBox}>
+      <Grid container sx={{display: 'flex', justifyContent: 'center', }}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: { xs: 10, md: 15 },
+            left: { xs: 10, md: 45 },
+          }}
+        >
+          <Box
+            component="img"
+            src="/public/images/full logo.svg"
+            alt="logo"
+            sx={{
+              height: { xs: 40, sm: 60, md: 90 }, // Responsive height
+              width: 'auto',
+            }}
+          />
+        </Box>
+
+
+        <Grid item size={{ xs: 11, sm: 8, md: 9}} sx={styles.gridBox} mt={{ xs: 10, md: 0 }}>
           <Paper elevation={10} sx={styles.cardPaper}>
-            <Typography variant="body2" align="center" gutterBottom mb={2}>
-              Welcome to COCKPIT.!
-            </Typography>
+             <CustomTypography text=" Welcome to COCKPIT.!" sx={{mb: 2, textAlign: 'center' }} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} />
 
             <Box sx={styles.centeredBox}>
               <Button sx={styles.toggleButton(activeForm === 'login')} onClick={() => setActiveForm('login')}>
@@ -339,7 +357,7 @@ function AdminLogin() {
                       endAdornment: (
                         <InputAdornment position="end">
                           <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                            {showPassword ? <Visibility /> : <VisibilityOff /> }
+                            {showPassword ? <Visibility /> : <VisibilityOff />}
                           </IconButton>
                         </InputAdornment>
                       ),
@@ -404,7 +422,7 @@ function AdminLogin() {
                       endAdornment: (
                         <InputAdornment position="end">
                           <IconButton onClick={() => setShowRegPassword(!showRegPassword)} edge="end">
-                            {showRegPassword ? <Visibility /> : <VisibilityOff /> }
+                            {showRegPassword ? <Visibility /> : <VisibilityOff />}
                           </IconButton>
                         </InputAdornment>
                       ),
@@ -448,7 +466,7 @@ function AdminLogin() {
           <CustomTypography text="Forgot password?" fontSize={{ xs: '20px', sm: '22px', md: '22px' }} sx={{ mb: 4 }} fontWeight={600} />
           <CustomTypography text="Verify your email address" fontSize={{ xs: '16px', sm: '18px', md: '18px' }} sx={{ mb: 2 }} fontWeight={600} />
 
-          <CustomTypography text="We will send you reset password link on this email"  fontSize={{ xs: '12px', sm: '14px', md: '14px' }} sx={{ mb: 4 ,}}  />
+          <CustomTypography text="We will send you reset password link on this email" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} sx={{ mb: 4, }} />
           <Grid  >
             <CustomTextField
               label="Enter your email"
