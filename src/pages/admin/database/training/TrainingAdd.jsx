@@ -6,7 +6,7 @@ function TrainingAdd() {
   return (
     <>
       <Navbar title="Training">
-        <Training />
+        <Training bulkButton={true}/>
       </Navbar>
     </>
   );

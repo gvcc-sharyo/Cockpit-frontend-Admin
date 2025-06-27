@@ -18,17 +18,20 @@ const AdminRoute = () => {
 
   const AuthRoute = () => {
     const isAuthenticated = !!localStorage.getItem("adminToken");
-    return isAuthenticated ? <Outlet /> : <Navigate to="/" />;
+    console.log('isAuthenticated value', isAuthenticated);
+    
+    return isAuthenticated ? <Outlet /> : <Navigate to="/adminlogin" />;
   };
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<AdminLogin />} />
-        <Route path="/admin/resetpassword/:token" element={<ResetPassword />} />
+        {/* <Route path="/" element={<AdminLogin />} /> */}
+        <Route path="/adminlogin" element={<AdminLogin />} />
+        <Route path="/resetpassword/:token" element={<ResetPassword />} />
         
         <Route element={<AuthRoute />}>
-        <Route path="/admin/dashboard" element={<Dashboard />} />
+        <Route path="/" element={<Dashboard />} />
         <Route path="/admin/trainingsyllabus" element={<TrainingSyllabus />} />
         <Route path="/admin/feedback" element={<Feedback />} />
         <Route path="/admin/trainingChapter" element={<TrainingChapter />} />

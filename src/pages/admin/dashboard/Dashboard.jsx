@@ -1,14 +1,13 @@
-import React, { useRef } from "react";
 import Navbar from "../../../components/admin/Navbar";
 import { Box, Grid, Typography } from "@mui/material";
 import InstituteTable from "../../../components/admin/InstituteTable";
-
 import "./dashboard.css";
 import { useState, useEffect } from "react";
 import { apiGet } from "../../../api/axios";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import { useNavigate } from "react-router-dom";
 import Graph from "./graph";
+import CustomTypography from "../../../components/admin/CustomTypography";
 
 function Dashboard() {
   const adminId = localStorage.getItem("adminId");
@@ -19,22 +18,19 @@ function Dashboard() {
     try {
       const response = await apiGet("/reports");
 
-      if (response.data.status === 200 && response.data.data.length === 0) {
-        snackbarEmitter("No reports found", "info");
-      } else if (response.data.status === 200) {
-        setReports(response.data.data);
-      } else {
+      if (response.data.status === 200 ) {
+        const filteredReports = response.data.data.filter((report) => report.status === 'pending');
+        console.log("filteredReports", filteredReports);
+        
+        setReports(filteredReports);
+      } 
+       else {
         snackbarEmitter(response.data.message, "error");
       }
     } catch (error) {
       snackbarEmitter("Something went wrong", "error");
     }
   };
-
-   const filteredReports = reports.filter((report) => report.status === 'pending');
-
-
-
 
   const [totals, setTotals] = useState([]);
 
@@ -152,13 +148,13 @@ function Dashboard() {
         <Box sx={{ backgroundColor: "#f8f9fa", p: 2 }}>
           <Grid container spacing={2}>
             {stats.map(({ title, number, icon }) => (
-              <Grid size={{ xs: 6, md:6,lg:6 }} key={title}>
+              <Grid size={{ xs: 6, md:6,sm:6 }} key={title}>
                 <Box sx={classes.statsBox}>
                   <Box>
-                    <Typography sx={classes.statTitle} gutterBottom>
-                      {title}
-                    </Typography>
-                    <Typography sx={classes.statNumber}>{number}</Typography>
+ 
+                    <CustomTypography text={title} fontSize={{ xs: '10px', sm: '12px', md: '12px' }} mb={0} fontWeight={600} />
+                   
+                    <CustomTypography text={number} fontSize={{ xs: '12px', sm: '14px', md: '14x' }}  mb={0} fontWeight={600} />
                   </Box>
                   <Box sx={classes.iconBox}>{icon}</Box>
                 </Box>
@@ -178,22 +174,19 @@ function Dashboard() {
 
             <Grid size={{ xs: 10, md: 12,lg:5 }}>
               <Box sx={classes.reportBox}>
-                <Typography sx={classes.reportTitle}>Report</Typography>
-                {filteredReports.map((report, index) => (
+                <CustomTypography text='Report' fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={600} />
+                { reports.length === 0 ?
+                 <CustomTypography text='No pending reports' fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} /> 
+
+                 :
+                
+                reports.map((report, index) => (
                   <Box mt={2}>
-                    <Typography sx={classes.reportName}>
-                      {report.userId.username}
-                    </Typography>
+                    <CustomTypography text={report?.userId?.username} fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
                     <Box sx={classes.reportLine}>
-                      <Typography sx={classes.reportedText}>
-                        Has reported a question on {report.questionId.syllabus}
-                      </Typography>
-                      <Typography
-                        sx={classes.replyText}
-                        onClick={() => handleNavigate(`/admin/feedback`, report._id)}
-                      >
-                        Reply
-                      </Typography>
+                       <CustomTypography text={` Has reported a question on ${report?.questionId?.syllabus}`} color='#718096' fontSize={{ xs: '10px', sm: '12px', md: '12px' }} mb={0} fontWeight={400} />
+     
+                      <CustomTypography text='Reply' onClick={() => handleNavigate(`/admin/feedback`, report?._id)} color='#EAB308' fontSize={{ xs: '10px', sm: '12px', md: '12px' }} mb={0} fontWeight={600} sx={{ cursor: 'pointer' }} />
                     </Box>
                   </Box>
                 ))}

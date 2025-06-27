@@ -70,7 +70,8 @@ function TrainingSyllabus() {
     navigate('/admin/trainingChapter',{
       state: {
         syllabusTitle: item.title,
-        syllabusId: item._id
+        syllabusId: item._id,
+        category: item.category
       }
     });
   };
@@ -157,13 +158,13 @@ function TrainingSyllabus() {
 
     <Navbar title="Syllabus">
 
-      <Box sx={{ maxHeight: '100vh', overflowY: 'scroll' }}>
+      <Box >
         <Box sx={{ display: 'flex', mb: 1, alignItems: 'center', justifyContent: 'space-between' }}>
-          <CustomTypography text='List of syllabus' fontWeight='800' fontSize={{ xs: '14px', sm: '18px', md: '18px' }} />
+          <CustomTypography text='List of syllabus' fontWeight='600' fontSize={{ xs: '14px', sm: '18px', md: '18px' }} />
           <CustomButton children=' + Add syllabus' onClick={handleModalOpen} loading={false} bgColor='#EAB308' sx={{ width: { xs: '50%', md: '20%', sm: '30%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
         </Box>
 
-        <Grid container spacing={4} sx={{ mt: 5 }} >
+        <Grid container spacing={4}  sx={{mt: 5, maxHeight: '70vh', overflowY: 'scroll' }}>
           {
             <>
               {syllabus.length > 0 && syllabus.map((item, index) => (
@@ -257,6 +258,7 @@ function TrainingSyllabus() {
                 select
               >
                 <MenuItem value="General">General</MenuItem>
+                <MenuItem value="Instrument">Instrument</MenuItem>
                 <MenuItem value="Radio">Radio</MenuItem>
               </CustomTextField>
             </Grid>

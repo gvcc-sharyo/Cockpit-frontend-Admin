@@ -1,6 +1,6 @@
 import React from "react";
 import { Typography } from "@mui/material";
-const CustomTypography = ({ text,   fontSize = { xs: '12px', sm: '13px', md: '14px' }, fontWeight=400, color, mb=1, sx = {}}) => {
+const CustomTypography = ({ text, onClick,  fontSize = { xs: '12px', sm: '13px', md: '14px' }, fontWeight=400, color, mb=1, sx = {}}) => {
   return (
     <Typography
       sx={{
@@ -11,6 +11,7 @@ const CustomTypography = ({ text,   fontSize = { xs: '12px', sm: '13px', md: '14
         color: color,
         ...sx
       }}
+      onClick = {onClick}
     >
       {text}
     </Typography>

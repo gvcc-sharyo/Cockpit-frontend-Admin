@@ -20,7 +20,7 @@ import {
   Dialog,
   DialogContent
 } from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { Opacity, Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { apiPost } from '../../../api/axios';
 import CustomTextField from '../../../components/admin/CustomTextField';
@@ -29,6 +29,8 @@ import CustomButton from '../../../components/admin/CustomButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { color } from 'chart.js/helpers';
 import './adminLogin.css';
+import CustomTypography from '../../../components/admin/CustomTypography';
+import { left } from '@popperjs/core';
 
 const styles = {
   containerBox: {
@@ -44,6 +46,7 @@ const styles = {
   gridBox: {
     display: 'flex',
     alignItems: 'center',
+
   },
   cardPaper: {
     padding: '2rem',
@@ -51,9 +54,8 @@ const styles = {
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
     backdropFilter: 'blur(10px)',
     color: '#fff',
-    width: '100%',
+    width: 'auto',
     maxWidth: '500px',
-    marginTop: { xs: '10px', md: 0 }
   },
   toggleButton: (activeForm) => ({
     border: 'none',
@@ -66,6 +68,7 @@ const styles = {
     cursor: 'pointer',
     backgroundColor: activeForm ? '#EAB308' : 'none',
     borderRadius: '50px',
+    textTransform: 'none'
   }),
   centeredBox: {
     display: 'flex',
@@ -146,6 +149,7 @@ function AdminLogin() {
   const [registerErrors, setRegisterErrors] = useState({});
 
   const [showPassword, setShowPassword] = useState(false);
+  const [showRegPassword, setShowRegPassword] = useState(false);
 
   const navigate = useNavigate();
 
@@ -172,6 +176,7 @@ function AdminLogin() {
   };
 
   const [loading, setLoading] = useState(false);
+
   const handleLogin = async () => {
     // e.preventDefault();
     if (!validateLoginForm()) return;
@@ -191,7 +196,7 @@ function AdminLogin() {
           localStorage.setItem('adminToken', response.data.token);
           localStorage.setItem('adminId', response.data.data._id);
           setLoginForm({ email: '', password: '' });
-          navigate('/admin/dashboard');
+          navigate('/');
         } else {
           snackbarEmitter(response.data.message, 'error');
         }
@@ -241,8 +246,11 @@ function AdminLogin() {
   const [forgotDialogOpen, setForgotDialogOpen] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
   const [forgotError, setForgotError] = useState('');
-  const[forgotLoading, setForgotLoading] = useState(false);
+  const [forgotLoading, setForgotLoading] = useState(false);
 
+  const handleForgotClick = () => {
+    setForgotDialogOpen(true);
+  }
   const handleForgotPassword = async () => {
     if (!forgotEmail) {
       setForgotError('Email is required');
@@ -259,17 +267,17 @@ function AdminLogin() {
       const response = await apiPost('/admin/forgot-password', { email: forgotEmail });
 
       setTimeout(() => {
-        setForgotLoading(false);    
-         if (response.data.status === 200) {
+        setForgotLoading(false);
+        if (response.data.status === 200) {
           setForgotDialogOpen(false);
           snackbarEmitter(response.data.message, 'success');
           setForgotEmail('');
-   
-      } else {
-        snackbarEmitter(response.data.message, 'error');
-      }    
-      },1500)
-     
+
+        } else {
+          snackbarEmitter(response.data.message, 'error');
+        }
+      }, 1500)
+
 
     } catch (err) {
       setTimeout(() => {
@@ -281,12 +289,29 @@ function AdminLogin() {
 
   return (
     <Box sx={styles.containerBox}>
-      <Grid container>
-        <Grid item size={{ xs: 12, sm: 8, md: 10 }} sx={styles.gridBox}>
+      <Grid container sx={{display: 'flex', justifyContent: 'center', }}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: { xs: 10, md: 15 },
+            left: { xs: 10, md: 45 },
+          }}
+        >
+          <Box
+            component="img"
+            src="/public/images/full logo.svg"
+            alt="logo"
+            sx={{
+              height: { xs: 40, sm: 60, md: 90 }, // Responsive height
+              width: 'auto',
+            }}
+          />
+        </Box>
+
+
+        <Grid item size={{ xs: 11, sm: 8, md: 9}} sx={styles.gridBox} mt={{ xs: 10, md: 0 }}>
           <Paper elevation={10} sx={styles.cardPaper}>
-            <Typography variant="body2" align="center" gutterBottom mb={2}>
-              Welcome to COCKPIT.!
-            </Typography>
+             <CustomTypography text=" Welcome to COCKPIT.!" sx={{mb: 2, textAlign: 'center' }} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} />
 
             <Box sx={styles.centeredBox}>
               <Button sx={styles.toggleButton(activeForm === 'login')} onClick={() => setActiveForm('login')}>
@@ -297,9 +322,8 @@ function AdminLogin() {
               </Button>
             </Box>
 
-            <Typography variant="body2" align="center" sx={styles.secondaryText}>
-              Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-            </Typography>
+
+            <CustomTypography text="Your gateway to the skies - manage your pilot profile & access training resources and management." sx={{ mt: 4, mb: 2 }} />
 
             {activeForm === 'login' && (
               <>
@@ -333,7 +357,7 @@ function AdminLogin() {
                       endAdornment: (
                         <InputAdornment position="end">
                           <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                            {showPassword ? <Visibility /> : <VisibilityOff />}
                           </IconButton>
                         </InputAdornment>
                       ),
@@ -343,7 +367,8 @@ function AdminLogin() {
 
                 <Grid container alignItems="center" gap={1} sx={styles.formGrid} mt={2} >
 
-                  <Typography onClick={() => setForgotDialogOpen(true)} variant="body2" sx={{ ...styles.secondaryText, cursor: 'pointer' }} gutterBottom>Forgot Password?</Typography>
+                  {/* <Typography onClick={() => setForgotDialogOpen(true)} variant="body2" sx={{ ...styles.secondaryText, cursor: 'pointer' }} gutterBottom>Forgot Password?</Typography> */}
+                  <CustomTypography text='Forgot Password?' onClick={handleForgotClick} sx={{ cursor: 'pointer' }} />
 
                   <CustomButton children='Board me' onClick={handleLogin} loading={loading} bgColor='#EAB308' borderRadius='50px' />
 
@@ -386,12 +411,22 @@ function AdminLogin() {
                   <CustomTextField
                     label='Password'
                     name="password"
+                    type={showRegPassword ? 'text' : 'password'}
                     value={registerForm.password}
                     onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
                     placeholder="Access Key"
                     error={!!registerErrors.password}
                     helperText={registerErrors.password}
                     borderRadius='50px'
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton onClick={() => setShowRegPassword(!showRegPassword)} edge="end">
+                            {showRegPassword ? <Visibility /> : <VisibilityOff />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
                   />
 
                 </Grid>
@@ -428,16 +463,10 @@ function AdminLogin() {
             <CloseIcon />
           </IconButton>
 
-          <Typography variant="h6" fontWeight="bold" color="white" mb={4} fontSize={{ xs: '18px', sm: '20px', md: '22px' }}>
-            Forgot password?
-          </Typography>
-          <Typography fontWeight="bold" color="white" mb={1} fontSize={{ xs: '14px', sm: '16px', md: '18px' }}>
-            Verify your email address
-          </Typography>
-          <Typography color="white" mb={3} fontSize={{ xs: '12px', sm: '13px' }}>
-            We will send you reset password link on this email
-          </Typography>
+          <CustomTypography text="Forgot password?" fontSize={{ xs: '20px', sm: '22px', md: '22px' }} sx={{ mb: 4 }} fontWeight={600} />
+          <CustomTypography text="Verify your email address" fontSize={{ xs: '16px', sm: '18px', md: '18px' }} sx={{ mb: 2 }} fontWeight={600} />
 
+          <CustomTypography text="We will send you reset password link on this email" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} sx={{ mb: 4, }} />
           <Grid  >
             <CustomTextField
               label="Enter your email"
