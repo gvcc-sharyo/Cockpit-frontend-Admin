@@ -211,7 +211,15 @@ function TrainingQuestion() {
         }
     }
 
-
+const handleNavigate = () => {
+    navigate('/admin/trainingChapter',{
+      state: {
+        syllabusTitle: syllabusName,
+        category: category,
+        selectBook: bookName
+      }
+    });
+}
 
     return (
 
@@ -227,11 +235,11 @@ function TrainingQuestion() {
             >
 
                 <Grid sx={{ display: 'flex', alignItems: 'center' , gap: '10px'}} mb={2}>
-                    <CustomTypography text={syllabusName}  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }}} />
+                    <CustomTypography text='Syllabus' onClick={() => navigate('/admin/trainingsyllabus')}  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer'}} />
                     <CustomTypography text='>' sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }}} />
-                    <CustomTypography  text={bookName}  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }}} />
+                    <CustomTypography  text='Chapter' onClick={handleNavigate} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer'}} />
                     <CustomTypography  text='>'  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }}} />
-                    <CustomTypography text={chapterName} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }}} />
+                    <CustomTypography text='Questions'  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' },cursor: 'pointer'}} />
                 </Grid>
                 {/* Header Buttons */}
                 <Grid

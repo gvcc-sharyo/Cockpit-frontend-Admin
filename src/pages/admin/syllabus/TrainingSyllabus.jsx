@@ -1,6 +1,6 @@
 import Navbar from "../../../components/admin/Navbar";
 import { useEffect, useState } from "react";
-import { apiGet, apiPostUpload } from "../../../api/axios";
+import { apiGet, apiPostUpload, apiDelete } from "../../../api/axios";
 import {
   Grid,
   Card,
@@ -19,7 +19,8 @@ import {
   Alert,
   Snackbar,
   CircularProgress,
-  Backdrop
+  Backdrop,
+  Menu
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import CloseIcon from '@mui/icons-material/Close';
@@ -28,6 +29,7 @@ import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import CustomTextField from "../../../components/admin/CustomTextField";
 import CustomButton from "../../../components/admin/CustomButton";
 import CustomTypography from "../../../components/admin/CustomTypography";
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 function TrainingSyllabus() {
   const [syllabus, setSyllabus] = useState([]);
@@ -67,10 +69,9 @@ function TrainingSyllabus() {
 
   const navigate = useNavigate();
   const handleClick = (item) => {
-    navigate('/admin/trainingChapter',{
+    navigate('/admin/trainingChapter', {
       state: {
         syllabusTitle: item.title,
-        syllabusId: item._id,
         category: item.category
       }
     });
@@ -81,6 +82,8 @@ function TrainingSyllabus() {
     setOpenModal(false);
     setFormData({ image: null, title: '', category: '' });
     setFormErrors({ title: '', category: '' });
+    setIsEditing(false);
+    closeMenu();
   };
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
@@ -114,10 +117,15 @@ function TrainingSyllabus() {
     data.append('image', formData.image);
     data.append('title', formData.title);
     data.append('category', formData.category);
+    if (isEditing) {
+      data.append('syllabusId', menuItem._id);
+    }
 
     try {
+      const endpoint = isEditing ? '/updateSyllabus' : '/addSyllabus';
+      const response = await apiPostUpload(endpoint, data);
 
-      const response = await apiPostUpload('/addSyllabus', data);
+      // const response = await apiPostUpload('/addSyllabus', data);
       setTimeout(() => {
         setLoading(false);
         if (response.data.status === 200) {
@@ -131,18 +139,89 @@ function TrainingSyllabus() {
           handleModalClose();
         }
 
+        closeMenu();
+
       }, 1500)
 
     } catch (error) {
       setTimeout(() => {
         setLoading(false);
         snackbarEmitter('Something went wrong', 'error');
+        closeMenu();
       }, 1500);
 
 
     }
   };
 
+  const [menuAnchor, setMenuAnchor] = useState(false);
+  const [menuItem, setMenuItem] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const openMenu = (e, item) => {
+
+    setMenuAnchor(e.currentTarget);
+    setMenuItem(item);
+  };
+
+  const closeMenu = () => {
+    setMenuAnchor(null);
+    setMenuItem([]);
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setFormData(
+      {
+        image: menuItem.imageUrl,
+        title: menuItem.title,
+        category: menuItem.category
+      }
+    )
+    handleModalOpen();
+
+  };
+
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState('');
+
+  const handleDeleteModalClose = () => {
+    setOpenDeleteModal(false);
+    setDeleteId('');
+  }
+
+  const handleDelete = () => {
+    setOpenDeleteModal(true);
+    setDeleteId(menuItem._id);
+  }
+
+  const handleDeleteSyllabus = async () => {
+
+    setLoading(true);
+    try {
+      const response = await apiDelete(`/deleteSyllabus/${deleteId}`);
+
+      setTimeout(() => {
+        setLoading(false);
+        if (response.data.status === 200) {
+          snackbarEmitter(response.data.message, 'success');
+          handleDeleteModalClose();
+        } else {
+          snackbarEmitter(response.data.message, 'error');
+          handleDeleteModalClose();
+        }
+        closeMenu();
+        fetchSyllabus();
+      }, 1500)
+
+    } catch (error) {
+      setLoading(false);
+      snackbarEmitter('Something went wrong', 'error');
+      handleModalClose();
+      fetchSyllabus();
+      closeMenu();
+    }
+  }
 
   const styles = {
     textField: {
@@ -162,15 +241,16 @@ function TrainingSyllabus() {
           <CustomButton children=' + Add syllabus' onClick={handleModalOpen} loading={false} bgColor='#EAB308' sx={{ width: { xs: '50%', md: '20%', sm: '30%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
         </Box>
 
-        <Grid container spacing={4}  sx={{mt: 5, maxHeight: '70vh', overflowY: 'scroll' }}>
-          {
-            <>
-              {syllabus.length > 0 && syllabus.map((item, index) => (
-                <Grid size={{ xs: 6, sm: 4, md: 3 }} key={index}>
-                  <Card sx={{ height: '90%', textAlign: 'center', cursor: 'pointer' }}
-                    onClick={() => handleClick(item)}
-                  >
+        <Grid container spacing={4} sx={{ mt: 5, maxHeight: '70vh', overflowY: 'scroll' }}>
 
+          {
+            syllabus.length > 0 && syllabus.map((item, index) => (
+
+              <Grid size={{ xs: 6, sm: 4, md: 3 }} key={index}>
+                <Card sx={{ height: '90%', textAlign: 'center' }}
+
+                >
+                  <Box sx={{ display: "flex", justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <CardMedia
                       component="img"
                       image={item.imageUrl} // fallback if image is not available
@@ -186,18 +266,43 @@ function TrainingSyllabus() {
                         //  ml:2
                       }}
                     />
-                    <CardContent>
-                      {/* <Typography sx={{ fontSize: { xs: '12px', sm: '14px', md: '14px', fontWeight: 'bold' } }} component="div">
+
+                    <IconButton
+                      onClick={(e) => openMenu(e, item)}
+                    // sx={{ position: 'absolute', top: 20, right: 0 }}
+                    >
+                      <MoreHorizIcon />
+                    </IconButton>
+
+
+                  </Box>
+
+
+
+                  <CardContent onClick={() => handleClick(item)} sx={{ cursor: 'pointer' }}>
+                    {/* <Typography sx={{ fontSize: { xs: '12px', sm: '14px', md: '14px', fontWeight: 'bold' } }} component="div">
                         {item.title}
                       </Typography> */}
-                      <CustomTypography text={item.title} fontWeight='500' fontSize={{ xs: '10px', sm: '14px', md: '16px' }} />
-                      <CustomTypography text={item.category} color='#EAB308' fontSize={{ xs: '10px', sm: '13px', md: '13px' }} />
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </>
-          }
+                    <CustomTypography text={item.title} fontWeight='500' fontSize={{ xs: '10px', sm: '14px', md: '16px' }} />
+                    <CustomTypography text={item.category} color='#EAB308' fontSize={{ xs: '10px', sm: '13px', md: '13px' }} />
+                  </CardContent>
+
+
+
+                </Card>
+
+
+              </Grid>
+
+            ))}
+
+
+          <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={closeMenu}
+          >
+            <MenuItem onClick={handleEdit} >Edit</MenuItem>
+            <MenuItem onClick={handleDelete} >Delete</MenuItem>
+          </Menu>
+
         </Grid>
       </Box>
 
@@ -252,17 +357,57 @@ function TrainingSyllabus() {
                 onChange={handleInputChange}
                 placeholder="Category"
               />
-             
+
             </Grid>
 
           </Grid>
 
           <Grid sx={{ display: 'flex', justifyContent: 'center' }}>
-            <CustomButton children='Add' onClick={handleAddSyllabus} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
+            <CustomButton children={isEditing ? 'Update' : 'Add'} onClick={handleAddSyllabus} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
           </Grid>
 
         </DialogContent>
       </Dialog>
+
+
+
+
+      <Dialog open={openDeleteModal} onClose={handleDeleteModalClose} maxWidth="md">
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <CustomTypography text="Confirm deletion" fontSize={{ xs: '16px', sm: '18px', md: '18px' }} mb={0} fontWeight={600} />
+          <IconButton onClick={handleDeleteModalClose}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+
+        <DialogContent dividers>
+
+          <Grid container sx={{ display: 'flex', alignItems: 'center', gap: 3 }} >
+            <Grid item>
+              <CustomTypography text="Do you want to delet this syllabus?" fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={400} />
+            </Grid>
+            <Grid item>
+              <Grid container spacing={2} justifyContent="center">
+                <Grid item>
+
+                  <CustomButton children='Yes' onClick={handleDeleteSyllabus} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
+                </Grid>
+                <Grid item>
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={handleDeleteModalClose}
+                    sx={{ backgroundColor: '#BF0000', color: 'white' }}
+                  >
+                    No
+                  </Button>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+        </DialogContent>
+      </Dialog>
+
     </Navbar>
   );
 }
