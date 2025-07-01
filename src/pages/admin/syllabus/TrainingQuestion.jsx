@@ -34,7 +34,7 @@ function TrainingQuestion() {
     const [questions, setQuestions] = useState([]);
 
     const location = useLocation();
-    const { category, syllabusName, bookName, chapterName } = location.state || {};
+    const { category, syllabusName, bookName, chapterName, activeBook} = location.state || {};
 
     const fetchQuestions = async () => {
         try {
@@ -235,11 +235,11 @@ const handleNavigate = () => {
             >
 
                 <Grid sx={{ display: 'flex', alignItems: 'center' , gap: '10px'}} mb={2}>
-                    <CustomTypography text='Syllabus' onClick={() => navigate('/admin/trainingsyllabus')}  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer'}} />
+                    <CustomTypography text='Syllabus' onClick={() => navigate('/admin/trainingsyllabus')}  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
                     <CustomTypography text='>' sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }}} />
-                    <CustomTypography  text='Chapter' onClick={handleNavigate} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer'}} />
+                    <CustomTypography  text='Chapter' onClick={handleNavigate} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
                     <CustomTypography  text='>'  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }}} />
-                    <CustomTypography text='Questions'  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' },cursor: 'pointer'}} />
+                    <CustomTypography text='Questions'  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' },cursor: 'pointer', textDecoration: 'underline' }} />
                 </Grid>
                 {/* Header Buttons */}
                 <Grid
@@ -398,19 +398,13 @@ const handleNavigate = () => {
                             </Typography>
                         </Grid>
                         <Grid item>
-                            <Grid container spacing={2} justifyContent="center">
+                            <Grid container spacing={2} sx={{ display: 'flex', alignItems: 'center' }}>
                                 <Grid item>
 
                                     <CustomButton children='Yes' onClick={updateQuestion} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
                                 </Grid>
                                 <Grid item>
-                                    <Button
-                                        variant="outlined"
-                                        color="secondary"
-                                        onClick={handleStatusModalClose}
-                                    >
-                                        No
-                                    </Button>
+                                    <CustomButton children='No' onClick={handleStatusModalClose} bgColor='#BF0000' sx={{ width: { xs: '50%', md: '30%', sm: '30%' }, fontSize: { xs: '11px', md: '13px', sm: '13px' } }} />
                                 </Grid>
                             </Grid>
                         </Grid>

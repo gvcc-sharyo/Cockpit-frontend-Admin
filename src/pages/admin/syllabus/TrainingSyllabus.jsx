@@ -262,9 +262,11 @@ function TrainingSyllabus() {
                         objectFit: 'cover',
                         mx: { xs: 'auto', sm: '10px', md: '10px' },
                         mt: 2,
+                        cursor: 'pointer',
 
                         //  ml:2
                       }}
+                      onClick={() => handleClick(item)} 
                     />
 
                     <IconButton

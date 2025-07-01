@@ -1,5 +1,5 @@
 import Navbar from "../../../components/admin/Navbar";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { apiGet, apiPost, apiDelete } from "../../../api/axios";
 import {
     Grid,
@@ -39,7 +39,6 @@ function TrainingChapter() {
     const [chapters, setChapters] = useState([]);
     const location = useLocation();
     const { syllabusTitle, syllabusId, category, selectBook } = location.state;
-
 
     const [filteredBooks, setFilteredBooks] = useState([]);
 
@@ -113,9 +112,7 @@ function TrainingChapter() {
         setOpenModal(false);
         setIsEditing(false);
         setBookData({ bookTitle: '', syllabusId: syllabusId });
-        closeMenu();
-
-        
+        closeMenu();        
     };
 
     const [openChapterModal, setOpenChapterModal] = useState(false);
@@ -242,7 +239,6 @@ function TrainingChapter() {
 
             console.log('isActive', isActive);
 
-
         }
 
         setLoading(true);
@@ -284,6 +280,7 @@ function TrainingChapter() {
                 syllabusName: chapter.syllabus,
                 bookName: chapter.book,
                 chapterName: chapter.chaptername,
+                activeBook: selectBook
             },
         });
     }
@@ -389,6 +386,12 @@ function TrainingChapter() {
     }
 
 
+const bookRefs = useRef({});
+useEffect(() => {
+    if (selectedBook && bookRefs.current[selectedBook]) {
+        bookRefs.current[selectedBook].scrollIntoView({ behavior: 'smooth', inline: 'center' });
+    }
+}, [selectedBook, filteredBooks]);
 
     return (
 
@@ -398,9 +401,9 @@ function TrainingChapter() {
 
 
                 <Grid sx={{ display: 'flex', alignItems: 'center', gap: '10px' }} mb={2}>
-                    <CustomTypography text='Syllabus' onClick={() => navigate('/admin/trainingsyllabus')} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer' }} />
+                    <CustomTypography text='Syllabus' onClick={() => navigate('/admin/trainingsyllabus')} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
                     <CustomTypography text='>' sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' } }} />
-                    <CustomTypography text='Chapter' sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', }} />
+                    <CustomTypography text='Chapter' sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer',  textDecoration: 'underline' }} />
 
                 </Grid>
 
@@ -418,7 +421,7 @@ function TrainingChapter() {
                     <Box sx={{ display: 'flex', gap: '15px', padding: '10px', width: 'max-content' }}>
                         {
                             filteredBooks.length > 0 && filteredBooks.map((book) => (
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', boxShadow: 3, borderRadius: '10px', px: 2, py: 1, minWidth: { xs: '45px', md: '120px', sm: '60px' }, bgcolor: selectedBook === book.bookTitle ? '#FFEBAB' : '#fff' }}>
+                                <Box  ref={(el) => (bookRefs.current[book.bookTitle] = el)} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', boxShadow: 3, borderRadius: '10px', px: 2, py: 1, minWidth: { xs: '45px', md: '120px', sm: '60px' }, bgcolor: selectedBook === book.bookTitle ? '#FFEBAB' : '#fff' }}>
                                     {/* <CustomButton children={book.bookTitle} onClick={() => setSelectedBook(book.bookTitle)} loading={false} bgColor={selectedBook === book.bookTitle ? '#FFEBAB' : '#fff'}
                                         sx={{ color: 'black', py: 0, minWidth: { xs: '45px', md: '120px', sm: '60px' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }}
                                     /> */}
@@ -665,20 +668,13 @@ function TrainingChapter() {
                             <CustomTypography text="Do you want to change the status" fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={400} />
                         </Grid>
                         <Grid item>
-                            <Grid container spacing={2} justifyContent="center">
+                            <Grid  container spacing={2} sx={{ display: 'flex', alignItems: 'center' }}>
                                 <Grid item>
 
                                     <CustomButton children='Yes' onClick={handleAddChapter} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
                                 </Grid>
                                 <Grid item>
-                                    <Button
-                                        variant="outlined"
-                                        color="secondary"
-                                        onClick={handleStatusModalClose}
-                                        sx={{ backgroundColor: '#BF0000', color: 'white' }}
-                                    >
-                                        No
-                                    </Button>
+                                    <CustomButton children='No' onClick={handleStatusModalClose} bgColor='#BF0000' sx={{ width: { xs: '50%', md: '30%', sm: '30%' }, fontSize: { xs: '11px', md: '13px', sm: '13px' } }} />
                                 </Grid>
                             </Grid>
                         </Grid>

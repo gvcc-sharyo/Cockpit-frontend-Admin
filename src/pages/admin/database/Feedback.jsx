@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Box, Grid, Typography, IconButton, Collapse, Button, Avatar,
   Dialog, DialogTitle, DialogContent, Divider, FormControl, FormControlLabel, Radio,
@@ -221,14 +221,13 @@ function Feedback() {
     }
   }
 
-  // const time = new Date(createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
   return (
     <Navbar title={"Feedback"}>
       <Grid container justifyContent="center" sx={{ maxHeight: '100vh', overflowY: 'scroll' }}>
         {
           reports.map((report, index) => (
-            <Grid size={{ xs: 12, sm: 10, md: 10 }} >
+            <Grid  size={{ xs: 12, sm: 10, md: 10 }} >
               {/* Toggle Box */}
               <Box sx={styles.toggleBox} onClick={() => setOpen(open === report?._id ? null : report?._id)}>
                 <Grid sx={{ display: "flex", alignItems: "center", gap: 2 }} >
