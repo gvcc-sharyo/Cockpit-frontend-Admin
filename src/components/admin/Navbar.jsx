@@ -66,18 +66,20 @@ const Navbar = ({ title, children }) => {
 
   const [adminData, setAdminData] = useState({
     profileimage: "",
-    username: "",
+    firstname: "",
     role: "",
   });
 
   const getProfile = async () => {
     try {
       const response = await apiGet(`/admin/getAdmin?adminId=${adminId}`);
+      console.log("admin data",response.data.data);
+      
 
       if (response.data.status === 200) {
         setAdminData({
           profileimage: response.data.data.profileimage,
-          username: response.data.data.username,
+          firstname: response.data.data.firstname,
           role: response.data.data.role,
         });
 
@@ -358,9 +360,9 @@ const Navbar = ({ title, children }) => {
             <CustomTypography text='Do you want to logout?' fontSize={{ xs: '14px', md: '16px', sm: '16px' }} />
           </DialogContentText>
         </DialogContent>
-        <DialogActions sx={{ display: 'flex', gap: 1.5, mb: 1 }} >
-          <CustomButton children='Cancel' onClick={handleClose} bgColor='#BF0000' sx={{ width: { xs: '50%', md: '30%', sm: '30%' }, fontSize: { xs: '11px', md: '13px', sm: '13px' } }} />
+        <DialogActions sx={{ display: 'flex', gap: 0.5, mb: 1 }} >
           <CustomButton children='Logout' onClick={confirmLogout} bgColor='#EAB308' sx={{ width: { xs: '50%', md: '30%', sm: '30%' }, fontSize: { xs: '11px', md: '13px', sm: '13px' } }} />
+           <CustomButton children='Cancel' onClick={handleClose} bgColor='#BF0000' sx={{ width: { xs: '50%', md: '30%', sm: '30%' }, fontSize: { xs: '11px', md: '13px', sm: '13px' } }} />
         </DialogActions>
       </Dialog>
 
@@ -409,7 +411,7 @@ const Navbar = ({ title, children }) => {
               <Avatar sx={{ width: 25, height: 25, }}
                 src={adminData.profileimage}
               >
-                {adminData.username.charAt(0).toUpperCase()}
+                {adminData?.firstname.charAt(0).toUpperCase()}
               </Avatar>
             </Box>
           </Toolbar>
@@ -581,13 +583,13 @@ const Navbar = ({ title, children }) => {
               <Avatar sx={{ width: 40, height: 40 }}
                 src={adminData.profileimage}
               >
-                {adminData.username.charAt(0).toUpperCase()}</Avatar>
+                {adminData?.firstname.charAt(0).toUpperCase()}</Avatar>
               <Grid sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
                 {/* <Typography variant="body1">
                   {adminData?.username}
                 </Typography> */}
-                <CustomTypography text={adminData?.username} fontSize={{ xs: '12px', md: '14px', sm: '14px' }} mb={0} fontWeight={600} />
+                <CustomTypography text={adminData?.firstname} fontSize={{ xs: '12px', md: '14px', sm: '14px' }} mb={0} fontWeight={600} />
                 {/* <Typography variant="caption" color="text.secondary">
                   {adminData?.role === "super_admin" ? "Super Admin" : "Admin"}
                   

@@ -6,6 +6,7 @@ import Navbar from "../../../components/admin/Navbar";
 import CustomTextField from "../../../components/admin/CustomTextField";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import CustomButton from "../../../components/admin/CustomButton";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const adminId = localStorage.getItem("adminId");
@@ -76,6 +77,9 @@ const Profile = () => {
     if (!formData.zipcode.trim()) errs.zipcode = "Zip code is required";
     return errs;
   };
+  
+
+  const navigate = useNavigate();
 const handleSubmit = async (e) => {
   e.preventDefault();
   const validationErrors = validate();
@@ -103,6 +107,7 @@ const handleSubmit = async (e) => {
       setTimeout(() => {
         snackbarEmitter(data.message, "success");
         setLoading(false);
+         navigate(0)
       }, 2000);
     } else {
       setTimeout(() => {
