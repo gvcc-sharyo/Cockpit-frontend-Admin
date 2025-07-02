@@ -38,7 +38,7 @@ function TrainingChapter() {
     const [books, setBooks] = useState([]);
     const [chapters, setChapters] = useState([]);
     const location = useLocation();
-    const { syllabusTitle, syllabusId, category, selectBook } = location.state;
+    const { syllabusTitle, syllabusID, category, selectBook } = location.state;
 
     const [filteredBooks, setFilteredBooks] = useState([]);
 
@@ -46,24 +46,23 @@ function TrainingChapter() {
 
     const fetchBooks = async () => {
         try {
-            const response = await apiGet('/getBooks');
+            const response = await apiGet(`/booksBySyllabusId/${syllabusID}`);
 
             if (response.data.status === 200) {
-                const bookList = response.data.books;
+                const bookList = response.data.data;
 
-                // Step 1: Filter books that have a syllabusId field
-                // const booksWithSyllabus = bookList.filter(book => book.syllabusId);
-
+                // Step 1: Filter books that have a syllabusID field
+                // const booksWithSyllabus = bookList.filter(book => book.syllabusID);
                 // Step 2: Filter those books by matching syllabusTitle
-                const filterBooks = bookList.filter(book => book.syllabusId?.title === syllabusTitle);
+                // const filterBooks = bookList.filter(book => book.syllabusID?.title === syllabusTitle);
 
-                if (filterBooks.length === 0) {
+                if (bookList.length === 0) {
                     snackbarEmitter('No books found', 'info');
                 }
 
-                setFilteredBooks(filterBooks);
+                setFilteredBooks(bookList);
 
-                setSelectedBook(selectBook ? selectBook : filterBooks[0]?.bookTitle);
+                setSelectedBook(selectBook ? selectBook : bookList[0]?.bookTitle);
 
             } else {
                 snackbarEmitter(response.data.message, 'error');
@@ -74,16 +73,12 @@ function TrainingChapter() {
         }
     };
 
-
     const fetchChapters = async () => {
         try {
-            const response = await apiGet('/getChapters');
+            const response = await apiGet(`/chaptersBySyllabusId/${syllabusID}`);
 
-            if (response.data.status === 200 && response.data.chapters.length === 0) {
-                snackbarEmitter('No chapters found', 'info');
-            }
-            else if (response.data.status === 200) {
-                setChapters(response.data.chapters);
+            if (response.data.status === 200) {
+                setChapters(response.data.data);
             }
             else {
                 snackbarEmitter(response.data.message, 'error');
@@ -99,19 +94,19 @@ function TrainingChapter() {
         fetchChapters();
     }, [])
 
-    const filteredChapters = chapters.filter((chapter) => chapter.book === selectedBook && chapter.syllabus === syllabusTitle);
+    const filteredChapters = chapters.filter((chapter) => chapter.book === selectedBook);
 
     const [openModal, setOpenModal] = useState(false);
     const [bookData, setBookData] = useState({
         bookTitle: '',
-        syllabusId: syllabusId
+        syllabusID: syllabusID
     });
 
     const handleModalOpen = () => setOpenModal(true);
     const handleModalClose = () => {
         setOpenModal(false);
         setIsEditing(false);
-        setBookData({ bookTitle: '', syllabusId: syllabusId });
+        setBookData({ bookTitle: '', syllabusID: syllabusID });
         closeMenu();        
     };
 
@@ -144,7 +139,7 @@ function TrainingChapter() {
 
         const req = {
             bookTitle: bookData.bookTitle,
-            syllabusId: syllabusId
+            syllabusId: syllabusID
         }
 
         if (isEditing) {
@@ -171,7 +166,7 @@ function TrainingChapter() {
                 }
 
 
-            }, 1500)
+            }, 500)
 
 
         } catch (error) {
@@ -181,7 +176,7 @@ function TrainingChapter() {
                 snackbarEmitter('Something went wrong', 'error');
                 fetchBooks();
                 closeMenu();
-            }, 1500);
+            }, 500);
 
         }
     }
@@ -257,7 +252,7 @@ function TrainingChapter() {
                 } else {
                     snackbarEmitter(response.data.message, 'error');
                 }
-            }, 1500)
+            }, 500)
 
 
         } catch (error) {
@@ -265,7 +260,7 @@ function TrainingChapter() {
                 setLoading(false);
                 snackbarEmitter('Something went wrong', 'error');
                 fetchChapters();
-            }, 1500);
+            }, 500);
 
         }
     };
@@ -280,7 +275,9 @@ function TrainingChapter() {
                 syllabusName: chapter.syllabus,
                 bookName: chapter.book,
                 chapterName: chapter.chaptername,
-                activeBook: selectBook
+                activeBook: selectBook,
+                syllabusid: syllabusID,
+                chapterId: chapter._id
             },
         });
     }
@@ -338,7 +335,7 @@ function TrainingChapter() {
         setIsEditing(true);
         setBookData({
             bookTitle: menuItem.bookTitle,
-            syllabusId: syllabusId
+            syllabusID: syllabusID
         })
         handleModalOpen();
 
@@ -374,7 +371,7 @@ function TrainingChapter() {
                 }
                 closeMenu();
                 fetchBooks();
-            }, 1500)
+            }, 500)
 
         } catch (error) {
             setLoading(false);
@@ -401,10 +398,9 @@ useEffect(() => {
 
 
                 <Grid sx={{ display: 'flex', alignItems: 'center', gap: '10px' }} mb={2}>
-                    <CustomTypography text='Syllabus' onClick={() => navigate('/admin/trainingsyllabus')} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
-                    <CustomTypography text='>' sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' } }} />
-                    <CustomTypography text='Chapter' sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer',  textDecoration: 'underline' }} />
-
+                    
+                    <CustomTypography text={syllabusTitle} onClick={() => navigate('/admin/trainingsyllabus')} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
+                   
                 </Grid>
 
                 <Grid container sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', }} >
@@ -699,20 +695,13 @@ useEffect(() => {
                             <CustomTypography text="Do you want to delet this book?" fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={400} />
                         </Grid>
                         <Grid item>
-                            <Grid container spacing={2} justifyContent="center">
+                            <Grid container spacing={2} sx={{ display: 'flex', alignItems: 'center' }}>
                                 <Grid item>
 
                                     <CustomButton children='Yes' onClick={handleDeleteBook} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
                                 </Grid>
                                 <Grid item>
-                                    <Button
-                                        variant="outlined"
-                                        color="secondary"
-                                        onClick={handleDeleteModalClose}
-                                        sx={{ backgroundColor: '#BF0000', color: 'white' }}
-                                    >
-                                        No
-                                    </Button>
+                                     <CustomButton children='No' onClick={handleDeleteModalClose} bgColor='#BF0000' sx={{ width:'20%', }}/>
                                 </Grid>
                             </Grid>
                         </Grid>

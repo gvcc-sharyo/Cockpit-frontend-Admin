@@ -169,7 +169,7 @@ function Training({ syllabusName, bookName, chapterName, question, report = fals
             });
             setErrors({});
           }
-        }, 1500);
+        }, 500);
       } else {
         setLoading(false);
         console.error("Submission failed with response:", response);
@@ -327,7 +327,7 @@ function Training({ syllabusName, bookName, chapterName, question, report = fals
         }
         // navigate('/admin/trainingQuestion', { state: { category: syllabus.category, syllabusName: formData.syllabus, bookName: formData.book, chapterName: formData.chapter } });
 
-      }, 1500);
+      }, 500);
 
     } catch (error) {
 

@@ -200,13 +200,13 @@ function AdminLogin() {
         } else {
           snackbarEmitter(response.data.message, 'error');
         }
-      }, 1500)
+      }, 500)
 
     } catch (error) {
       setTimeout(() => {
         setLoading(false);
         snackbarEmitter('Something went wrong', 'error');
-      }, 1500);
+      }, 500);
     }
   };
 
@@ -231,14 +231,14 @@ function AdminLogin() {
         else {
           snackbarEmitter(response.data.message, 'error');
         }
-      }, 1500)
+      }, 500)
 
 
     } catch (error) {
       setTimeout(() => {
         setLoading(false);
         snackbarEmitter('Something went wrong', 'error');
-      }, 1500)
+      }, 500)
 
     }
   };
@@ -276,14 +276,14 @@ function AdminLogin() {
         } else {
           snackbarEmitter(response.data.message, 'error');
         }
-      }, 1500)
+      }, 500)
 
 
     } catch (err) {
       setTimeout(() => {
         setForgotLoading(false);
         snackbarEmitter('Something went wrong', 'error');
-      }, 1500);
+      }, 500);
     }
   };
 
