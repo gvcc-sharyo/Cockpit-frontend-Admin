@@ -71,6 +71,7 @@ function TrainingSyllabus() {
   const handleClick = (item) => {
     navigate('/admin/trainingChapter', {
       state: {
+        syllabusID: item._id,
         syllabusTitle: item.title,
         category: item.category
       }
@@ -141,14 +142,14 @@ function TrainingSyllabus() {
 
         closeMenu();
 
-      }, 1500)
+      }, 500)
 
     } catch (error) {
       setTimeout(() => {
         setLoading(false);
         snackbarEmitter('Something went wrong', 'error');
         closeMenu();
-      }, 1500);
+      }, 500);
 
 
     }
@@ -212,7 +213,7 @@ function TrainingSyllabus() {
         }
         closeMenu();
         fetchSyllabus();
-      }, 1500)
+      }, 500)
 
     } catch (error) {
       setLoading(false);
@@ -278,7 +279,6 @@ function TrainingSyllabus() {
 
 
                   </Box>
-
 
 
                   <CardContent onClick={() => handleClick(item)} sx={{ cursor: 'pointer' }}>
@@ -395,14 +395,7 @@ function TrainingSyllabus() {
                   <CustomButton children='Yes' onClick={handleDeleteSyllabus} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
                 </Grid>
                 <Grid item>
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    onClick={handleDeleteModalClose}
-                    sx={{ backgroundColor: '#BF0000', color: 'white' }}
-                  >
-                    No
-                  </Button>
+              <CustomButton children='No' onClick={handleDeleteModalClose} bgColor='#BF0000' sx={{ width:'20%', }}/>
                 </Grid>
               </Grid>
             </Grid>

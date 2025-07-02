@@ -81,13 +81,15 @@ function Feedback() {
       const response = await apiGet('/reports');
 
       if (response.data.status === 200) {
+        // setOpen(null);
         const filteredReports = response.data.data.filter((report) => report.status === 'pending');
         if (filteredReports.length === 0) {
+          setOpen(null);
+          setReports([]); 
           snackbarEmitter('No pending reports found', 'info');
         } else {
           setReports(filteredReports);
         }
-
       }
       else {
         snackbarEmitter(response.data.message, 'error');
@@ -198,16 +200,12 @@ function Feedback() {
           fetchReports();
         }
         else {
-          setCustomLoading({
-            approveLoading: false,
-            declineLoading: false
-          })
           snackbarEmitter(response.data.message, 'error');
           fetchReports();
         }
 
 
-      }, 1500)
+      }, 500)
     }
     catch (error) {
       setTimeout(() => {
@@ -217,7 +215,7 @@ function Feedback() {
         })
         snackbarEmitter('Something went wrong', 'error');
         fetchReports();
-      }, 1500)
+      }, 500)
     }
   }
 
@@ -226,8 +224,8 @@ function Feedback() {
     <Navbar title={"Feedback"}>
       <Grid container justifyContent="center" sx={{ maxHeight: '100vh', overflowY: 'scroll' }}>
         {
-          reports.map((report, index) => (
-            <Grid  size={{ xs: 12, sm: 10, md: 10 }} >
+           reports.length > 0 && reports.map((report, index) => (
+            <Grid  key={report._id} size={{ xs: 12, sm: 10, md: 10 }} >
               {/* Toggle Box */}
               <Box sx={styles.toggleBox} onClick={() => setOpen(open === report?._id ? null : report?._id)}>
                 <Grid sx={{ display: "flex", alignItems: "center", gap: 2 }} >

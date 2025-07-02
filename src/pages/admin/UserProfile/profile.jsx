@@ -108,12 +108,12 @@ const handleSubmit = async (e) => {
         snackbarEmitter(data.message, "success");
         setLoading(false);
          navigate(0)
-      }, 2000);
+      }, 500);
     } else {
       setTimeout(() => {
         snackbarEmitter(data.message, "warning");
         setLoading(false);
-      }, 2000);
+      }, 500);
     }
   } catch (error) {
     setLoading(false);
@@ -146,7 +146,6 @@ const handleSubmit = async (e) => {
   { name: "state", placeholder: "State", value: formData.state, size: { xs: 12, md: 4 } },
   { name: "zipcode", placeholder: "ZipCode", value: formData.zipcode, size: { xs: 12, md: 4 } }
 ];
-
 
   const styles = {
     card: {

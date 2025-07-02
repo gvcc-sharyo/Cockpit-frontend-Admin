@@ -34,11 +34,11 @@ function TrainingQuestion() {
     const [questions, setQuestions] = useState([]);
 
     const location = useLocation();
-    const { category, syllabusName, bookName, chapterName, activeBook} = location.state || {};
+    const { category, syllabusName, bookName, chapterName, activeBook, syllabusid, chapterId} = location.state || {};
 
     const fetchQuestions = async () => {
         try {
-            const response = await apiGet('/questions');
+            const response = await apiGet(`/questionsByChapterId/${chapterId}`);
             if (response.data.status === 200 && response.data.data.length === 0) {
                 snackbarEmitter('No questions found', 'info');
             }
@@ -59,7 +59,7 @@ function TrainingQuestion() {
         fetchQuestions();
     }, [])
 
-    const filteredQuestions = questions.filter(q => q.syllabus === syllabusName && q.book === bookName && q.chapter === chapterName);
+    // const filteredQuestions = questions.filter(q => q.syllabus === syllabusName && q.book === bookName && q.chapter === chapterName);
 
     const navigate = useNavigate();
     const handleAddClick = () => {
@@ -122,7 +122,7 @@ function TrainingQuestion() {
                 }
                 fetchQuestions();
 
-            }, 1500);
+            }, 500);
 
 
         } catch (error) {
@@ -200,13 +200,13 @@ function TrainingQuestion() {
                     handleStatusModalClose();
                     fetchQuestions();
                 }
-            }, 1500)
+            }, 500)
 
         } catch (error) {
             setTimeout(() => {
                 setLoading(false);
                 snackbarEmitter('Something went wrong', 'error');
-            }, 1500)
+            }, 500)
 
         }
     }
@@ -215,8 +215,10 @@ const handleNavigate = () => {
     navigate('/admin/trainingChapter',{
       state: {
         syllabusTitle: syllabusName,
+        syllabusID: syllabusid,
         category: category,
-        selectBook: bookName
+        selectBook: bookName,
+        
       }
     });
 }
@@ -235,11 +237,11 @@ const handleNavigate = () => {
             >
 
                 <Grid sx={{ display: 'flex', alignItems: 'center' , gap: '10px'}} mb={2}>
-                    <CustomTypography text='Syllabus' onClick={() => navigate('/admin/trainingsyllabus')}  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
+                    <CustomTypography text={syllabusName} onClick={() => navigate('/admin/trainingsyllabus')}  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
                     <CustomTypography text='>' sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }}} />
-                    <CustomTypography  text='Chapter' onClick={handleNavigate} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
+                    <CustomTypography  text={bookName} onClick={handleNavigate} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
                     <CustomTypography  text='>'  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }}} />
-                    <CustomTypography text='Questions'  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' },cursor: 'pointer', textDecoration: 'underline' }} />
+                    <CustomTypography text={chapterName} onClick={handleNavigate}  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' },cursor: 'pointer', textDecoration: 'underline' }} />
                 </Grid>
                 {/* Header Buttons */}
                 <Grid
@@ -301,7 +303,7 @@ const handleNavigate = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {filteredQuestions.length > 0 && filteredQuestions.map((question, index) => (
+                                {questions.length > 0 && questions.map((question, index) => (
                                     <TableRow key={index} sx={{ borderBottom: '1px solid #e0e0e0' }}>
                                         <TableCell>{index + 1}</TableCell>
                                         <TableCell>{question.question}</TableCell>
@@ -404,7 +406,7 @@ const handleNavigate = () => {
                                     <CustomButton children='Yes' onClick={updateQuestion} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
                                 </Grid>
                                 <Grid item>
-                                    <CustomButton children='No' onClick={handleStatusModalClose} bgColor='#BF0000' sx={{ width: { xs: '50%', md: '30%', sm: '30%' }, fontSize: { xs: '11px', md: '13px', sm: '13px' } }} />
+                                    <CustomButton children='No' onClick={handleStatusModalClose} bgColor='#BF0000' sx={{ width: '20%'} }/>
                                 </Grid>
                             </Grid>
                         </Grid>
