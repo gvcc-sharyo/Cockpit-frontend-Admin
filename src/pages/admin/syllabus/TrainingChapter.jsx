@@ -696,7 +696,7 @@ useEffect(() => {
 
                     <Grid container sx={{ display: 'flex', alignItems: 'center', gap: 3 }} >
                         <Grid item>
-                            <CustomTypography text="Do you want to delet this book?" fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={400} />
+                            <CustomTypography text="Do you want to delete this book?" fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={400} />
                         </Grid>
                         <Grid item>
                             <Grid container spacing={2} justifyContent="center">
