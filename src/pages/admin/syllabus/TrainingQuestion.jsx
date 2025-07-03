@@ -1,5 +1,5 @@
 import Navbar from "../../../components/admin/Navbar";
-import { useEffect, useState } from "react";
+import { act, useEffect, useState } from "react";
 import {
     Grid,
     Typography,
@@ -34,7 +34,13 @@ function TrainingQuestion() {
     const [questions, setQuestions] = useState([]);
 
     const location = useLocation();
-    const { category, syllabusName, bookName, chapterName, activeBook, syllabusid, chapterId} = location.state || {};
+    const { category, syllabusName, bookName, chapterName, activeBook, syllabusid, chapterId, bookid} = location.state || {};
+
+   console.log("syllabus id",syllabusid);
+   console.log("chapter id",chapterId);
+   console.log("book id",bookid);
+   
+   
 
     const fetchQuestions = async () => {
         try {
@@ -66,9 +72,12 @@ function TrainingQuestion() {
         navigate('/admin/addQuestion',
             {
                 state: {
-                    syllabusName,
-                    bookName,
-                    chapterName,
+                    syllabusName: syllabusName,
+                    bookName: bookName,
+                    chapterName : chapterName,
+                    syllabusId : syllabusid,
+                    chapterId : chapterId,
+                    bookId : bookid
                 }
             },);
     }
@@ -107,6 +116,9 @@ function TrainingQuestion() {
             formData.append('syllabus', syllabusName);
             formData.append('book', bookName);
             formData.append('chapter', chapterName);
+            formData.append('chapterId', chapterId);
+            formData.append('syllabusId', syllabusid);
+            formData.append('bookId', bookid);
 
             const response = await apiPostUpload('/uploadQuestionsBulk', formData);
 
@@ -138,7 +150,10 @@ function TrainingQuestion() {
                 syllabusName,
                 bookName,
                 chapterName,
-                question
+                question,
+                syllabusid,
+                chapterId,
+                bookid
             }
         });
     };
@@ -217,7 +232,8 @@ const handleNavigate = () => {
         syllabusTitle: syllabusName,
         syllabusID: syllabusid,
         category: category,
-        selectBook: bookName,
+        selectBook: activeBook,
+        activeBookID: bookid
         
       }
     });

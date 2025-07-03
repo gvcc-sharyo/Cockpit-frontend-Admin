@@ -19,7 +19,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 
 
-function Training({ syllabusName, bookName, chapterName, question, report = false, modalClose, bulkButton = false }) {
+function Training({ syllabusName, bookName, chapterName, question, syllabusId, chapterId, bookId, report = false, modalClose, bulkButton = false }) {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [options, setOptions] = useState([1, 2]);
@@ -27,6 +27,9 @@ function Training({ syllabusName, bookName, chapterName, question, report = fals
     syllabus: syllabusName || location.state?.syllabusName || "",
     book: bookName || location.state?.bookName || "",
     chapter: chapterName || location.state?.chapterName || "",
+    syllabusId: syllabusId || location.state?.syllabusId || "",
+    chapterId: chapterId || location.state?.chapterId || "",
+    bookId: bookId || location.state?.bookId || "",
     question: question?.question || "",
     options: question?.options || [
       { id: 1, text: "", isCorrect: false },
@@ -43,8 +46,8 @@ function Training({ syllabusName, bookName, chapterName, question, report = fals
     if (!formData.book.trim()) newErrors.book = "Book is required.";
     if (!formData.chapter.trim()) newErrors.chapter = "Chapter is required.";
     if (!formData.question.trim()) newErrors.question = "Question is required.";
-    if (!formData.explanation.trim())
-      newErrors.explanation = "Explanation is required.";
+    // if (!formData.explanation.trim())
+    //   newErrors.explanation = "Explanation is required.";
     formData.options.forEach((opt, i) => {
       if (!opt.text.trim())
         newErrors[`option_${i}`] = "Option text is required.";
