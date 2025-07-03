@@ -38,11 +38,12 @@ function TrainingChapter() {
     const [books, setBooks] = useState([]);
     const [chapters, setChapters] = useState([]);
     const location = useLocation();
-    const { syllabusTitle, syllabusID, category, selectBook } = location.state;
+    const { syllabusTitle, syllabusID, category, selectBook, activeBookID } = location.state;
 
     const [filteredBooks, setFilteredBooks] = useState([]);
 
     const [selectedBook, setSelectedBook] = useState(filteredBooks[0]?.bookTitle);
+    const[selectedBookID, setSelectedBookID] = useState(filteredBooks[0]?._id); 
 
     const fetchBooks = async () => {
         try {
@@ -63,6 +64,7 @@ function TrainingChapter() {
                 setFilteredBooks(bookList);
 
                 setSelectedBook(selectBook ? selectBook : bookList[0]?.bookTitle);
+                setSelectedBookID(selectBook ? activeBookID : bookList[0]?._id);
 
             } else {
                 snackbarEmitter(response.data.message, 'error');
@@ -85,7 +87,7 @@ function TrainingChapter() {
             }
 
         } catch (error) {
-            console.error('Error fetching syllabus:', error);
+            console.error('Error fetching chapters:', error);
         }
     };
 
@@ -94,7 +96,7 @@ function TrainingChapter() {
         fetchChapters();
     }, [])
 
-    const filteredChapters = chapters.filter((chapter) => chapter.book === selectedBook);
+    const filteredChapters = chapters.filter((chapter) => chapter.bookId === selectedBookID);
 
     const [openModal, setOpenModal] = useState(false);
     const [bookData, setBookData] = useState({
@@ -200,7 +202,7 @@ function TrainingChapter() {
     const handleAddChapter = async () => {
         console.log("add chapter api called");
 
-        if (!selectedBook) {
+        if (!selectedBookID) {
             snackbarEmitter('Please select a book', 'error');
             return;
         }
@@ -218,7 +220,9 @@ function TrainingChapter() {
 
         const req = {
             syllabus: syllabusTitle,
+            syllabusId: syllabusID,
             book: selectedBook,
+            bookId: selectedBookID,
             chapterno: formData.chapterno,
             chaptername: formData.chaptername,
             status: formData.status
@@ -275,9 +279,10 @@ function TrainingChapter() {
                 syllabusName: chapter.syllabus,
                 bookName: chapter.book,
                 chapterName: chapter.chaptername,
-                activeBook: selectBook,
+                activeBook: selectedBook,
                 syllabusid: syllabusID,
-                chapterId: chapter._id
+                chapterId: chapter._id,
+                bookid: selectedBookID
             },
         });
     }
@@ -383,12 +388,17 @@ function TrainingChapter() {
     }
 
 
+    const handleBookClick = (book) => {
+        setSelectedBook(book.bookTitle);
+        setSelectedBookID(book._id);
+    }
+
 const bookRefs = useRef({});
 useEffect(() => {
-    if (selectedBook && bookRefs.current[selectedBook]) {
-        bookRefs.current[selectedBook].scrollIntoView({ behavior: 'smooth', inline: 'center' });
+    if (selectedBookID && bookRefs.current[selectedBookID]) {
+        bookRefs.current[selectedBookID].scrollIntoView({ behavior: 'smooth', inline: 'center' });
     }
-}, [selectedBook, filteredBooks]);
+}, [selectedBookID, filteredBooks]);
 
     return (
 
@@ -417,11 +427,11 @@ useEffect(() => {
                     <Box sx={{ display: 'flex', gap: '15px', padding: '10px', width: 'max-content' }}>
                         {
                             filteredBooks.length > 0 && filteredBooks.map((book) => (
-                                <Box  ref={(el) => (bookRefs.current[book.bookTitle] = el)} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', boxShadow: 3, borderRadius: '10px', px: 2, py: 1, minWidth: { xs: '45px', md: '120px', sm: '60px' }, bgcolor: selectedBook === book.bookTitle ? '#FFEBAB' : '#fff' }}>
+                                <Box  ref={(el) => (bookRefs.current[book._id] = el)} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', boxShadow: 3, borderRadius: '10px', px: 2, py: 1, minWidth: { xs: '45px', md: '120px', sm: '60px' }, bgcolor: selectedBookID === book._id ? '#FFEBAB' : '#fff' }}>
                                     {/* <CustomButton children={book.bookTitle} onClick={() => setSelectedBook(book.bookTitle)} loading={false} bgColor={selectedBook === book.bookTitle ? '#FFEBAB' : '#fff'}
                                         sx={{ color: 'black', py: 0, minWidth: { xs: '45px', md: '120px', sm: '60px' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }}
                                     /> */}
-                                    <CustomTypography text={book.bookTitle} fontSize={{ xs: '12px', sm: '13px', md: '14px' }} fontWeight={600} onClick={() => setSelectedBook(book.bookTitle)} sx={{ cursor: 'pointer' }} />
+                                    <CustomTypography text={book.bookTitle} fontSize={{ xs: '12px', sm: '13px', md: '14px' }} fontWeight={600} onClick={() => handleBookClick(book)} sx={{ cursor: 'pointer' }} />
 
                                     <IconButton
                                         onClick={(e) => openMenu(e, book)}
@@ -692,12 +702,11 @@ useEffect(() => {
 
                     <Grid container sx={{ display: 'flex', alignItems: 'center', gap: 3 }} >
                         <Grid item>
-                            <CustomTypography text="Do you want to delet this book?" fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={400} />
+                            <CustomTypography text="Do you want to delete this book?" fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={400} />
                         </Grid>
                         <Grid item>
                             <Grid container spacing={2} sx={{ display: 'flex', alignItems: 'center' }}>
                                 <Grid item>
-
                                     <CustomButton children='Yes' onClick={handleDeleteBook} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
                                 </Grid>
                                 <Grid item>

@@ -46,6 +46,7 @@ function TrainingSyllabus() {
 
 
       if (response.data.status === 200 && response.data.data.length === 0) {
+        setSyllabus([]);
         snackbarEmitter('No syllabus found', 'info');
       }
 
@@ -107,6 +108,7 @@ function TrainingSyllabus() {
     const errors = {};
 
     if (!formData.title) errors.title = 'Title is required';
+    if(!formData.image) errors.image = 'Image is required';
 
     setFormErrors(errors);
 
@@ -335,6 +337,14 @@ function TrainingSyllabus() {
                 {formData.image.name}
               </Typography>
             )}
+
+            {
+              formErrors.image && (
+                <Typography variant="body2" sx={{ mt: 1, color: 'red' }}>
+                  {formErrors.image}
+                </Typography>
+              )
+            }
           </Box>
 
           <Grid container sx={{ display: 'flex', gap: 3, mb: 3 }}>
@@ -386,7 +396,7 @@ function TrainingSyllabus() {
 
           <Grid container sx={{ display: 'flex', alignItems: 'center', gap: 3 }} >
             <Grid item>
-              <CustomTypography text="Do you want to delet this syllabus?" fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={400} />
+              <CustomTypography text="Do you want to delete this syllabus?" fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={400} />
             </Grid>
             <Grid item>
               <Grid container spacing={2} justifyContent="center">
