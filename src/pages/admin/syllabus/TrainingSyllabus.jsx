@@ -47,6 +47,7 @@ function TrainingSyllabus() {
 
       if (response.data.status === 200 && response.data.data.length === 0) {
         setSyllabus([]);
+        // setMenuItem([]);
         snackbarEmitter('No syllabus found', 'info');
       }
 

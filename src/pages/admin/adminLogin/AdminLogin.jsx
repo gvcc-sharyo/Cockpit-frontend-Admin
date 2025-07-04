@@ -35,7 +35,7 @@ import { left } from '@popperjs/core';
 const styles = {
   containerBox: {
     minHeight: '100vh',
-    backgroundImage: 'url(/public/images/signin.svg)',
+    backgroundImage: 'url(/images/signin.svg)',
     backgroundSize: 'cover',
     // objectFit: 'cover',
     backgroundPosition: 'center',
@@ -299,7 +299,7 @@ function AdminLogin() {
         >
           <Box
             component="img"
-            src="/public/images/full logo.svg"
+            src="/images/full logo.svg"
             alt="logo"
             sx={{
               height: { xs: 40, sm: 60, md: 90 }, // Responsive height

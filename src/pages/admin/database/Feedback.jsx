@@ -23,8 +23,6 @@ function Feedback() {
 
   console.log('reportId', reportID);
 
-
-
   const styles = {
     toggleBox: {
       bgcolor: "#fff",
@@ -134,6 +132,9 @@ function Feedback() {
     syllabus: "",
     book: "",
     chapter: "",
+    syllabusId: "",
+    bookId: "",
+    chapterId: "",
     question: {
       _id: "",
       question: "",
@@ -148,9 +149,12 @@ function Feedback() {
   const handleModalOpen = (report) => {
     setOpenModal(true);
     setFormData({
-      syllabus: report.questionId.syllabus,
-      book: report.questionId.book,
-      chapter: report.questionId.chapter,
+      syllabus: report.questionId?.syllabus,
+      book: report.questionId?.book,
+      chapter: report.questionId?.chapter,
+      syllabusId: report.questionId?.syllabusId,
+      bookId: report.questionId?.bookId,  
+      chapterId: report.questionId?.chapterId,
       question: {
         _id: report.questionId._id,
         question: report.questionId.question,
@@ -350,123 +354,10 @@ function Feedback() {
         </DialogTitle>
 
         <DialogContent dividers>
-          {/* <Grid container spacing={2} sx={{ mt: 2, mb: 2 }}>
-            <Grid size={{ xs: 12, md: 12, sm:12 }}>
-              <CustomTextArea
-                value={formData.question}
-                onChange={(e) =>
-                  handleInputChange({
-                    target: { name: "question", value: e.target.value },
-                  })
-                }
-              />
-            </Grid>
-          </Grid>
-          <Divider sx={{ border: "1px solid #DBDBDB", mb: 2 }} />
-          <Box
-            sx={{
-              justifyContent: "space-between",
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 2,
-            }}
-          >
-            <CustomTypography text="Selected Correct Options" />
-            <CustomTypography text="Choices" />
-            <Box sx={{ width: { xs: "50%", sm: "auto" } }}>
-              <Button
-                onClick={handleAddOption}
-                variant="contained"
-                fullWidth={true}
-                sx={{
-                  backgroundColor: "#EAB308",
-                  color: "white",
-                  borderRadius: "10px",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                +Add Option
-              </Button>
-            </Box>
-          </Box>
-          <FormControl fullWidth sx={{ mt: 2 }}>
-            <RadioGroup
-              onChange={(e) => handleOptionCorrectChange(e.target.value)}
-            >
-              {formData.options.length > 0 && formData.options.map((option, index) => (
-                <Box
-                  key={option.id}
-                  sx={{
-                    display: "flex",
-                    width: "100%",
-                    alignItems: "center",
-                    mb: 2,
-                  }}
-                >
-                  <Radio
-                    value={`option-${index}`}
-                    checked={option.isCorrect}
-                    sx={{ mt: 2, mr: { xs: -2, md: 2 } }}
-                  />
-                  <Box
-                    sx={{ width: "-webkit-fill-available", marginLeft: "50px" }}
-                  >
-                    <Box
-                      sx={{ display: "flex", justifyContent: "flex-end", mb: 1 }}
-                    >
-                      <Button
-                        variant="text"
-                        color="primary"
-                        onClick={() => handleDeleteOption(index)}
-                        sx={{ padding: 0, minWidth: "auto", fontWeight: "bold" }}
-                      >
-                        Delete
-                      </Button>
-                    </Box>
-                    <CustomTextArea
-                      value={option.text}
-                      onChange={(e) =>
-                        handleOptionTextChange(index, e.target.value)
-                      }
-                    />
-                  </Box>
-                </Box>
-              ))}
-            </RadioGroup>
-          </FormControl>
-          <Divider sx={{ border: "1px solid #DBDBDB", mb: 2, mt: 2 }} />
-          <Box sx={{ display: "flex", width: "100%", alignItems: "center" }}>
-            <CustomTypography text={"Solution"} />
-            <Box
-              sx={{
-                width: "-webkit-fill-available",
-                marginLeft: { xs: "20px", md: "50px" },
-              }}
-            >
-              <CustomTextArea
-                value={formData.explanation}
-                onChange={(e) => handleExplanationChange(e.target.value)}
-              />
-            </Box>
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              flexDirection: { xs: "column", sm: "row" },
-              gap: 2,
-              mt: 4,
-            }}
-          >
-            <CustomButton children='Update question' onClick={handleUpdate} loading={loading} bgColor='#EAB308' sx={{ width: '30%' }} />
-          </Box> */}
-          <Training syllabusName={formData.syllabus} bookName={formData.book} chapterName={formData.chapter} question={formData.question} report={true} modalClose={handleModalClose} />
+          <Training syllabusNav={true} syllabusName={formData.syllabus} bookName={formData.book} chapterName={formData.chapter} syllabusId={formData.syllabusId} bookId={formData.bookId} chapterId={formData.chapterId} question={formData.question} report={true} modalClose={handleModalClose} />
 
         </DialogContent>
       </Dialog>
-
-
 
     </Navbar>
   );
