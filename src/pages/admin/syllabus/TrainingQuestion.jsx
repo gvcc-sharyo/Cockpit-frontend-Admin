@@ -34,13 +34,13 @@ function TrainingQuestion() {
     const [questions, setQuestions] = useState([]);
 
     const location = useLocation();
-    const { category, syllabusName, bookName, chapterName, activeBook, syllabusid, chapterId, bookid} = location.state || {};
+    const { category, syllabusName, bookName, chapterName, activeBook, syllabusid, chapterId, bookid } = location.state || {};
 
-   console.log("syllabus id",syllabusid);
-   console.log("chapter id",chapterId);
-   console.log("book id",bookid);
-   
-   
+    console.log("syllabus id", syllabusid);
+    console.log("chapter id", chapterId);
+    console.log("book id", bookid);
+
+
 
     const fetchQuestions = async () => {
         try {
@@ -74,10 +74,10 @@ function TrainingQuestion() {
                 state: {
                     syllabusName: syllabusName,
                     bookName: bookName,
-                    chapterName : chapterName,
-                    syllabusId : syllabusid,
-                    chapterId : chapterId,
-                    bookId : bookid
+                    chapterName: chapterName,
+                    syllabusId: syllabusid,
+                    chapterId: chapterId,
+                    bookId: bookid
                 }
             },);
     }
@@ -147,13 +147,13 @@ function TrainingQuestion() {
     const handleEditClick = (question) => {
         navigate('/admin/addQuestion/', {
             state: {
-                syllabusName,
-                bookName,
-                chapterName,
-                question,
-                syllabusid,
-                chapterId,
-                bookid
+                syllabusName: syllabusName,
+                bookName: bookName,
+                chapterName: chapterName,
+                question: question,
+                syllabusId: syllabusid,
+                chapterId: chapterId,
+                bookId: bookid
             }
         });
     };
@@ -226,18 +226,18 @@ function TrainingQuestion() {
         }
     }
 
-const handleNavigate = () => {
-    navigate('/admin/trainingChapter',{
-      state: {
-        syllabusTitle: syllabusName,
-        syllabusID: syllabusid,
-        category: category,
-        selectBook: activeBook,
-        activeBookID: bookid
-        
-      }
-    });
-}
+    const handleNavigate = () => {
+        navigate('/admin/trainingChapter', {
+            state: {
+                syllabusTitle: syllabusName,
+                syllabusID: syllabusid,
+                category: category,
+                selectBook: activeBook,
+                activeBookID: bookid
+
+            }
+        });
+    }
 
     return (
 
@@ -252,12 +252,12 @@ const handleNavigate = () => {
                 }}
             >
 
-                <Grid sx={{ display: 'flex', alignItems: 'center' , gap: '10px'}} mb={2}>
-                    <CustomTypography text={syllabusName} onClick={() => navigate('/admin/trainingsyllabus')}  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
-                    <CustomTypography text='>' sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }}} />
-                    <CustomTypography  text={bookName} onClick={handleNavigate} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
-                    <CustomTypography  text='>'  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }}} />
-                    <CustomTypography text={chapterName} onClick={handleNavigate}  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' },cursor: 'pointer', textDecoration: 'underline' }} />
+                <Grid sx={{ display: 'flex', alignItems: 'center', gap: '10px' }} mb={2}>
+                    <CustomTypography text={syllabusName} onClick={() => navigate('/admin/trainingsyllabus')} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
+                    <CustomTypography text='>' sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' } }} />
+                    <CustomTypography text={bookName} onClick={handleNavigate} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
+                    <CustomTypography text='>' sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' } }} />
+                    <CustomTypography text={chapterName} onClick={handleNavigate} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
                 </Grid>
                 {/* Header Buttons */}
                 <Grid
@@ -422,7 +422,7 @@ const handleNavigate = () => {
                                     <CustomButton children='Yes' onClick={updateQuestion} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
                                 </Grid>
                                 <Grid item>
-                                    <CustomButton children='No' onClick={handleStatusModalClose} bgColor='#BF0000' sx={{ width: '20%'} }/>
+                                    <CustomButton children='No' onClick={handleStatusModalClose} bgColor='#BF0000' sx={{ width: '20%' }} />
                                 </Grid>
                             </Grid>
                         </Grid>

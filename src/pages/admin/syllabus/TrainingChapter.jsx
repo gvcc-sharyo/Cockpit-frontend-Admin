@@ -52,11 +52,6 @@ function TrainingChapter() {
             if (response.data.status === 200) {
                 const bookList = response.data.data;
 
-                // Step 1: Filter books that have a syllabusID field
-                // const booksWithSyllabus = bookList.filter(book => book.syllabusID);
-                // Step 2: Filter those books by matching syllabusTitle
-                // const filterBooks = bookList.filter(book => book.syllabusID?.title === syllabusTitle);
-
                 if (bookList.length === 0) {
                     snackbarEmitter('No books found', 'info');
                 }
@@ -75,12 +70,14 @@ function TrainingChapter() {
         }
     };
 
+    const[filteredChapters, setFilteredChapters] = useState([]);
     const fetchChapters = async () => {
         try {
             const response = await apiGet(`/chaptersBySyllabusId/${syllabusID}`);
 
             if (response.data.status === 200) {
-                setChapters(response.data.data);
+                 const filterChapters = response.data.data.filter((chapter) => chapter.bookId === selectedBookID);
+                setFilteredChapters(filterChapters);
             }
             else {
                 snackbarEmitter(response.data.message, 'error');
@@ -93,10 +90,15 @@ function TrainingChapter() {
 
     useEffect(() => {
         fetchBooks();
-        fetchChapters();
+        // fetchChapters();
     }, [])
 
-    const filteredChapters = chapters.filter((chapter) => chapter.bookId === selectedBookID);
+   useEffect(() => {
+    if (selectedBookID) {
+        fetchChapters();
+    }
+}, [selectedBookID]);
+
 
     const [openModal, setOpenModal] = useState(false);
     const [bookData, setBookData] = useState({
@@ -250,12 +252,13 @@ function TrainingChapter() {
                 setLoading(false);
                 if (response.data.status === 200) {
                     snackbarEmitter(response.data.message, 'success');
-                    fetchChapters();
+                    
                     handleChapterModalClose();
                     handleStatusModalClose();
                 } else {
                     snackbarEmitter(response.data.message, 'error');
                 }
+                fetchChapters();
             }, 500)
 
 
@@ -276,8 +279,8 @@ function TrainingChapter() {
         navigate('/admin/trainingQuestion', {
             state: {
                 category: category,
-                syllabusName: chapter.syllabus,
-                bookName: chapter.book,
+                syllabusName: syllabusTitle,
+                bookName: selectedBook,
                 chapterName: chapter.chaptername,
                 activeBook: selectedBook,
                 syllabusid: syllabusID,
