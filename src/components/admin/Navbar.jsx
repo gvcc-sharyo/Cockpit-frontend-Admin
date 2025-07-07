@@ -314,6 +314,29 @@ const Navbar = ({ title, children }) => {
                 </ListItemIcon>
                 <CustomTypography text='Pricing' color={isActive('/admin/pricing') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
               </ListItem>
+
+
+               <ListItem
+                button
+                onClick={() => handleNavigate('/admin/institution')}
+                sx={{
+                  fontWeight: 'bold',
+                  borderRadius: 2,
+                  mb: 1,
+                  bgcolor: isActive('/admin/institution') ? '#EAB308' : 'white',
+                  // color: isActive('/admin/pricing') ? 'white' : 'black',
+                  cursor: 'pointer',
+                  ":hover": {
+                    color: 'black'
+                  },
+
+                }}
+              >
+                <ListItemIcon>
+                  <img src="/images/institution.svg" alt="institution" />
+                </ListItemIcon>
+                <CustomTypography text='Institution' color={isActive('/admin/institution') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
+              </ListItem>
             </List>
           </Box>
 

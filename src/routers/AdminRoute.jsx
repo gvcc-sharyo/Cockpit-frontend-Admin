@@ -12,6 +12,7 @@ import Profile from '../pages/admin/UserProfile/profile';
 import AddQuestion from '../pages/admin/syllabus/AddQuestion';
 import TrainingAdd from '../pages/admin/database/training/TrainingAdd';
 import ResetPassword from '../pages/admin/resetPassword/ResetPassword';
+import InstitutionDetail from '../pages/admin/institute/InstitutionDetail';
 
 const AdminRoute = () => {
 
@@ -38,7 +39,7 @@ const AdminRoute = () => {
         <Route path="/admin/addQuestion" element={<AddQuestion />} />
         <Route path="/admin/trainingAdd" element={<TrainingAdd />} />
         <Route path="/admin/institution" element={<Institution />} />
-        {/* <Route path="/admin/institutiondetails" element ={<InstitutionDetail />} /> */}
+        <Route path="/admin/institutiondetails" element ={<InstitutionDetail />} />
         <Route path="/admin/notifications" element={<Notifications />} />
         <Route path="/admin/pricing" element={<Pricing />} />
         <Route path="/admin/profile" element={<Profile />} />

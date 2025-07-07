@@ -14,23 +14,10 @@ import {
 } from "@mui/material";
 import EditSquareIcon from '@mui/icons-material/EditSquare';
 import { apiGet } from "../../api/axios";
+import CustomTypography from "./CustomTypography";
+import CustomButton from "./CustomButton";
 
-function InstituteTable({maxWidth}) {
-
-    const [institutes, setInstitutes] = useState([])
-
-    const fetchInstitute = async () => {
-        try {
-            const response = await apiGet('/admin/getInstitute');
-            setInstitutes(response.data.data);
-        } catch (error) {
-            console.error('Error fetching institutes:', error);
-        }
-    };
-
-    useEffect(() => {
-        fetchInstitute();
-    }, [])
+function InstituteTable({maxWidth, handleClick, institutes}) {
 
 
     return (
@@ -46,23 +33,32 @@ function InstituteTable({maxWidth}) {
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell><Typography fontWeight="bold">Sr No</Typography></TableCell>
-                                <TableCell><Typography fontWeight="bold">Institute Name</Typography></TableCell>
-                                <TableCell><Typography fontWeight="bold">Number students</Typography></TableCell>
-                                <TableCell><Typography fontWeight="bold">Status</Typography></TableCell>
-                                <TableCell><Typography fontWeight="bold">Action</Typography></TableCell>
+                                <TableCell>
+                                     <CustomTypography text="Sr No" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
+                                </TableCell>
+                                <TableCell>
+                                    <CustomTypography text="Institute Name" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
+                                </TableCell>
+                                <TableCell>
+                                    <CustomTypography text="Number students" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
+                                </TableCell>
+                                <TableCell>
+                                    <CustomTypography text="Status" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
+                                </TableCell>
+                                <TableCell>
+                                    <CustomTypography text="Action" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
+                                </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {institutes.map((institute, index) => (
                                 <TableRow key={index} sx={{ borderBottom: '1px solid #e0e0e0', }}>
                                     <TableCell >{index + 1}</TableCell>
-                                    <TableCell>{institute.instituteName}</TableCell>
+                                    <TableCell sx={{ cursor: 'pointer' }} onClick={handleClick}>{institute.instituteName}</TableCell>
                                     <TableCell>1</TableCell>
                                     <TableCell>
-                                        <Button variant="contained" sx={{ backgroundColor: '#109CF1', color: 'white' }}>
-                                            Active
-                                        </Button>
+                                       
+                                         <CustomButton children='Active' loading={false} bgColor='#109CF1' sx={{ width: { xs: '20%', sm: '20%', md: '20%' }, fontSize: { xs: '10px', sm: '11px', md: '12px' }, }} />
                                     </TableCell>
                                     <TableCell>
                                         <IconButton>
