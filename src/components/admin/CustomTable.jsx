@@ -17,7 +17,7 @@ import { apiGet } from "../../api/axios";
 import CustomTypography from "./CustomTypography";
 import CustomButton from "./CustomButton";
 
-function InstituteTable({maxWidth, handleClick, institutes}) {
+function CustomTable({maxWidth, handleClick, institutes, tableHeaders}) {
 
 
     return (
@@ -33,25 +33,19 @@ function InstituteTable({maxWidth, handleClick, institutes}) {
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell>
-                                     <CustomTypography text="Sr No" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
-                                </TableCell>
-                                <TableCell>
-                                    <CustomTypography text="Institute Name" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
-                                </TableCell>
-                                <TableCell>
-                                    <CustomTypography text="Number students" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
-                                </TableCell>
-                                <TableCell>
-                                    <CustomTypography text="Status" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
-                                </TableCell>
-                                <TableCell>
-                                    <CustomTypography text="Action" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
-                                </TableCell>
+
+                                {
+                                    tableHeaders?.map((header, index) => (
+                                        <TableCell key={index}>
+                                            <CustomTypography text={header} fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
+                                        </TableCell>
+                                    ))
+                                }
+                              
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {institutes.map((institute, index) => (
+                            {institutes?.map((institute, index) => (
                                 <TableRow key={index} sx={{ borderBottom: '1px solid #e0e0e0', }}>
                                     <TableCell >{index + 1}</TableCell>
                                     <TableCell sx={{ cursor: 'pointer' }} onClick={handleClick}>{institute.instituteName}</TableCell>
@@ -76,4 +70,4 @@ function InstituteTable({maxWidth, handleClick, institutes}) {
     );
 }
 
-export default InstituteTable;
+export default CustomTable;

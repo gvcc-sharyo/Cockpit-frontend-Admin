@@ -22,7 +22,7 @@ import {
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 import { apiGet, apiPost } from "../../../api/axios";
 import CloseIcon from "@mui/icons-material/Close";
-import InstituteTable from "../../../components/admin/InstituteTable";
+import CustomTable from "../../../components/admin/CustomTable";
 import CustomButton from "../../../components/admin/CustomButton";
 import CustomTextField from "../../../components/admin/CustomTextField";
 import CustomTypography from "../../../components/admin/CustomTypography";
@@ -103,7 +103,12 @@ function Institution() {
 
 
     const handleModalOpen = () => setOpenModal(true);
-    const handleModalClose = () => setOpenModal(false);
+    const handleModalClose = () => {
+        setOpenModal(false);
+        setFormData({});
+        setFormErrs({});
+    }
+
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         instituteName: "",
@@ -121,21 +126,31 @@ function Institution() {
         setFormData({ ...formData, [name]: value });
     };
 
-    const formErrors = {
-        instituteName: "",
-        department: "",
-        email: "",
-        phone: "",
-        amount: "",
-        period: "",
-        password: "",
-        transactionid: "",
-        address: "",
+    const [formErrs, setFormErrs] = useState({});
+
+    const handleErrors = () => {
+        const errs = {};
+        if (!formData.instituteName) errs.instituteName = "Institute name is required";
+        if (!formData.department) errs.department = "Department is required";
+        if (!formData.email) errs.email = "Email is required";
+        if (!/\S+@\S+\.\S+/.test(formData.email)) errs.email = 'Invalid email';
+        if (!formData.phone) errs.phone = "Phone number is required";
+        if (!formData.amount) errs.amount = "Amount is required";
+        if (!formData.period) errs.period = "Period is required";
+        if (!formData.password) errs.password = "Password is required";
+        if (!formData.address) errs.address = "Address is required";
+        setFormErrs(errs);
+        return errs;
     };
 
-
-
     const handleAddInstitute = async () => {
+        const errors = handleErrors();
+
+        if (errors.length > 0) {
+            return;
+        }
+
+
         const req = {
             instituteName: formData.instituteName,
             department: formData.department,
@@ -145,6 +160,7 @@ function Institution() {
             subscriptionPeriod: formData.period,
             address: formData.address,
         };
+
         try {
             setLoading(true);
             const response = await apiPost("/admin/addInstitute", req);
@@ -181,6 +197,8 @@ function Institution() {
         navigate('/admin/institutiondetails');
     }
 
+const tableHeaders = ['Sr no', 'Institute Name', 'Number of students', 'Status', 'Action'];
+
     return (
         <>
             <Navbar title="Institution">
@@ -198,7 +216,7 @@ function Institution() {
                 </Grid>
 
                 <Grid size={{ xs: 12 }} mt={2}>
-                    <InstituteTable maxWidth={"100%"} handleClick={handleClick} institutes={institutes} />
+                    <CustomTable maxWidth={"100%"} handleClick={handleClick} institutes={institutes} tableHeaders={tableHeaders} />
                 </Grid>
 
 
@@ -220,6 +238,8 @@ function Institution() {
                                     value={formData.instituteName}
                                     onChange={handleInputChange}
                                     placeholder="Enter"
+                                    error={!!formErrs.instituteName}
+                                    helperText={formErrs.instituteName}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12, md: 5 }}>
@@ -229,6 +249,8 @@ function Institution() {
                                     value={formData.department}
                                     onChange={handleInputChange}
                                     placeholder="Enter"
+                                    error={!!formErrs.department}
+                                    helperText={formErrs.department}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12, md: 5 }}>
@@ -238,6 +260,8 @@ function Institution() {
                                     value={formData.email}
                                     onChange={handleInputChange}
                                     placeholder="Enter"
+                                    error={!!formErrs.email}
+                                    helperText={formErrs.email}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12, md: 5 }}>
@@ -247,6 +271,8 @@ function Institution() {
                                     value={formData.phone}
                                     onChange={handleInputChange}
                                     placeholder="Enter"
+                                    error={!!formErrs.phone}
+                                    helperText={formErrs.phone}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12, md: 5 }}>
@@ -256,6 +282,8 @@ function Institution() {
                                     value={formData.amount}
                                     onChange={handleInputChange}
                                     placeholder="Enter"
+                                    error={!!formErrs.amount}
+                                    helperText={formErrs.amount}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12, md: 5 }}>
@@ -266,6 +294,8 @@ function Institution() {
                                     value={formData.period}
                                     onChange={handleInputChange}
                                     placeholder="Enter"
+                                    error={!!formErrs.period}
+                                    helperText={formErrs.period}
                                 >
                                     <MenuItem value="1">1 month</MenuItem>
                                     <MenuItem value="6">6 months</MenuItem>
@@ -281,6 +311,8 @@ function Institution() {
                                     value={formData.password}
                                     onChange={handleInputChange}
                                     placeholder="Enter"
+                                    error={!!formErrs.password}
+                                    helperText={formErrs.password}
                                 />
                             </Grid>
 
@@ -301,6 +333,8 @@ function Institution() {
                                     value={formData.address}
                                     onChange={handleInputChange}
                                     placeholder="Enter"
+                                    error={!!formErrs.address}
+                                    helperText={formErrs.address}
                                 />
                             </Grid>
 

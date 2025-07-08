@@ -203,10 +203,10 @@ const Navbar = ({ title, children }) => {
                   cursor: 'pointer',
                   ":hover": {
                     color: 'black'
-                  }
+                  },
                 }}
               >
-                <ListItemIcon>
+                <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
                   <img src="/images/dashboard.svg" alt="Dashboard" />
                 </ListItemIcon>
                 <CustomTypography text='Dashboard' color={isActive('/') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
@@ -226,7 +226,7 @@ const Navbar = ({ title, children }) => {
                   }
                 }}
               >
-                <ListItemIcon>
+                <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
                   <img src="/images/syllabus.svg" alt="Syllabus" />
                 </ListItemIcon>
                 <CustomTypography text='Syllabus' color={isActive('/admin/trainingsyllabus') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
@@ -243,7 +243,7 @@ const Navbar = ({ title, children }) => {
                   cursor: 'pointer',
                 }}
               >
-                <ListItemIcon sx={{ minWidth: 40, mr: 1 }}> {/* Increase space here */}
+                <ListItemIcon sx={{ minWidth: 30, mr: 1 }}> {/* Increase space here */}
                   <img src="/images/database.svg" alt="Database" />
                 </ListItemIcon>
                 <CustomTypography text='Database' color={'#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
@@ -252,7 +252,7 @@ const Navbar = ({ title, children }) => {
 
 
               <Collapse in={openDatabase} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding>
+                {/* <List component="div" disablePadding> */}
                   <ListItem
                     button
                     sx={{
@@ -268,7 +268,7 @@ const Navbar = ({ title, children }) => {
                     }}
                     onClick={() => handleNavigate('/admin/trainingAdd')}
                   >
-                    <ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
                       <img src="/images/database.svg" alt="Training" />
                     </ListItemIcon>
                     <CustomTypography text='Training' color={isActive('/admin/trainingAdd') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
@@ -285,12 +285,12 @@ const Navbar = ({ title, children }) => {
                     }}
                     onClick={() => handleNavigate('/admin/feedback')}
                   >
-                    <ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
                       <img src="/images/database.svg" alt="Feedback" />
                     </ListItemIcon>
                     <CustomTypography text='Feedback' color={isActive('/admin/feedback') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
                   </ListItem>
-                </List>
+                {/* </List> */}
               </Collapse>
 
               <ListItem
@@ -309,7 +309,7 @@ const Navbar = ({ title, children }) => {
 
                 }}
               >
-                <ListItemIcon>
+                <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
                   <img src="/images/donate.svg" alt="Pricing" />
                 </ListItemIcon>
                 <CustomTypography text='Pricing' color={isActive('/admin/pricing') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
@@ -332,11 +332,34 @@ const Navbar = ({ title, children }) => {
 
                 }}
               >
-                <ListItemIcon>
+                <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
                   <img src="/images/institution.svg" alt="institution" />
                 </ListItemIcon>
                 <CustomTypography text='Institution' color={isActive('/admin/institution') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
               </ListItem>
+
+              <ListItem
+                button
+                onClick={() => handleNavigate('/admin/studentProfile')}
+                sx={{
+                  fontWeight: 'bold',
+                  borderRadius: 2,
+                  mb: 1,
+                  bgcolor: isActive('/admin/studentProfile') ? '#EAB308' : 'white',
+                  // color: isActive('/admin/pricing') ? 'white' : 'black',
+                  cursor: 'pointer',
+                  ":hover": {
+                    color: 'black'
+                  },
+
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
+                  <img src="/images/3-User.svg" alt="img" />
+                </ListItemIcon>
+                <CustomTypography text='Student profile' color={isActive('/admin/studentProfile') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
+              </ListItem>
+
             </List>
           </Box>
 

@@ -1,6 +1,6 @@
 import Navbar from "../../../components/admin/Navbar";
 import { Box, Grid, Typography } from "@mui/material";
-import InstituteTable from "../../../components/admin/InstituteTable";
+import CustomTable from "../../../components/admin/CustomTable";
 import "./dashboard.css";
 import { useState, useEffect } from "react";
 import { apiGet } from "../../../api/axios";
