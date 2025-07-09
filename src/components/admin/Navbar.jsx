@@ -269,9 +269,30 @@ const Navbar = ({ title, children }) => {
                     onClick={() => handleNavigate('/admin/trainingAdd')}
                   >
                     <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
-                      <img src="/images/database.svg" alt="Training" />
+                      <img src="/images/database.svg" alt="img" />
                     </ListItemIcon>
                     <CustomTypography text='Training' color={isActive('/admin/trainingAdd') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
+                  </ListItem>
+
+                      <ListItem
+                    button
+                    sx={{
+                      pl: 4,
+                      mb: 1,
+                      borderRadius: 2,
+                      bgcolor: isActive('/admin/test') ? '#EAB308' : 'white',
+                      // color: isActive('/admin/trainingAdd') ? 'white' : 'black',
+                      cursor: 'pointer',
+                      ":hover": {
+                        color: 'black'
+                      }
+                    }}
+                    onClick={() => handleNavigate('/admin/test')}
+                  >
+                    <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
+                      <img src="/images/database.svg" alt="img" />
+                    </ListItemIcon>
+                    <CustomTypography text='Test' color={isActive('/admin/test') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
                   </ListItem>
 
                   <ListItem
