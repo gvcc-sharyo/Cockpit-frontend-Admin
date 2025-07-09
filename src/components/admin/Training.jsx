@@ -222,7 +222,7 @@ function Training({ syllabusName, bookName, chapterName, question, report = fals
   const [book, setBook] = useState([]);
   const getBooks = async (syllabus = "") => {
     try {
-      const response = await apiGet(syllabus ? `/getBooks?syllabus=${encodeURIComponent(syllabus)}` : "/getBooks");
+      const response = await apiGet("/getBooks");
       if (response.data.status === 200) {
         const booksList = response.data.books.filter(item => !syllabus || (item.syllabusId && item.syllabusId.title === syllabus)).map(item => item.bookTitle).filter(Boolean);
         setBook(booksList);
@@ -237,7 +237,7 @@ function Training({ syllabusName, bookName, chapterName, question, report = fals
   const [chapters, setChapters] = useState([]);
   const getChapters = async (syllabus = "", book = "") => {
     try {
-      const response = await apiGet(syllabus && book ? `/getChapters?syllabus=${encodeURIComponent(syllabus)}&book=${encodeURIComponent(book)}` : "/getChapters");
+      const response = await apiGet( "/getChapters");
       if (response.data.status === 200) {
         const chapterList = response.data.chapters.filter(item => !syllabus || !book || (item.syllabus === syllabus && item.book === book)).map(item => item.chaptername).filter(Boolean);
         setChapters(chapterList);

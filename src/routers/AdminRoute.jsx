@@ -39,7 +39,7 @@ const AdminRoute = () => {
         <Route path="/admin/addQuestion" element={<AddQuestion />} />
         <Route path="/admin/trainingAdd" element={<TrainingAdd />} />
         <Route path="/admin/institution" element={<Institution />} />
-        {/* <Route path="/admin/institutiondetails" element ={<InstitutionDetail />} /> */}
+        <Route path="/admin/institutiondetails" element ={<InstitutionDetail />} />
         <Route path="/admin/notifications" element={<Notifications />} />
         <Route path="/admin/pricing" element={<Pricing />} />
         <Route path="/admin/profile" element={<Profile />} />
