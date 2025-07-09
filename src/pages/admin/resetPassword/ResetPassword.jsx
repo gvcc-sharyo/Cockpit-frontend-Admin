@@ -119,13 +119,13 @@ function ResetPassword() {
                 } else {
                     snackbarEmitter(response.data.message, 'error');
                 }
-            }, 1500)
+            }, 500)
 
         } catch (error) {
             setTimeout(() => {
                 setLoading(false);
                 snackbarEmitter('Something went wrong', 'error');
-            }, 1500)
+            }, 500)
 
         }
     };

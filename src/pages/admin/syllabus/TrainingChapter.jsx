@@ -1,6 +1,6 @@
 import Navbar from "../../../components/admin/Navbar";
-import { useEffect, useState } from "react";
-import { apiGet, apiPost } from "../../../api/axios";
+import { useEffect, useState, useRef } from "react";
+import { apiGet, apiPost, apiDelete } from "../../../api/axios";
 import {
     Grid,
     Card,
@@ -22,7 +22,8 @@ import {
     TableHead,
     TableRow,
     Paper,
-    MenuItem
+    MenuItem,
+    Menu
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import CloseIcon from '@mui/icons-material/Close';
@@ -31,85 +32,86 @@ import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import CustomTextField from "../../../components/admin/CustomTextField";
 import CustomButton from "../../../components/admin/CustomButton";
 import CustomTypography from "../../../components/admin/CustomTypography";
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 function TrainingChapter() {
     const [books, setBooks] = useState([]);
     const [chapters, setChapters] = useState([]);
     const location = useLocation();
-    const {syllabusTitle, syllabusId, category} = location.state;
-
+    const { syllabusTitle, syllabusID, category, selectBook, activeBookID } = location.state;
 
     const [filteredBooks, setFilteredBooks] = useState([]);
 
-    const [selectedBook, setSelectedBook] = useState('');
+    const [selectedBook, setSelectedBook] = useState(filteredBooks[0]?.bookTitle);
+    const[selectedBookID, setSelectedBookID] = useState(filteredBooks[0]?._id); 
 
-   const fetchBooks = async () => {
-    try {
-        const response = await apiGet('/getBooks');
+    const fetchBooks = async () => {
+        try {
+            const response = await apiGet(`/booksBySyllabusId/${syllabusID}`);
 
-        if (response.data.status === 200) {
-            const bookList = response.data.books;
+            if (response.data.status === 200) {
+                const bookList = response.data.data;
 
-            // Step 1: Filter books that have a syllabusId field
-            const booksWithSyllabus = bookList.filter(book => book.syllabusId);
+                if (bookList.length === 0) {
+                    snackbarEmitter('No books found', 'info');
+                }
 
-            // Step 2: Filter those books by matching syllabusTitle
-            const filterBooks = booksWithSyllabus.filter(book => book.syllabusId.title === syllabusTitle);
+                setFilteredBooks(bookList);
 
-            if (filterBooks.length === 0) {
-                snackbarEmitter('No books found', 'info');
+                setSelectedBook(selectBook ? selectBook : bookList[0]?.bookTitle);
+                setSelectedBookID(selectBook ? activeBookID : bookList[0]?._id);
+
+            } else {
+                snackbarEmitter(response.data.message, 'error');
             }
 
-            setFilteredBooks(filterBooks);
-
-            if (filterBooks.length > 0) {
-                setSelectedBook(filterBooks[0].bookTitle);
-            }
-
-        } else {
-            snackbarEmitter(response.data.message, 'error');
+        } catch (error) {
+            snackbarEmitter('Something went wrong', 'error');
         }
+    };
 
-    } catch (error) {
-        snackbarEmitter('Something went wrong', 'error');
-    }
-};
-
-
+    const[filteredChapters, setFilteredChapters] = useState([]);
     const fetchChapters = async () => {
         try {
-            const response = await apiGet('/getChapters');
+            const response = await apiGet(`/chaptersBySyllabusId/${syllabusID}`);
 
-            if (response.data.status === 200 && response.data.chapters.length === 0) {
-                snackbarEmitter('No chapters found', 'info');
-            }
-            else if (response.data.status === 200) {
-                setChapters(response.data.chapters);
+            if (response.data.status === 200) {
+                 const filterChapters = response.data.data.filter((chapter) => chapter.bookId === selectedBookID);
+                setFilteredChapters(filterChapters);
             }
             else {
                 snackbarEmitter(response.data.message, 'error');
             }
 
         } catch (error) {
-            console.error('Error fetching syllabus:', error);
+            console.error('Error fetching chapters:', error);
         }
     };
 
     useEffect(() => {
         fetchBooks();
-        fetchChapters();
+        // fetchChapters();
     }, [])
 
-    const filteredChapters = chapters.filter((chapter) => chapter.book === selectedBook && chapter.syllabus === syllabusTitle);
+   useEffect(() => {
+    if (selectedBookID) {
+        fetchChapters();
+    }
+}, [selectedBookID]);
+
 
     const [openModal, setOpenModal] = useState(false);
-    const [bookName, setBookName] = useState([]);
+    const [bookData, setBookData] = useState({
+        bookTitle: '',
+        syllabusID: syllabusID
+    });
 
     const handleModalOpen = () => setOpenModal(true);
     const handleModalClose = () => {
         setOpenModal(false);
-        setBookName('');
-        setBookError('');
+        setIsEditing(false);
+        setBookData({ bookTitle: '', syllabusID: syllabusID });
+        closeMenu();        
     };
 
     const [openChapterModal, setOpenChapterModal] = useState(false);
@@ -132,28 +134,43 @@ function TrainingChapter() {
 
     const handleAddBook = async () => {
 
-        if (!bookName) {
+        if (!bookData.bookTitle) {
             setBookError('Book name is required');
             return;
         }
 
         setLoading(true);
 
+        const req = {
+            bookTitle: bookData.bookTitle,
+            syllabusId: syllabusID
+        }
+
+        if (isEditing) {
+            req.bookId = menuItem._id;
+        }
+
         try {
-            const response = await apiPost('/addBooks', { bookTitle: bookName , syllabusId: syllabusId});
+            const endpoint = isEditing ? '/updateBook' : '/addBooks';
+            const response = await apiPost(endpoint, req);
 
             setTimeout(() => {
                 setLoading(false);
                 if (response.data.status === 200) {
                     snackbarEmitter(response.data.message, 'success');
+                    fetchBooks();
+                    closeMenu();
                     handleModalClose();
                 } else {
 
                     snackbarEmitter(response.data.message, 'error');
+                    fetchBooks();
+                    closeMenu();
                     handleModalClose();
                 }
-                fetchBooks();
-            }, 1500)
+
+
+            }, 500)
 
 
         } catch (error) {
@@ -162,8 +179,8 @@ function TrainingChapter() {
                 setLoading(false);
                 snackbarEmitter('Something went wrong', 'error');
                 fetchBooks();
-            }, 1500);
-
+                closeMenu();
+            }, 500);
 
         }
     }
@@ -187,7 +204,7 @@ function TrainingChapter() {
     const handleAddChapter = async () => {
         console.log("add chapter api called");
 
-        if (!selectedBook) {
+        if (!selectedBookID) {
             snackbarEmitter('Please select a book', 'error');
             return;
         }
@@ -205,7 +222,9 @@ function TrainingChapter() {
 
         const req = {
             syllabus: syllabusTitle,
+            syllabusId: syllabusID,
             book: selectedBook,
+            bookId: selectedBookID,
             chapterno: formData.chapterno,
             chaptername: formData.chaptername,
             status: formData.status
@@ -221,7 +240,6 @@ function TrainingChapter() {
 
             console.log('isActive', isActive);
 
-
         }
 
         setLoading(true);
@@ -234,13 +252,14 @@ function TrainingChapter() {
                 setLoading(false);
                 if (response.data.status === 200) {
                     snackbarEmitter(response.data.message, 'success');
-                    fetchChapters();
+                    
                     handleChapterModalClose();
                     handleStatusModalClose();
                 } else {
                     snackbarEmitter(response.data.message, 'error');
                 }
-            }, 1500)
+                fetchChapters();
+            }, 500)
 
 
         } catch (error) {
@@ -248,7 +267,7 @@ function TrainingChapter() {
                 setLoading(false);
                 snackbarEmitter('Something went wrong', 'error');
                 fetchChapters();
-            }, 1500);
+            }, 500);
 
         }
     };
@@ -260,9 +279,13 @@ function TrainingChapter() {
         navigate('/admin/trainingQuestion', {
             state: {
                 category: category,
-                syllabusName: chapter.syllabus,
-                bookName: chapter.book,
+                syllabusName: syllabusTitle,
+                bookName: selectedBook,
                 chapterName: chapter.chaptername,
+                activeBook: selectedBook,
+                syllabusid: syllabusID,
+                chapterId: chapter._id,
+                bookid: selectedBookID
             },
         });
     }
@@ -301,11 +324,97 @@ function TrainingChapter() {
         setOpenStatusModal(true);
     };
 
+
+    const [menuAnchor, setMenuAnchor] = useState(false);
+    const [menuItem, setMenuItem] = useState([]);
+
+    const openMenu = (e, item) => {
+
+        setMenuAnchor(e.currentTarget);
+        setMenuItem(item);
+    };
+
+    const closeMenu = () => {
+        setMenuAnchor(null);
+        setMenuItem([]);
+    };
+
+    const handleEdit = () => {
+        setIsEditing(true);
+        setBookData({
+            bookTitle: menuItem.bookTitle,
+            syllabusID: syllabusID
+        })
+        handleModalOpen();
+
+    };
+
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [deleteId, setDeleteId] = useState('');
+
+    const handleDeleteModalClose = () => {
+        setOpenDeleteModal(false);
+        setDeleteId('');
+    }
+
+    const handleDelete = () => {
+        setOpenDeleteModal(true);
+        setDeleteId(menuItem._id);
+    }
+
+    const handleDeleteBook = async () => {
+
+        setLoading(true);
+        try {
+            const response = await apiDelete(`/deleteBook/${deleteId}`);
+
+            setTimeout(() => {
+                setLoading(false);
+                if (response.data.status === 200) {
+                    snackbarEmitter(response.data.message, 'success');
+                    handleDeleteModalClose();
+                } else {
+                    snackbarEmitter(response.data.message, 'error');
+                    handleDeleteModalClose();
+                }
+                closeMenu();
+                fetchBooks();
+            }, 500)
+
+        } catch (error) {
+            setLoading(false);
+            snackbarEmitter('Something went wrong', 'error');
+            handleDeleteModalClose();
+            fetchBooks();
+            closeMenu();
+        }
+    }
+
+
+    const handleBookClick = (book) => {
+        setSelectedBook(book.bookTitle);
+        setSelectedBookID(book._id);
+    }
+
+const bookRefs = useRef({});
+useEffect(() => {
+    if (selectedBookID && bookRefs.current[selectedBookID]) {
+        bookRefs.current[selectedBookID].scrollIntoView({ behavior: 'smooth', inline: 'center' });
+    }
+}, [selectedBookID, filteredBooks]);
+
     return (
 
         <Navbar title={'Syllabus'}>
 
             <Grid container sx={{ flexDirection: 'column', position: "relative", backgroundColor: '#f8f9fa', padding: '10px' }} >
+
+
+                <Grid sx={{ display: 'flex', alignItems: 'center', gap: '10px' }} mb={2}>
+                    
+                    <CustomTypography text={syllabusTitle} onClick={() => navigate('/admin/trainingsyllabus')} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
+                   
+                </Grid>
 
                 <Grid container sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', }} >
                     <Grid size={{ xs: 6, md: 8, sm: 6 }}>
@@ -313,24 +422,38 @@ function TrainingChapter() {
                     </Grid>
 
                     {/* <Grid size={{ xs: 6, md: 4, sm: 4 }}> */}
-                        <CustomButton children=' + Add books' onClick={handleModalOpen} loading={false} bgColor='#EAB308' sx={{ width: { xs: '45%', md: '15%', sm: '20%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
+                    <CustomButton children=' + Add books' onClick={handleModalOpen} loading={false} bgColor='#EAB308' sx={{ width: { xs: '45%', md: '15%', sm: '20%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} />
                     {/* </Grid> */}
                 </Grid>
 
                 <Box sx={{ maxWidth: '100%', overflowX: 'auto' }} mt={2}>
                     <Box sx={{ display: 'flex', gap: '15px', padding: '10px', width: 'max-content' }}>
                         {
-                          filteredBooks.length > 0 &&  filteredBooks.map((book) => (
-                                <>
-                                <CustomButton children={book.bookTitle} onClick={() => setSelectedBook(book.bookTitle)} loading={false} bgColor={selectedBook === book.bookTitle ? '#FFEBAB' : '#fff'} 
-                                sx={{color:'black', px:3, py:1, width: { xs: '45%', md: '45%', sm: '25%' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }} 
-                                 />
-                                 
-                                </>
-                             
-                              
+                            filteredBooks.length > 0 && filteredBooks.map((book) => (
+                                <Box  ref={(el) => (bookRefs.current[book._id] = el)} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', boxShadow: 3, borderRadius: '10px', px: 2, py: 1, minWidth: { xs: '45px', md: '120px', sm: '60px' }, bgcolor: selectedBookID === book._id ? '#FFEBAB' : '#fff' }}>
+                                    {/* <CustomButton children={book.bookTitle} onClick={() => setSelectedBook(book.bookTitle)} loading={false} bgColor={selectedBook === book.bookTitle ? '#FFEBAB' : '#fff'}
+                                        sx={{ color: 'black', py: 0, minWidth: { xs: '45px', md: '120px', sm: '60px' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }}
+                                    /> */}
+                                    <CustomTypography text={book.bookTitle} fontSize={{ xs: '12px', sm: '13px', md: '14px' }} fontWeight={600} onClick={() => handleBookClick(book)} sx={{ cursor: 'pointer' }} />
+
+                                    <IconButton
+                                        onClick={(e) => openMenu(e, book)}
+                                    // sx={{ position: 'absolute', top: 20, right: 0 }}
+                                    >
+                                        <MoreHorizIcon />
+                                    </IconButton>
+
+                                </Box>
+
+
                             ))
                         }
+
+                        <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={closeMenu}
+                        >
+                            <MenuItem onClick={handleEdit} >Edit</MenuItem>
+                            <MenuItem onClick={handleDelete} >Delete</MenuItem>
+                        </Menu>
                     </Box>
                 </Box>
 
@@ -382,21 +505,21 @@ function TrainingChapter() {
                                 <TableHead>
                                     <TableRow>
                                         <TableCell>
-                                             <CustomTypography text="Chapter No" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
+                                            <CustomTypography text="Chapter No" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
                                         </TableCell>
                                         <TableCell>
-                                               <CustomTypography text="Chapter Name" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
+                                            <CustomTypography text="Chapter Name" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
                                         </TableCell>
                                         <TableCell>
-                                             <CustomTypography text="Status" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
+                                            <CustomTypography text="Status" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
                                         </TableCell>
                                         <TableCell>
-                                           <CustomTypography text="Action" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
+                                            <CustomTypography text="Action" fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
                                         </TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    { filteredChapters.length > 0 && filteredChapters.map((chapter, index) => (
+                                    {filteredChapters.length > 0 && filteredChapters.map((chapter, index) => (
                                         <TableRow
                                             key={index}
                                             sx={{ borderBottom: '1px solid #e0e0e0', cursor: 'pointer' }}
@@ -404,7 +527,7 @@ function TrainingChapter() {
                                             <TableCell>{index + 1}</TableCell>
                                             <TableCell onClick={() => handleChapterClick(chapter)}>
                                                 {/* {chapter.chaptername} */}
-                                                  <CustomTypography text={chapter.chaptername} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={400} />
+                                                <CustomTypography text={chapter.chaptername} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={400} />
                                             </TableCell>
                                             <TableCell>
                                                 {/* <Button
@@ -421,7 +544,7 @@ function TrainingChapter() {
                                                 >
                                                     {chapter.isactive === true ? 'Active' : 'Inactive'}
                                                 </Button> */}
-                                                 <CustomButton children= {chapter.isactive === true ? 'Active' : 'Inactive'} onClick={()=> handleStatusClick(chapter)} loading={false} bgColor={chapter.isactive === true ? '#109CF1' : '#D61508'} sx={{ width: { xs: '20%', sm: '20%', md: '20%' }, fontSize: { xs: '10px', sm: '11px', md: '12px' }, }} />
+                                                <CustomButton children={chapter.isactive === true ? 'Active' : 'Inactive'} onClick={() => handleStatusClick(chapter)} loading={false} bgColor={chapter.isactive === true ? '#109CF1' : '#D61508'} sx={{ width: { xs: '20%', sm: '20%', md: '20%' }, fontSize: { xs: '10px', sm: '11px', md: '12px' }, }} />
                                             </TableCell>
                                             <TableCell>
                                                 <IconButton size="small" onClick={() => handleEditChapter(chapter)}>
@@ -444,7 +567,7 @@ function TrainingChapter() {
 
             <Dialog open={openModal} onClose={handleModalClose} maxWidth="sm">
                 <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                       <CustomTypography text="Add book" fontSize={{ xs: '16px', sm: '18px', md: '18px' }} mb={0} fontWeight={600} />
+                    <CustomTypography text="Add book" fontSize={{ xs: '16px', sm: '18px', md: '18px' }} mb={0} fontWeight={600} />
                     <IconButton onClick={handleModalClose}>
                         <CloseIcon />
                     </IconButton>
@@ -458,8 +581,8 @@ function TrainingChapter() {
                             <CustomTextField
                                 label="Book Title"
                                 name="title"
-                                value={bookName}
-                                onChange={(e) => setBookName(e.target.value)}
+                                value={bookData.bookTitle}
+                                onChange={(e) => setBookData({ ...bookData, bookTitle: e.target.value })}
                                 placeholder="Book Title"
                                 error={!!bookError} //error={bookError ? true : false}
                                 helperText={bookError}
@@ -468,7 +591,7 @@ function TrainingChapter() {
                         </Grid>
 
                         <Grid item mt={{ xs: 0, md: 3, sm: 3 }} >
-                            <CustomButton children='Add' onClick={handleAddBook} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
+                            <CustomButton children={isEditing ? 'Update' : 'Add'} onClick={handleAddBook} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
                         </Grid>
                     </Grid>
                 </DialogContent>
@@ -476,7 +599,7 @@ function TrainingChapter() {
 
             <Dialog open={openChapterModal} onClose={handleChapterModalClose} maxWidth="sm">
                 <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <CustomTypography text="Add chapters" fontSize={{ xs: '16px', sm: '18px', md: '18px' }} mb={0} fontWeight={600} />
+                    <CustomTypography text="Add chapters" fontSize={{ xs: '16px', sm: '18px', md: '18px' }} mb={0} fontWeight={600} />
                     <IconButton onClick={handleChapterModalClose}>
                         <CloseIcon />
                     </IconButton>
@@ -541,7 +664,7 @@ function TrainingChapter() {
 
             <Dialog open={openStatusModal} onClose={handleStatusModalClose} maxWidth="md">
                 <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <CustomTypography text="Status update" fontSize={{ xs: '16px', sm: '18px', md: '18px' }} mb={0} fontWeight={600} />
+                    <CustomTypography text="Status update" fontSize={{ xs: '16px', sm: '18px', md: '18px' }} mb={0} fontWeight={600} />
                     <IconButton onClick={handleStatusModalClose}>
                         <CloseIcon />
                     </IconButton>
@@ -551,23 +674,46 @@ function TrainingChapter() {
 
                     <Grid container sx={{ display: 'flex', alignItems: 'center', gap: 3 }} >
                         <Grid item>
-                               <CustomTypography text="Do you want to change the status" fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={400} />
+                            <CustomTypography text="Do you want to change the status" fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={400} />
                         </Grid>
                         <Grid item>
-                            <Grid container spacing={2} justifyContent="center">
+                            <Grid  container spacing={2} sx={{ display: 'flex', alignItems: 'center' }}>
                                 <Grid item>
 
                                     <CustomButton children='Yes' onClick={handleAddChapter} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
                                 </Grid>
                                 <Grid item>
-                                    <Button
-                                        variant="outlined"
-                                        color="secondary"
-                                        onClick={handleStatusModalClose}
-                                        sx={{backgroundColor:'#BF0000', color:'white'}}
-                                    >
-                                        No
-                                    </Button>
+                                    <CustomButton children='No' onClick={handleStatusModalClose} bgColor='#BF0000' sx={{ width: { xs: '50%', md: '30%', sm: '30%' }, fontSize: { xs: '11px', md: '13px', sm: '13px' } }} />
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </DialogContent>
+            </Dialog>
+
+
+
+            <Dialog open={openDeleteModal} onClose={handleDeleteModalClose} maxWidth="md">
+                <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <CustomTypography text="Confirm deletion" fontSize={{ xs: '16px', sm: '18px', md: '18px' }} mb={0} fontWeight={600} />
+                    <IconButton onClick={handleDeleteModalClose}>
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+
+                <DialogContent dividers>
+
+                    <Grid container sx={{ display: 'flex', alignItems: 'center', gap: 3 }} >
+                        <Grid item>
+                            <CustomTypography text="Do you want to delete this book?" fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={400} />
+                        </Grid>
+                        <Grid item>
+                            <Grid container spacing={2} sx={{ display: 'flex', alignItems: 'center' }}>
+                                <Grid item>
+                                    <CustomButton children='Yes' onClick={handleDeleteBook} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
+                                </Grid>
+                                <Grid item>
+                                     <CustomButton children='No' onClick={handleDeleteModalClose} bgColor='#BF0000' sx={{ width:'20%', }}/>
                                 </Grid>
                             </Grid>
                         </Grid>

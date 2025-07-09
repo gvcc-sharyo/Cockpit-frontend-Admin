@@ -12,7 +12,11 @@ const CustomTextField = ({
   bgcolor,
   ...rest
 }) => {
+   console.log('value', value);
   return (
+
+   
+    
     <Box>
       {label && <CustomTypography text={label} />}
       <TextField

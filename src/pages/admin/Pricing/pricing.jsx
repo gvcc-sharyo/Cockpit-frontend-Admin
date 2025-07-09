@@ -59,7 +59,7 @@ const Pricing = () => {
     } catch (error) {
       snackbarEmitter("Something went wrong", "error");
     } finally {
-      setTimeout(() => setLoadingIndex(null), 2000);
+      setTimeout(() => setLoadingIndex(null), 500);
     }
   };
 
@@ -69,6 +69,7 @@ const Pricing = () => {
       const { data } = await apiGet("/admin/getPricing");
       const formatted = (data?.data || []).filter(p => p.planName?.trim() && p.price != null && p.duration?.trim())
         .map(p => ({ ...p, price: p.price.toString(), isNew: false }));
+        
       setForms(formatted);
       setErrors(formatted.map(() => ({})));
     } catch (error) {
@@ -104,7 +105,7 @@ const Pricing = () => {
     try {
       const { _id, planName, price, duration, modules = [] } = forms[index];
       const res = await apiPost("/admin/updatePricing", { pricingId: _id, planName, price: Number(price), duration, modules });
-      setTimeout(() => setLoadingUpdateIndex(snackbarEmitter(res.data.message, "success")), 2000);
+      setTimeout(() => setLoadingUpdateIndex(snackbarEmitter(res.data.message, "success")), 500);
       const updatedForms = [...forms];
       updatedForms[index].isNew = false;
       setForms(updatedForms);
@@ -112,7 +113,7 @@ const Pricing = () => {
     } catch (error) {
       console.error("Update failed:", error);
     } finally {
-      setTimeout(() => setLoadingUpdateIndex(null), 2000);
+      setTimeout(() => setLoadingUpdateIndex(null), 500);
     }
   };
 

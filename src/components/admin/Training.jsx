@@ -18,15 +18,25 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 
 
+function Training({ syllabusNav = false, syllabusName, bookName, chapterName, question, syllabusId, chapterId, bookId, report = false, modalClose, bulkButton = false }) {
 
-function Training({ syllabusName, bookName, chapterName, question, report = false, modalClose, bulkButton = false }) {
+  console.log("syllabusId", syllabusId);
+  console.log("bookId", bookId);
+  console.log("chapterId", chapterId);
+
+
+
+
   const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [options, setOptions] = useState([1, 2]);
   const [formData, setFormData] = useState({
-    syllabus: syllabusName || location.state?.syllabusName || "",
-    book: bookName || location.state?.bookName || "",
-    chapter: chapterName || location.state?.chapterName || "",
+    syllabus: syllabusNav ? syllabusName : "",
+    book: syllabusNav ? bookName : "",
+    chapter: syllabusNav ? chapterName : "",
+    syllabusId: syllabusNav ? syllabusId : "",
+    bookId: syllabusNav ? bookId : "",
+    chapterId: syllabusNav ? chapterId : "",
     question: question?.question || "",
     options: question?.options || [
       { id: 1, text: "", isCorrect: false },
@@ -34,6 +44,9 @@ function Training({ syllabusName, bookName, chapterName, question, report = fals
     ],
     explanation: question?.explanation || "",
   });
+
+  console.log("form data", formData);
+
 
   const [errors, setErrors] = useState({});
 
@@ -43,8 +56,8 @@ function Training({ syllabusName, bookName, chapterName, question, report = fals
     if (!formData.book.trim()) newErrors.book = "Book is required.";
     if (!formData.chapter.trim()) newErrors.chapter = "Chapter is required.";
     if (!formData.question.trim()) newErrors.question = "Question is required.";
-    if (!formData.explanation.trim())
-      newErrors.explanation = "Explanation is required.";
+    // if (!formData.explanation.trim())
+    //   newErrors.explanation = "Explanation is required.";
     formData.options.forEach((opt, i) => {
       if (!opt.text.trim())
         newErrors[`option_${i}`] = "Option text is required.";
@@ -59,22 +72,60 @@ function Training({ syllabusName, bookName, chapterName, question, report = fals
   // =================== Input Handlers ===================
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === "syllabus") {
+      const selected = syllabus.find((s) => s._id === value);
+      setFormData((prev) => ({
+        ...prev,
+        syllabus: selected?.title,
+        syllabusId: selected?._id || "",
+        book: "",
+        chapter: "",
+        bookId: "",
+        chapterId: ""
+      }));
+      setErrors((prev) => ({ ...prev, syllabus: undefined }));
+      getBooks(value, selected?._id);
+      setBook([]);
+      setChapters([]);
+      return;
+    }
+
+    if (name === "book") {
+      const selected = book.find((b) => b._id === value);
+
+      setFormData((prev) => ({
+        ...prev,
+        book: selected?.bookTitle,
+        bookId: selected?._id || "",
+        chapter: "",
+        chapterId: ""
+      }));
+      setErrors((prev) => ({ ...prev, book: undefined }));
+      getChapters(formData.syllabus, value);
+      setChapters([]);
+      return;
+    }
+
+    if (name === "chapter") {
+      const selected = chapters.find((c) => c._id === value);
+      setFormData((prev) => ({
+        ...prev,
+        chapter: selected?.chaptername,
+        chapterId: selected?._id || "",
+      }));
+      setErrors((prev) => ({ ...prev, chapter: undefined }));
+      return;
+    }
+
+    // ✅ Generic fallback for other fields like "question"
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-      ...(name === "syllabus" ? { book: "", chapter: "" } : name === "book" ? { chapter: "" } : {}),
     }));
     setErrors((prev) => ({ ...prev, [name]: undefined }));
-    if (name === "syllabus") {
-      getBooks(value);
-      setBook([]);
-      setChapters([]);
-    }
-    if (name === "book") {
-      getChapters(formData.syllabus, value);
-      setChapters([]);
-    }
   };
+
 
   const handleExplanationChange = (value) => {
     setFormData((prev) => ({ ...prev, explanation: value }));
@@ -169,7 +220,7 @@ function Training({ syllabusName, bookName, chapterName, question, report = fals
             });
             setErrors({});
           }
-        }, 1500);
+        }, 500);
       } else {
         setLoading(false);
         console.error("Submission failed with response:", response);
@@ -184,9 +235,9 @@ function Training({ syllabusName, bookName, chapterName, question, report = fals
 
   const handleCancel = () => {
     setFormData({
-      syllabus: syllabusName || location.state?.syllabusName || "",
-      book: bookName || location.state?.bookName || "",
-      chapter: chapterName || location.state?.chapterName || "",
+      syllabus: syllabusName || "",
+      book: bookName || "",
+      chapter: chapterName || "",
       question: question?.question || "",
       options: question?.options || [
         { id: 1, text: "", isCorrect: false },
@@ -203,73 +254,114 @@ function Training({ syllabusName, bookName, chapterName, question, report = fals
   };
 
   const [syllabus, setSyllabus] = useState([]);
+  const [book, setBook] = useState([]);
+  const [chapters, setChapters] = useState([]);
+
   const getSyllabus = async () => {
     try {
       const response = await apiGet("/getSyllabus");
       if (response.data.status === 200) {
-        const titles = [...new Set(response.data.data.map(item => item.title).filter(Boolean))];
-        setSyllabus(titles);
-
-        // console.log("Response for Syllabus :", response.data);
-      }
-    } catch (error) {
-      snackbarEmitter(response.data.message, "error");
-    }
-  };
-
-
-
-  const [book, setBook] = useState([]);
-  const getBooks = async (syllabus = "") => {
-    try {
-      const response = await apiGet("/getBooks");
-      if (response.data.status === 200) {
-        const booksList = response.data.books.filter(item => !syllabus || (item.syllabusId && item.syllabusId.title === syllabus)).map(item => item.bookTitle).filter(Boolean);
-        setBook(booksList);
-        // console.log("Response for Books :", response.data);
+        setSyllabus(response.data.data); // full syllabus objects
       }
     } catch (error) {
       snackbarEmitter("Something went wrong", "error");
-      setBook([]);
     }
   };
 
-  const [chapters, setChapters] = useState([]);
+  const getBooks = async (syllabus = "", selectedSyllabusId) => {
+    // console.log("syllabus id for req", formData.syllabusId);
+    try {
+
+      const response = await apiGet(`/booksBySyllabusId/${selectedSyllabusId}`);
+      if (response.data.status === 200) {
+        setBook(response.data.data); // full book objects
+      }
+    } catch (error) {
+      snackbarEmitter("Something went wrong", "error");
+    }
+  };
+
   const getChapters = async (syllabus = "", book = "") => {
+    console.log("syllabus id for chapters", formData.syllabusId);
+
     try {
-      const response = await apiGet( "/getChapters");
+
+      const response = await apiGet(`/chaptersBySyllabusId/${formData.syllabusId}`);
       if (response.data.status === 200) {
-        const chapterList = response.data.chapters.filter(item => !syllabus || !book || (item.syllabus === syllabus && item.book === book)).map(item => item.chaptername).filter(Boolean);
-        setChapters(chapterList);
-        // console.log("Response for Chapters :", response.data);
+        setChapters(response.data.data); // full chapter objects
       }
     } catch (error) {
       snackbarEmitter("Something went wrong", "error");
-      setChapters([]);
     }
   };
 
 
   useEffect(() => {
-    getSyllabus();
-    if (syllabusName || location.state?.syllabusName) {
-      const initialSyllabus = syllabusName || location.state?.syllabusName;
-      getBooks(initialSyllabus);
-      if (bookName || location.state?.bookName) {
-        getChapters(initialSyllabus, bookName || location.state?.bookName);
-      } else {
-        setChapters([]);
-      }
-    } else {
-      getBooks();
-      getChapters();
+    if (syllabusNav) {
+      return;
     }
-  }, [syllabusName, bookName, location.state]);
 
-  const data = [{ label: "Syllabus", name: "syllabus", value: formData.syllabus, onChange: handleInputChange, error: !!errors.syllabus, helperText: errors.syllabus, options: syllabus, disabled: report },
-  { label: "Book", name: "book", value: formData.book, onChange: handleInputChange, error: !!errors.book, helperText: errors.book, options: book, disabled: report || !formData.syllabus },
-  { label: "Chapter", name: "chapter", value: formData.chapter, onChange: handleInputChange, error: !!errors.chapter, helperText: errors.chapter, options: chapters, disabled: report || !formData.book }
+    getSyllabus();
+    // getBooks();
+    // getChapters();
+  }, []);
+
+  const data = [
+    {
+      label: "Syllabus",
+      name: "syllabus",
+      value: formData.syllabusId,
+      onChange: handleInputChange,
+      error: !!errors.syllabus,
+      helperText: errors.syllabus,
+      options: syllabusNav
+        ? [{ label: syllabusName, value: syllabusId }]
+        : syllabus.map(item => ({
+          label: item.title,
+          value: item._id
+        })),
+      disabled: report || syllabusNav
+    },
+    {
+      label: "Book",
+      name: "book",
+      value: formData.bookId,
+      onChange: handleInputChange,
+      error: !!errors.book,
+      helperText: errors.book,
+      options: syllabusNav
+        ? [{ label: bookName, value: bookId }]
+        : book
+          .filter(item => item.syllabusId?._id === formData.syllabusId)
+          .map(item => ({
+            label: item.bookTitle,
+            value: item._id
+          })),
+      disabled: report || syllabusNav
+    },
+    {
+      label: "Chapter",
+      name: "chapter",
+      value: formData.chapterId,
+      onChange: handleInputChange,
+      error: !!errors.chapter,
+      helperText: errors.chapter,
+      options: syllabusNav
+        ? [{ label: chapterName, value: chapterId }]
+        : chapters
+          .filter(
+            item =>
+              item.bookId === formData.bookId &&
+              item.syllabusId?._id === formData.syllabusId
+          )
+          .map(item => ({
+            label: item.chaptername,
+            value: item._id
+          })),
+      disabled: report || syllabusNav
+    }
   ];
+
 
   //bulk upload
 
@@ -306,11 +398,14 @@ function Training({ syllabusName, bookName, chapterName, question, report = fals
       reqData.append('syllabus', formData.syllabus);
       reqData.append('book', formData.book);
       reqData.append('chapter', formData.chapter);
+      reqData.append('syllabusId', formData.syllabusId);
+      reqData.append('bookId', formData.bookId);
+      reqData.append('chapterId', formData.chapterId);
 
-      if(formData.syllabus === '' || formData.book === '' || formData.chapter === ''){ 
+      if (formData.syllabus === '' || formData.book === '' || formData.chapter === '') {
         setBulkLoad(false);
-       snackbarEmitter('Please select Syllabus, Book and Chapter', 'warning');
-       return;
+        snackbarEmitter('Please select Syllabus, Book and Chapter', 'warning');
+        return;
       }
 
       const response = await apiPostUpload('/uploadQuestionsBulk', reqData);
@@ -327,7 +422,7 @@ function Training({ syllabusName, bookName, chapterName, question, report = fals
         }
         // navigate('/admin/trainingQuestion', { state: { category: syllabus.category, syllabusName: formData.syllabus, bookName: formData.book, chapterName: formData.chapter } });
 
-      }, 1500);
+      }, 500);
 
     } catch (error) {
 
@@ -337,106 +432,106 @@ function Training({ syllabusName, bookName, chapterName, question, report = fals
   };
 
   const styles = {
-      addImageBox: { display: "flex", justifyContent: "flex-end" },
-      addImageButton: {
-        backgroundColor: "#EAB308",
-        color: "white",
-        borderRadius: "10px",
-        whiteSpace: "nowrap",
-        textTransform: "none",
-        fontFamily: "Lexend",
-        fontWeight: 300,
-        fontSize: "16px",
+    addImageBox: { display: "flex", justifyContent: "flex-end" },
+    addImageButton: {
+      backgroundColor: "#EAB308",
+      color: "white",
+      borderRadius: "10px",
+      whiteSpace: "nowrap",
+      textTransform: "none",
+      fontFamily: "Lexend",
+      fontWeight: 300,
+      fontSize: "16px",
+    },
+    questionAreaGrid: { mt: 2, mb: 2 },
+    divider: { border: "1px solid #DBDBDB", mb: 2 },
+    dividerWithMargin: { border: "1px solid #DBDBDB", mb: 2, mt: 2 },
+    optionsHeaderBox: {
+      justifyContent: "space-between",
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 2,
+    },
+    addOptionBox: { width: { xs: "100%", sm: "auto" } },
+    addOptionButton: {
+      backgroundColor: "#EAB308",
+      color: "white",
+      borderRadius: "10px",
+      whiteSpace: "nowrap",
+      textTransform: "none",
+      fontFamily: "Lexend",
+      fontWeight: 300,
+      fontSize: "16px",
+    },
+    radioFormControl: { mt: 2 },
+    optionItemBox: {
+      display: "flex",
+      width: "100%",
+      alignItems: "center",
+      mb: 2,
+    },
+    radio: {
+      mt: 2,
+      mr: { xs: -2, md: 2 },
+      "&.Mui-checked": {
+        color: "#EAB308",
       },
-      questionAreaGrid: { mt: 2, mb: 2 },
-      divider: { border: "1px solid #DBDBDB", mb: 2 },
-      dividerWithMargin: { border: "1px solid #DBDBDB", mb: 2, mt: 2 },
-      optionsHeaderBox: {
-        justifyContent: "space-between",
-        display: "flex",
-        flexWrap: "wrap",
-        gap: 2,
-      },
-      addOptionBox: { width: { xs: "100%", sm: "auto" } },
-      addOptionButton: {
-        backgroundColor: "#EAB308",
-        color: "white",
-        borderRadius: "10px",
-        whiteSpace: "nowrap",
-        textTransform: "none",
-        fontFamily: "Lexend",
-        fontWeight: 300,
-        fontSize: "16px",
-      },
-      radioFormControl: { mt: 2 },
-      optionItemBox: {
-        display: "flex",
-        width: "100%",
-        alignItems: "center",
-        mb: 2,
-      },
-      radio: {
-        mt: 2,
-        mr: { xs: -2, md: 2 },
-        "&.Mui-checked": {
-          color: "#EAB308",
-        },
-      },
-      textAreaWrapper: {
-        width: "-webkit-fill-available",
-        marginLeft: { xs: "20px", md: "100px" },
-      },
-      deleteButtonBox: {
-        display: "flex",
-        justifyContent: "flex-end",
-        mb: 1,
-      },
-      deleteButton: {
-        padding: 0,
-        minWidth: "auto",
-        fontWeight: 500,
-        textTransform: "none",
-        fontFamily: "Jost",
-        fontSize: "14px",
-      },
-      errorText: { color: "#d32f2f", fontSize: "0.75rem", mt: 1 },
-      solutionBox: { display: "flex", width: "100%", alignItems: "center" },
-      solutionTextArea: {
-        width: "-webkit-fill-available",
-        marginLeft: { xs: "10px", md: "100px" },
-      },
-      buttonGroup: {
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        flexDirection: { xs: "column", sm: "row" },
-        gap: 2,
-        mt: 4,
-      },
-      submitButton: {
-        px: { xs: 2, sm: 4 },
-        width: { xs: "60%", sm: "auto" },
-        textTransform: "none",
-        backgroundColor: "#EAB308",
-        color: "white",
-        borderRadius: "10px",
-        whiteSpace: "nowrap",
-        fontFamily: "Lexend",
-        fontWeight: 300,
-        fontSize: "16px",
-      },
-      cancelButton: {
-        color: "#fff",
-        backgroundColor: "#BF0000",
-        borderRadius: "10px",
-        px: { xs: 2, sm: 4 },
-        textTransform: "none",
-        whiteSpace: "nowrap",
-        fontFamily: "Lexend",
-        fontWeight: 300,
-        fontSize: "16px",
-      },
-    };
+    },
+    textAreaWrapper: {
+      width: "-webkit-fill-available",
+      marginLeft: { xs: "20px", md: "100px" },
+    },
+    deleteButtonBox: {
+      display: "flex",
+      justifyContent: "flex-end",
+      mb: 1,
+    },
+    deleteButton: {
+      padding: 0,
+      minWidth: "auto",
+      fontWeight: 500,
+      textTransform: "none",
+      fontFamily: "Jost",
+      fontSize: "14px",
+    },
+    errorText: { color: "#d32f2f", fontSize: "0.75rem", mt: 1 },
+    solutionBox: { display: "flex", width: "100%", alignItems: "center" },
+    solutionTextArea: {
+      width: "-webkit-fill-available",
+      marginLeft: { xs: "10px", md: "100px" },
+    },
+    buttonGroup: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      flexDirection: { xs: "column", sm: "row" },
+      gap: 2,
+      mt: 4,
+    },
+    submitButton: {
+      px: { xs: 2, sm: 4 },
+      width: { xs: "60%", sm: "auto" },
+      textTransform: "none",
+      backgroundColor: "#EAB308",
+      color: "white",
+      borderRadius: "10px",
+      whiteSpace: "nowrap",
+      fontFamily: "Lexend",
+      fontWeight: 300,
+      fontSize: "16px",
+    },
+    cancelButton: {
+      color: "#fff",
+      backgroundColor: "#BF0000",
+      borderRadius: "10px",
+      px: { xs: 2, sm: 4 },
+      textTransform: "none",
+      whiteSpace: "nowrap",
+      fontFamily: "Lexend",
+      fontWeight: 300,
+      fontSize: "16px",
+    },
+  };
 
 
   return (
@@ -446,8 +541,8 @@ function Training({ syllabusName, bookName, chapterName, question, report = fals
           <Grid key={index} size={{ xs: 12, md: 4 }}>
             <CustomTextField label={field.label} required select placeholder={field.label} name={field.name} value={field.value} onChange={field.onChange} error={field.error} helperText={field.helperText} SelectProps={{ native: false }} disabled={field.disabled} >
               {field.options.map((item, idx) => (
-                <MenuItem key={idx} value={item}>
-                  {item}
+                <MenuItem key={idx} value={item.value}>
+                  {item.label}
                 </MenuItem>
               ))}
             </CustomTextField>
@@ -460,20 +555,20 @@ function Training({ syllabusName, bookName, chapterName, question, report = fals
         </Grid>
       </Grid>
       <Grid container spacing={2} sx={styles.questionAreaGrid}>
-         <Grid size={{ xs: 12, md: 12, sm:12}} sx={{ display: 'flex', justifyContent: 'space-between',  alignItems: 'center' }} >
+        <Grid size={{ xs: 12, md: 12, sm: 12 }} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} >
           <CustomTypography text="Question" />
           {
             bulkButton && <CustomButton children='Bulk upload' onClick={handleOpenUploadDialog} loading={false} bgColor='#EAB308' sx={{ width: { xs: '40%', md: '15%', sm: '20%' }, fontSize: { xs: '10px', md: '14px', sm: '14px' } }} />
           }
-          
+
         </Grid>
 
         <Grid size={{ xs: 12, md: 12 }}>
-          
+
           <CustomTextArea value={formData.question} onChange={(e) => handleInputChange({ target: { name: "question", value: e.target.value } })} error={!!errors.question} helperText={errors.question} />
         </Grid>
 
-       
+
       </Grid>
       <Divider sx={styles.divider} />
       <Box sx={styles.optionsHeaderBox}>

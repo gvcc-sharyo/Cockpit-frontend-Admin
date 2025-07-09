@@ -1,5 +1,5 @@
 import Navbar from "../../../components/admin/Navbar";
-import { useEffect, useState } from "react";
+import { act, useEffect, useState } from "react";
 import {
     Grid,
     Typography,
@@ -34,11 +34,17 @@ function TrainingQuestion() {
     const [questions, setQuestions] = useState([]);
 
     const location = useLocation();
-    const { category, syllabusName, bookName, chapterName } = location.state || {};
+    const { category, syllabusName, bookName, chapterName, activeBook, syllabusid, chapterId, bookid } = location.state || {};
+
+    console.log("syllabus id", syllabusid);
+    console.log("chapter id", chapterId);
+    console.log("book id", bookid);
+
+
 
     const fetchQuestions = async () => {
         try {
-            const response = await apiGet('/questions');
+            const response = await apiGet(`/questionsByChapterId/${chapterId}`);
             if (response.data.status === 200 && response.data.data.length === 0) {
                 snackbarEmitter('No questions found', 'info');
             }
@@ -59,16 +65,19 @@ function TrainingQuestion() {
         fetchQuestions();
     }, [])
 
-    const filteredQuestions = questions.filter(q => q.syllabus === syllabusName && q.book === bookName && q.chapter === chapterName);
+    // const filteredQuestions = questions.filter(q => q.syllabus === syllabusName && q.book === bookName && q.chapter === chapterName);
 
     const navigate = useNavigate();
     const handleAddClick = () => {
         navigate('/admin/addQuestion',
             {
                 state: {
-                    syllabusName,
-                    bookName,
-                    chapterName,
+                    syllabusName: syllabusName,
+                    bookName: bookName,
+                    chapterName: chapterName,
+                    syllabusId: syllabusid,
+                    chapterId: chapterId,
+                    bookId: bookid
                 }
             },);
     }
@@ -107,6 +116,9 @@ function TrainingQuestion() {
             formData.append('syllabus', syllabusName);
             formData.append('book', bookName);
             formData.append('chapter', chapterName);
+            formData.append('chapterId', chapterId);
+            formData.append('syllabusId', syllabusid);
+            formData.append('bookId', bookid);
 
             const response = await apiPostUpload('/uploadQuestionsBulk', formData);
 
@@ -122,7 +134,7 @@ function TrainingQuestion() {
                 }
                 fetchQuestions();
 
-            }, 1500);
+            }, 500);
 
 
         } catch (error) {
@@ -135,10 +147,13 @@ function TrainingQuestion() {
     const handleEditClick = (question) => {
         navigate('/admin/addQuestion/', {
             state: {
-                syllabusName,
-                bookName,
-                chapterName,
-                question
+                syllabusName: syllabusName,
+                bookName: bookName,
+                chapterName: chapterName,
+                question: question,
+                syllabusId: syllabusid,
+                chapterId: chapterId,
+                bookId: bookid
             }
         });
     };
@@ -200,18 +215,29 @@ function TrainingQuestion() {
                     handleStatusModalClose();
                     fetchQuestions();
                 }
-            }, 1500)
+            }, 500)
 
         } catch (error) {
             setTimeout(() => {
                 setLoading(false);
                 snackbarEmitter('Something went wrong', 'error');
-            }, 1500)
+            }, 500)
 
         }
     }
 
+    const handleNavigate = () => {
+        navigate('/admin/trainingChapter', {
+            state: {
+                syllabusTitle: syllabusName,
+                syllabusID: syllabusid,
+                category: category,
+                selectBook: activeBook,
+                activeBookID: bookid
 
+            }
+        });
+    }
 
     return (
 
@@ -226,12 +252,12 @@ function TrainingQuestion() {
                 }}
             >
 
-                <Grid sx={{ display: 'flex', alignItems: 'center' , gap: '10px'}} mb={2}>
-                    <CustomTypography text={syllabusName}  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }}} />
-                    <CustomTypography text='>' sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }}} />
-                    <CustomTypography  text={bookName}  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }}} />
-                    <CustomTypography  text='>'  sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }}} />
-                    <CustomTypography text={chapterName} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }}} />
+                <Grid sx={{ display: 'flex', alignItems: 'center', gap: '10px' }} mb={2}>
+                    <CustomTypography text={syllabusName} onClick={() => navigate('/admin/trainingsyllabus')} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
+                    <CustomTypography text='>' sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' } }} />
+                    <CustomTypography text={bookName} onClick={handleNavigate} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
+                    <CustomTypography text='>' sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' } }} />
+                    <CustomTypography text={chapterName} onClick={handleNavigate} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
                 </Grid>
                 {/* Header Buttons */}
                 <Grid
@@ -293,7 +319,7 @@ function TrainingQuestion() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {filteredQuestions.length > 0 && filteredQuestions.map((question, index) => (
+                                {questions.length > 0 && questions.map((question, index) => (
                                     <TableRow key={index} sx={{ borderBottom: '1px solid #e0e0e0' }}>
                                         <TableCell>{index + 1}</TableCell>
                                         <TableCell>{question.question}</TableCell>
@@ -390,19 +416,13 @@ function TrainingQuestion() {
                             </Typography>
                         </Grid>
                         <Grid item>
-                            <Grid container spacing={2} justifyContent="center">
+                            <Grid container spacing={2} sx={{ display: 'flex', alignItems: 'center' }}>
                                 <Grid item>
 
                                     <CustomButton children='Yes' onClick={updateQuestion} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
                                 </Grid>
                                 <Grid item>
-                                    <Button
-                                        variant="outlined"
-                                        color="secondary"
-                                        onClick={handleStatusModalClose}
-                                    >
-                                        No
-                                    </Button>
+                                    <CustomButton children='No' onClick={handleStatusModalClose} bgColor='#BF0000' sx={{ width: '20%' }} />
                                 </Grid>
                             </Grid>
                         </Grid>

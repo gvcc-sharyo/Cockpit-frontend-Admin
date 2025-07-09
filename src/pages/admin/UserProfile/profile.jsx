@@ -6,6 +6,7 @@ import Navbar from "../../../components/admin/Navbar";
 import CustomTextField from "../../../components/admin/CustomTextField";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import CustomButton from "../../../components/admin/CustomButton";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const adminId = localStorage.getItem("adminId");
@@ -76,6 +77,9 @@ const Profile = () => {
     if (!formData.zipcode.trim()) errs.zipcode = "Zip code is required";
     return errs;
   };
+  
+
+  const navigate = useNavigate();
 const handleSubmit = async (e) => {
   e.preventDefault();
   const validationErrors = validate();
@@ -103,12 +107,13 @@ const handleSubmit = async (e) => {
       setTimeout(() => {
         snackbarEmitter(data.message, "success");
         setLoading(false);
-      }, 2000);
+         navigate(0)
+      }, 500);
     } else {
       setTimeout(() => {
         snackbarEmitter(data.message, "warning");
         setLoading(false);
-      }, 2000);
+      }, 500);
     }
   } catch (error) {
     setLoading(false);
@@ -141,7 +146,6 @@ const handleSubmit = async (e) => {
   { name: "state", placeholder: "State", value: formData.state, size: { xs: 12, md: 4 } },
   { name: "zipcode", placeholder: "ZipCode", value: formData.zipcode, size: { xs: 12, md: 4 } }
 ];
-
 
   const styles = {
     card: {
