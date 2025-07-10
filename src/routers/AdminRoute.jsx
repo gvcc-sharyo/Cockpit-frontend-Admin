@@ -15,6 +15,7 @@ import ResetPassword from '../pages/admin/resetPassword/ResetPassword';
 import InstitutionDetail from '../pages/admin/institute/InstitutionDetail';
 import StudentProfile from '../pages/admin/studentProfile/StudentProfile';
 import StudentDetail from '../pages/admin/studentProfile/StudentDetail';
+import Test from '../pages/admin/database/Test/Test';
 
 const AdminRoute = () => {
 
@@ -47,6 +48,7 @@ const AdminRoute = () => {
         <Route path="/admin/profile" element={<Profile />} />
         <Route path="/admin/studentProfile" element={<StudentProfile />} />
         <Route path="/admin/studentDetail" element={<StudentDetail />} />
+        <Route path="/admin/test" element={<Test />} />
         </Route>
         
       </Routes>
