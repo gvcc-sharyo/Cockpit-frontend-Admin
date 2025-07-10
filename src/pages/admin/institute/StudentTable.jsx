@@ -19,10 +19,11 @@ const styles = {
     borderRadius: "16px",
     p: 3,
     backgroundColor: "#fff",
-    width:"100%",
+    width:"auto",
     boxShadow: "0px 4px 20px rgba(0,0,0,0.05)",
     height: "600px",
     overflow: "auto",
+
     // 👇 Scrollbar styles
     "&::-webkit-scrollbar": {
       width: "4px",
@@ -32,7 +33,7 @@ const styles = {
       borderRadius: "10px",
     },
     "&::-webkit-scrollbar-thumb": {
-      backgroundColor: "#EAB308", // Yellow
+      backgroundColor: "#EAB308", 
       borderRadius: "10px",
     },
     "&::-webkit-scrollbar-thumb:hover": {
@@ -158,11 +159,7 @@ function StudentsTable() {
                 <TableCell sx={styles.tableCell}>{row.lastName}</TableCell>
                 <TableCell sx={styles.tableCell}>{row.gender}</TableCell>
                 <TableCell sx={styles.tableCell}>{row.phone}</TableCell>
-                <TableCell sx={styles.tableCell}>
-                  <IconButton>
-                    <EditOutlinedIcon sx={{ color: "#EAB308" }} />
-                  </IconButton>
-                </TableCell>
+                <TableCell sx={styles.tableCell}><IconButton><img src="/images/edit.svg" alt="Edit" style={{ width: '20px', height: '20px' }} /></IconButton></TableCell>
               </TableRow>
             ))}
           </TableBody>

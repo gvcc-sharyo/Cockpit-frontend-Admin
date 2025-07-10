@@ -10,7 +10,7 @@ const Address = () => {
       padding: "24px",
       backgroundColor: "#fff",
       boxShadow: "0px 4px 20px rgba(0,0,0,0.05)",
-      width:"100%"
+      width:"auto"
 
     },
     title: {

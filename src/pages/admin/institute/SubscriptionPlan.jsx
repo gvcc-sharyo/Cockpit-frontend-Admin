@@ -25,7 +25,7 @@ const styles = {
     height: "auto",
     minHeight:"600px",
     overflow: "auto",
-    width:"100%",
+    width:"auto",
 
     mt: 4,
     "&::-webkit-scrollbar": {
@@ -144,7 +144,7 @@ const SubscriptionPlan = () => {
         elevation={3}
         sx={{
           borderRadius: "12px",
-          p: { xs: 2, sm: 3,width:"100%" },
+          p: { xs: 2, sm: 3,width:"auto" },
           backgroundColor: "#fff",
         }}
       >
@@ -249,7 +249,7 @@ const SubscriptionPlan = () => {
           <Table stickyHeader>
             <TableHead>
               <TableRow>
-                {["Invoice", "Billing dates", "Status", "Amount", "Action"].map((head, idx) => (
+                {["Invoice", "Billing dates", "Status", "Amount"].map((head, idx) => (
                   <TableCell key={idx} sx={styles.tableHeadCell}>
                     {head}
                   </TableCell>
@@ -278,11 +278,11 @@ const SubscriptionPlan = () => {
                     </Box>
                   </TableCell>
                   <TableCell sx={styles.tableCell}>{row.amount}</TableCell>
-                  <TableCell sx={styles.tableCell}>
+                  {/* <TableCell sx={styles.tableCell}>
                     <IconButton>
                       <DownloadIcon sx={{ color: "#EAB308" }} />
                     </IconButton>
-                  </TableCell>
+                  </TableCell> */}
                 </TableRow>
               ))}
             </TableBody>

@@ -25,7 +25,7 @@ function InstitutionDetail() {
 
   const styles = {
     card: {
-      width: { xs: "auto", md: "100%" },
+      width: { xs: "auto", md: "auto",lg:"auto" },
       borderRadius: "8px",
       p: 3,
       fontFamily: "Jost",
@@ -90,7 +90,7 @@ function InstitutionDetail() {
       fontSize: "14px",
     },
     tabRoot: {
-      fontFamily: "Inter",
+       fontFamily: "Jost",
       fontWeight: 400,
       fontSize: "16px",
       textTransform: "none",
@@ -104,8 +104,8 @@ function InstitutionDetail() {
   return (
     <>
       <Navbar title="Institution">
-        <Grid container spacing={8}>
-          <Grid size={{ xs: 12, md: 2.5 }}>
+        <Grid container spacing={4}>
+          <Grid size={{ xs: 12, md: 3,lg:3,sm:4 }} sx={{width:"auto"}}>
             <Paper elevation={3} sx={styles.card}>
               <Box sx={styles.avatarContainer}>
                 <Avatar alt="Cockpit" src="" sx={styles.avatar} />
@@ -192,8 +192,8 @@ function InstitutionDetail() {
             </Paper>
           </Grid>
 
-          <Grid size={{ xs: 12, md: 9 }}>
-            <Box sx={{ width: "100%" }}>
+          <Grid size={{ xs: 12, md: 9,lg:9,sm:8 }} sx={{ width: "100%" }}>
+            <Box sx={{ width: "auto" }}>
               <Tabs
                 value={value}
                 onChange={handleChange}
