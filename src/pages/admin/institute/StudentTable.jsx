@@ -118,18 +118,7 @@ function StudentsTable() {
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Typography sx={styles.heading}>Students</Typography>
 
-        <Box sx={styles.paginationBox}>
-          <Typography sx={styles.paginationLabel}>Showing</Typography>
-          <TextField
-            variant="outlined"
-            size="small"
-            value={12}
-            sx={styles.paginationInput}
-          />
-          <Typography sx={{ ...styles.paginationLabel, ml: 1 }}>
-            per page
-          </Typography>
-        </Box>
+        
       </Box>
 
       {/* Table */}
