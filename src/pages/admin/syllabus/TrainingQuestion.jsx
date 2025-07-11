@@ -341,7 +341,7 @@ function TrainingQuestion() {
                     <Button
                         component="label"
                         variant="contained"
-                        sx={{ mt: 1, p: 1, backgroundColor: 'orange', color: 'white' }}
+                        sx={{ mt: 1, p: 1, backgroundColor: '#EAB308', color: 'white' }}
                         startIcon={<CloudUploadIcon />}
 
                     >

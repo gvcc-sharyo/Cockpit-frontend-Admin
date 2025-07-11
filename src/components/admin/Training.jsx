@@ -13,9 +13,6 @@ function Training({ syllabusNav = false, syllabusName, bookName, chapterName, qu
   console.log("bookId", bookId);
   console.log("chapterId", chapterId);
 
-
-
-
   const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [options, setOptions] = useState([1, 2]);
