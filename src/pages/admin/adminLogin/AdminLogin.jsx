@@ -1,37 +1,11 @@
-import React, { useState } from 'react';
-import {
-  Grid,
-  Button,
-  TextField,
-  Typography,
-  Checkbox,
-  FormControlLabel,
-  IconButton,
-  Box,
-  Paper,
-  OutlinedInput,
-  InputAdornment,
-  InputLabel,
-  FormControl,
-  CircularProgress,
-  Snackbar,
-  Alert,
-  Backdrop,
-  Dialog,
-  DialogContent
-} from '@mui/material';
-import { Opacity, Visibility, VisibilityOff } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+
 import { apiPost } from '../../../api/axios';
 import axios from 'axios';
 import CustomTextField from '../../../components/admin/CustomTextField';
 import { snackbarEmitter } from '../../../components/admin/CustomSnackbar';
 import CustomButton from '../../../components/admin/CustomButton';
-import CloseIcon from '@mui/icons-material/Close';
-import { color } from 'chart.js/helpers';
 import './adminLogin.css';
 import CustomTypography from '../../../components/admin/CustomTypography';
-import { left } from '@popperjs/core';
 import { useGoogleLogin } from '@react-oauth/google';
 
 const styles = {

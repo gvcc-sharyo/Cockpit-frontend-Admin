@@ -1,35 +1,9 @@
 import Navbar from "../../../components/admin/Navbar";
-import { useEffect, useState } from "react";
 import { apiGet, apiPostUpload, apiDelete } from "../../../api/axios";
-import {
-  Grid,
-  Card,
-  CardMedia,
-  CardContent,
-  Typography,
-  Container,
-  Button,
-  Box,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  IconButton,
-  TextField,
-  MenuItem,
-  Alert,
-  Snackbar,
-  CircularProgress,
-  Backdrop,
-  Menu
-} from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import CloseIcon from '@mui/icons-material/Close';
-import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import CustomTextField from "../../../components/admin/CustomTextField";
 import CustomButton from "../../../components/admin/CustomButton";
 import CustomTypography from "../../../components/admin/CustomTypography";
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 function TrainingSyllabus() {
   const [syllabus, setSyllabus] = useState([]);

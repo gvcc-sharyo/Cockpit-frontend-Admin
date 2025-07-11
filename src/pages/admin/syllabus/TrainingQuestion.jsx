@@ -1,32 +1,7 @@
 import Navbar from "../../../components/admin/Navbar";
-import { act, useEffect, useState } from "react";
-import {
-    Grid,
-    Typography,
-    Container,
-    Button,
-    IconButton,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    Box,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    TextField
-} from "@mui/material";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
-import EditSquareIcon from '@mui/icons-material/EditSquare';
 import { apiGet, apiPostUpload, apiPost } from "../../../api/axios";
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import CustomButton from "../../../components/admin/CustomButton";
-import CloseIcon from '@mui/icons-material/Close';
 import CustomTypography from "../../../components/admin/CustomTypography";
 
 function TrainingQuestion() {

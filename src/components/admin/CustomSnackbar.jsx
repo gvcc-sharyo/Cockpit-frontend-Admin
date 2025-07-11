@@ -1,6 +1,3 @@
-import { useState, useEffect } from 'react';
-import { Snackbar, Alert } from '@mui/material';
-
 let externalSnackbarCallback = null;
 
 export const snackbarEmitter = (message, severity = 'info') => {

@@ -1,25 +1,3 @@
-import { useEffect, useState } from "react";
-import {
-    Grid,
-    Typography,
-    Container,
-    Button,
-    IconButton,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    TextField,
-    MenuItem,
-    Box,
-} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 import Navbar from "../../../components/admin/Navbar";
 import CustomButton from "../../../components/admin/CustomButton";
 import CustomTypography from "../../../components/admin/CustomTypography";
@@ -55,8 +33,6 @@ function StudentProfile() {
     // useEffect(() => {
     //     fetchInstitute();
     // }, [])
-
-
 
     const handleModalOpen = () => setOpenModal(true);
     const handleModalClose = () => {

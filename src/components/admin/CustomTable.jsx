@@ -1,20 +1,6 @@
-import { useEffect, useState } from "react";
-import {
-  Grid,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  IconButton,
-} from "@mui/material";
 import { apiGet } from "../../api/axios";
 import CustomTypography from "./CustomTypography";
 import CustomButton from "./CustomButton";
-import EditSquareIcon from "@mui/icons-material/EditSquare";
 
 function CustomTable({maxWidth, handleClick, institutes, tableHeaders}) {
 

@@ -1,4 +1,3 @@
-import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import Dashboard from '../pages/admin/dashboard/Dashboard';
 import TrainingSyllabus from '../pages/admin/syllabus/TrainingSyllabus';
 import Feedback from '../pages/admin/database/Feedback';

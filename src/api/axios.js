@@ -1,14 +1,8 @@
 import axios from 'axios';
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-
-
-
 // const BASE_URL = 'http://13.235.91.167:8000/cockpit';
 // GET
-
-
-
 
 export const apiGet = async (endpoint) => {
   const headers = {

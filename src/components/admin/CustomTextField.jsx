@@ -1,6 +1,5 @@
-import React from "react";
-import { Box, TextField } from "@mui/material";
 import CustomTypography from "./CustomTypography";
+
 const CustomTextField = ({
   label,
   required = false,

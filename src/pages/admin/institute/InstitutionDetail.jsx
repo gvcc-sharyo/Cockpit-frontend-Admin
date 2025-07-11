@@ -1,13 +1,4 @@
 import Navbar from "../../../components/admin/Navbar";
-import { Grid, Typography, Paper, Avatar, Stack, Box } from "@mui/material";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
-import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
-import SmartphoneIcon from "@mui/icons-material/Smartphone";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import { Email, Phone } from "@mui/icons-material";
-import * as React from "react";
 import StudentsTable from "./StudentTable";
 import Address from "./Address";
 import SubscriptionPlan from "./SubscriptionPlan";

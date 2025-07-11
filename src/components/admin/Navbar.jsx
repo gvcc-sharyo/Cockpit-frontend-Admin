@@ -1,36 +1,3 @@
-import { useEffect, useState, } from 'react';
-import {
-  Grid,
-  Box,
-  AppBar,
-  Toolbar,
-  Typography,
-  InputBase,
-  IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Collapse,
-  Avatar,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Button,
-  Autocomplete,
-  TextField,
-  Paper,
-  ListItemButton
-} from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import CloseIcon from '@mui/icons-material/Close';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
-import { useNavigate, useLocation } from 'react-router-dom';
-import SearchIcon from '@mui/icons-material/Search';
 import { snackbarEmitter } from './CustomSnackbar';
 import { apiGet } from '../../api/axios';
 import CustomButton from './CustomButton';

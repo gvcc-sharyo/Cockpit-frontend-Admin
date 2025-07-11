@@ -1,5 +1,4 @@
 import Navbar from "../../../components/admin/Navbar";
-import { useLocation, useNavigate } from "react-router-dom";
 import Training from "../../../components/admin/Training";
 
 function AddQuestion() {

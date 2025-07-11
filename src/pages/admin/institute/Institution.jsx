@@ -1,34 +1,10 @@
-import { useEffect, useState } from "react";
-import {
-    Grid,
-    Typography,
-    Container,
-    Button,
-    IconButton,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    TextField,
-    MenuItem,
-    Box,
-} from "@mui/material";
-import EditSquareIcon from "@mui/icons-material/EditSquare";
 import { apiGet, apiPost } from "../../../api/axios";
-import CloseIcon from "@mui/icons-material/Close";
 import CustomTable from "../../../components/admin/CustomTable";
 import CustomButton from "../../../components/admin/CustomButton";
 import CustomTextField from "../../../components/admin/CustomTextField";
 import CustomTypography from "../../../components/admin/CustomTypography";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import Navbar from "../../../components/admin/Navbar";
-import { useNavigate } from "react-router-dom";
 
 const styles = {
     container: {
