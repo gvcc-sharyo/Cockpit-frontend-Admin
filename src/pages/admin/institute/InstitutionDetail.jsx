@@ -105,7 +105,7 @@ function InstitutionDetail() {
     <>
       <Navbar title="Institution">
         <Grid container spacing={4}>
-          <Grid size={{ xs: 12, md: 3,lg:3,sm:4 }} sx={{width:"auto"}}>
+          <Grid size={{ xs: 12, md: 3,lg:3,sm:4 }} sx={{width:{xs:"100%",md:"auto"}}}>
             <Paper elevation={3} sx={styles.card}>
               <Box sx={styles.avatarContainer}>
                 <Avatar alt="Cockpit" src="" sx={styles.avatar} />

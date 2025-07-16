@@ -203,7 +203,7 @@ function AdminLogin() {
     const req = { email: loginForm.email, password: loginForm.password };
     try {
       const response = await apiPost('/admin/loginAdmin', req);
-      // console.log("Response :", response.data);
+      console.log("Response :", response.data);
 
       setTimeout(() => {
         setLoading(false);
@@ -282,6 +282,7 @@ function AdminLogin() {
 
     try {
       const response = await apiPost('/admin/forgot-password', { email: forgotEmail });
+
 
       setTimeout(() => {
         setForgotLoading(false);
