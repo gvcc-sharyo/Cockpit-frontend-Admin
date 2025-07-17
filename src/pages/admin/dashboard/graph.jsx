@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+// import { useEffect, useRef, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { apiGet } from "../../../api/axios";
 import {
@@ -11,7 +11,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { Box, Typography } from "@mui/material";
+// import { Box, Typography } from "@mui/material";
 
 // Register Chart.js components
 ChartJS.register(

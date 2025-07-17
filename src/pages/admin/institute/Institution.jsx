@@ -1,34 +1,10 @@
-import { useEffect, useState } from "react";
-import {
-  Grid,
-  Typography,
-  Container,
-  Button,
-  IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  TextField,
-  MenuItem,
-  Box,
-} from "@mui/material";
-import EditSquareIcon from "@mui/icons-material/EditSquare";
 import { apiGet, apiPost } from "../../../api/axios";
-import CloseIcon from "@mui/icons-material/Close";
 import CustomTable from "../../../components/admin/CustomTable";
 import CustomButton from "../../../components/admin/CustomButton";
 import CustomTextField from "../../../components/admin/CustomTextField";
 import CustomTypography from "../../../components/admin/CustomTypography";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import Navbar from "../../../components/admin/Navbar";
-import { useNavigate } from "react-router-dom";
 
 const styles = {
   container: {
@@ -63,13 +39,7 @@ const styles = {
     mb: 3,
     justifyContent: { md: "center", xs: "left" },
   },
-  //   submitBtn: {
-  //     backgroundColor: "orange",
-  //     color: "white",
-  //     fontWeight: "bold",
-  //   },
-
-  generateButton: {
+   generateButton: {
     position: "absolute",
     right: 0,
     top: "15%",
@@ -85,15 +55,20 @@ const styles = {
     fontSize: "14px",
   },
 };
+
+
 function Institution() {
   const [openModal, setOpenModal] = useState(false);
   const [chapterName, setChapterName] = useState([]);
 
   const [institutes, setInstitutes] = useState([]);
 
+
+
   const fetchInstitute = async () => {
     try {
-      const response = await apiGet("/admin/getInstitute");
+      const response = await apiGet("/admin/getAllInstitute");
+      console.log(response.data);
 
       if (response.data.status === 200 && response.data.data.length === 0) {
         snackbarEmitter("No institutes found", "info");
@@ -103,6 +78,7 @@ function Institution() {
         snackbarEmitter(response.data.message, "error");
       }
     } catch (error) {
+      console.error("Error fetching institutes:", error);
       snackbarEmitter("Something went wrong", "error");
     }
   };
@@ -123,13 +99,15 @@ function Institution() {
     instituteName: "",
     department: "",
     email: "",
-    phone: "",
-    amount: "",
-    period: "",
     password: "",
-    transactionid: "",
-    address: "",
+    phone: "",
+    subscriptionAmt: "",
+    subscriptionPeriod: "",
+    currentAddress: "",
+    permanentAddress: "",
+    transactionId: "",
   });
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -139,16 +117,34 @@ function Institution() {
 
   const handleErrors = () => {
     const errs = {};
+
     if (!formData.instituteName)
       errs.instituteName = "Institute name is required";
+
     if (!formData.department) errs.department = "Department is required";
+
     if (!formData.email) errs.email = "Email is required";
-    if (!/\S+@\S+\.\S+/.test(formData.email)) errs.email = "Invalid email";
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) errs.email = "Invalid email";
+
     if (!formData.phone) errs.phone = "Phone number is required";
-    if (!formData.amount) errs.amount = "Amount is required";
-    if (!formData.period) errs.period = "Period is required";
+
+    if (!formData.subscriptionAmt)
+      errs.subscriptionAmt = "Subscription amount is required";
+
+    if (!formData.subscriptionPeriod)
+      errs.subscriptionPeriod = "Subscription period is required";
+
     if (!formData.password) errs.password = "Password is required";
-    if (!formData.address) errs.address = "Address is required";
+
+    if (!formData.currentAddress)
+      errs.currentAddress = "Current address is required";
+
+    if (!formData.permanentAddress)
+      errs.permanentAddress = "Permanent address is required";
+
+    if (!formData.transactionId)
+      errs.transactionId = "Transaction ID is required";
+
     setFormErrs(errs);
     return errs;
   };
@@ -156,7 +152,8 @@ function Institution() {
   const handleAddInstitute = async () => {
     const errors = handleErrors();
 
-    if (errors.length > 0) {
+    // Correct way to check if any validation errors exist
+    if (Object.keys(errors).length > 0) {
       return;
     }
 
@@ -165,15 +162,19 @@ function Institution() {
       department: formData.department,
       email: formData.email,
       phone: formData.phone,
-      subscriptionAmt: formData.amount,
-      subscriptionPeriod: formData.period,
-      address: formData.address,
+      password: formData.password,
+      subscriptionAmt: formData.subscriptionAmt,
+      subscriptionPeriod: formData.subscriptionPeriod,
+      currentAddress: formData.currentAddress,
+      permanentAddress: formData.permanentAddress,
+      transactionId: formData.transactionId,
     };
 
     try {
       setLoading(true);
       const response = await apiPost("/admin/addInstitute", req);
-      console.log(response.data.message);
+      console.log(response.data);
+
       if (response.status === 200) {
         snackbarEmitter(response.data.message, "success");
         handleModalClose();
@@ -182,30 +183,43 @@ function Institution() {
           department: "",
           email: "",
           phone: "",
-          amount: "",
-          period: "",
-          address: "",
+          password: "",
+          subscriptionAmt: "",
+          subscriptionPeriod: "",
+          currentAddress: "",
+          permanentAddress: "",
+          transactionId: "",
         });
-        setTimeout(() => {
-          setLoading(false);
-        }, 2000);
       } else {
         alert("Failed to add institute");
-        // Even on failure, delay loader stop by 2 seconds
-        setTimeout(() => {
-          setLoading(false);
-        }, 2000);
       }
+
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
     } catch (error) {
       console.error("Error adding institute:", error);
+      snackbarEmitter("Something went wrong", "error");
+
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
     }
   };
 
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    navigate("/admin/institutiondetails");
+  const handleClick = (id) => {
+    navigate(`/admin/institutiondetails`);
   };
+
+  const handleEdit = (institute) => {
+  navigate(`/admin/institutiondetails`, {
+    state: { instituteId: institute._id },
+  });
+};
+
+
 
   const handleGeneratePassword = () => {
     const password = Math.random().toString(36).slice(-8);
@@ -249,6 +263,7 @@ function Institution() {
           <CustomTable
             maxWidth={"100%"}
             handleClick={handleClick}
+            handleEdit={handleEdit}
             institutes={institutes}
             tableHeaders={tableHeaders}
           />
@@ -276,6 +291,7 @@ function Institution() {
                   helperText={formErrs.instituteName}
                 />
               </Grid>
+
               <Grid size={{ xs: 12, md: 5 }}>
                 <CustomTextField
                   label="Department*"
@@ -287,6 +303,7 @@ function Institution() {
                   helperText={formErrs.department}
                 />
               </Grid>
+
               <Grid size={{ xs: 12, md: 5 }}>
                 <CustomTextField
                   label="Email*"
@@ -298,6 +315,7 @@ function Institution() {
                   helperText={formErrs.email}
                 />
               </Grid>
+
               <Grid size={{ xs: 12, md: 5 }}>
                 <CustomTextField
                   label="Phone Number*"
@@ -309,27 +327,29 @@ function Institution() {
                   helperText={formErrs.phone}
                 />
               </Grid>
+
               <Grid size={{ xs: 12, md: 5 }}>
                 <CustomTextField
                   label="Label Amount*"
-                  name="amount"
-                  value={formData.amount}
+                  name="subscriptionAmt"
+                  value={formData.subscriptionAmt}
                   onChange={handleInputChange}
                   placeholder="Enter"
-                  error={!!formErrs.amount}
-                  helperText={formErrs.amount}
+                  error={!!formErrs.subscriptionAmt}
+                  helperText={formErrs.subscriptionAmt}
                 />
               </Grid>
+
               <Grid size={{ xs: 12, md: 5 }}>
                 <CustomTextField
                   label="Subscription Period*"
                   select
-                  name="period"
-                  value={formData.period}
+                  name="subscriptionPeriod"
+                  value={formData.subscriptionPeriod}
                   onChange={handleInputChange}
                   placeholder="Enter"
-                  error={!!formErrs.period}
-                  helperText={formErrs.period}
+                  error={!!formErrs.subscriptionPeriod}
+                  helperText={formErrs.subscriptionPeriod}
                 >
                   <MenuItem value="1">1 month</MenuItem>
                   <MenuItem value="6">6 months</MenuItem>
@@ -361,8 +381,8 @@ function Institution() {
               <Grid size={{ xs: 12, md: 5 }}>
                 <CustomTextField
                   label="Transaction ID"
-                  name="transactionid"
-                  value={formData.transactionid}
+                  name="transactionId"
+                  value={formData.transactionId}
                   onChange={handleInputChange}
                   placeholder="Enter"
                 />
@@ -370,16 +390,29 @@ function Institution() {
 
               <Grid size={{ xs: 12, md: 10.5 }}>
                 <CustomTextField
-                  label="Address*"
-                  name="address"
-                  value={formData.address}
+                  label="Current Address*"
+                  name="currentAddress"
+                  value={formData.currentAddress}
                   onChange={handleInputChange}
                   placeholder="Enter"
-                  error={!!formErrs.address}
-                  helperText={formErrs.address}
+                  error={!!formErrs.currentAddress}
+                  helperText={formErrs.currentAddress}
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 10.5 }}>
+                <CustomTextField
+                  label="Permanent Address*"
+                  name="permanentAddress"
+                  value={formData.permanentAddress}
+                  onChange={handleInputChange}
+                  placeholder="Enter"
+                  error={!!formErrs.permanentAddress}
+                  helperText={formErrs.permanentAddress}
                 />
               </Grid>
             </Grid>
+
             <Grid
               item
               sx={{ display: "flex", justifyContent: "center" }}

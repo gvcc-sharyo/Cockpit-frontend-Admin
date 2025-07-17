@@ -1,18 +1,4 @@
-import React from "react";
-import {
-  Box,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  IconButton,
-  TextField,
-} from "@mui/material";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import { apiPost } from "../../../api/axios";
 
 const styles = {
   container: {
@@ -21,10 +7,11 @@ const styles = {
     backgroundColor: "#fff",
     width:"auto",
     boxShadow: "0px 4px 20px rgba(0,0,0,0.05)",
-    height: "600px",
+    height: "auto",
+    maxHeight: "600px", 
     overflow: "auto",
 
-    // 👇 Scrollbar styles
+   
     "&::-webkit-scrollbar": {
       width: "4px",
     },
@@ -103,15 +90,36 @@ const styles = {
   },
 };
 
-const sampleData = new Array(10).fill({
-  sn: "01",
-  firstName: "Bhumika",
-  lastName: "Prajapathi",
-  gender: "Female",
-  phone: "0987654321",
-});
 
-function StudentsTable() {
+
+function StudentsTable({ instituteId }) {
+
+   const [students, setStudents] = useState([]);
+
+
+
+
+
+
+  const getInstituteDetails = async () => {
+    try {
+      const response = await apiPost("/admin/instituteStudents", { instituteId: instituteId });
+      setStudents(response.data.data);
+        
+      console.log("Fetched institute details:", students);
+    } catch (error) {
+      console.error("Failed to fetch institute details:", error);
+    }
+  };
+
+
+  useEffect(() => {
+    if (instituteId) {
+      getInstituteDetails();
+    }
+  }, [instituteId]);
+
+
   return (
     <Paper elevation={3} sx={styles.container}>
       {/* Top Row */}
@@ -141,9 +149,9 @@ function StudentsTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {sampleData.map((row, idx) => (
+            {students.map((row, idx) => (
               <TableRow key={idx}>
-                <TableCell sx={styles.tableCell}>{row.sn}</TableCell>
+                <TableCell sx={styles.tableCell}>{idx+1}</TableCell>
                 <TableCell sx={styles.tableCell}>{row.firstName}</TableCell>
                 <TableCell sx={styles.tableCell}>{row.lastName}</TableCell>
                 <TableCell sx={styles.tableCell}>{row.gender}</TableCell>

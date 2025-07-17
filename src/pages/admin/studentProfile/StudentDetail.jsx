@@ -1,24 +1,7 @@
-import { useEffect, useState } from "react";
-import {
-  Grid,
-  Avatar,
-  Box,
-  Typography,
-  IconButton,
-  Paper,
-  Card,
-  CardContent,
-  CardMedia,
-} from "@mui/material";
 import Navbar from "../../../components/admin/Navbar";
 import CustomTypography from "../../../components/admin/CustomTypography";
-import EmailIcon from "@mui/icons-material/Email";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import PhoneIcon from "@mui/icons-material/Phone";
-
 
 function StudentDetail() {
-
 
   const styles = {
   mainContainer: {

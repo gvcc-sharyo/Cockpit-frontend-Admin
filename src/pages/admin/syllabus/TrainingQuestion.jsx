@@ -1,32 +1,7 @@
 import Navbar from "../../../components/admin/Navbar";
-import { act, useEffect, useState } from "react";
-import {
-    Grid,
-    Typography,
-    Container,
-    Button,
-    IconButton,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    Box,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    TextField
-} from "@mui/material";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
-import EditSquareIcon from '@mui/icons-material/EditSquare';
 import { apiGet, apiPostUpload, apiPost } from "../../../api/axios";
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import CustomButton from "../../../components/admin/CustomButton";
-import CloseIcon from '@mui/icons-material/Close';
 import CustomTypography from "../../../components/admin/CustomTypography";
 
 function TrainingQuestion() {
@@ -36,9 +11,9 @@ function TrainingQuestion() {
     const location = useLocation();
     const { category, syllabusName, bookName, chapterName, activeBook, syllabusid, chapterId, bookid } = location.state || {};
 
-    console.log("syllabus id", syllabusid);
-    console.log("chapter id", chapterId);
-    console.log("book id", bookid);
+    // console.log("syllabus id", syllabusid);
+    // console.log("chapter id", chapterId);
+    // console.log("book id", bookid);
 
 
 
@@ -193,7 +168,7 @@ function TrainingQuestion() {
             isactive: formData.isactive
         }
 
-        console.log('is active', req.isactive);
+        // console.log('is active', req.isactive);
 
 
 
@@ -366,7 +341,7 @@ function TrainingQuestion() {
                     <Button
                         component="label"
                         variant="contained"
-                        sx={{ mt: 1, p: 1, backgroundColor: 'orange', color: 'white' }}
+                        sx={{ mt: 1, p: 1, backgroundColor: '#EAB308', color: 'white' }}
                         startIcon={<CloudUploadIcon />}
 
                     >
