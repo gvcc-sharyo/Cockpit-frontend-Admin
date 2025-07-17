@@ -1,12 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Grid, TextField, MenuItem, Button, Card, Box } from "@mui/material";
-import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { apiGet, apiPost } from "../../../api/axios";
 import Navbar from "../../../components/admin/Navbar";
 import CustomTextField from "../../../components/admin/CustomTextField";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import CustomButton from "../../../components/admin/CustomButton";
-import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const adminId = localStorage.getItem("adminId");

@@ -1,12 +1,3 @@
-import { useState, useEffect, useRef } from "react";
-import {
-  Box, Grid, Typography, IconButton, Collapse, Button, Avatar,
-  Dialog, DialogTitle, DialogContent, Divider, FormControl, FormControlLabel, Radio,
-  RadioGroup,
-} from "@mui/material";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import CloseIcon from '@mui/icons-material/Close';
 import Navbar from "../../../components/admin/Navbar";
 import CustomTypography from "../../../components/admin/CustomTypography";
 import CustomTextArea from "../../../components/admin/CustomTextArea";
@@ -14,7 +5,6 @@ import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import { apiGet, apiPost } from "../../../api/axios";
 import CustomButton from "../../../components/admin/CustomButton";
 import Training from "../../../components/admin/Training";
-import { useLocation } from "react-router-dom";
 
 function Feedback() {
 

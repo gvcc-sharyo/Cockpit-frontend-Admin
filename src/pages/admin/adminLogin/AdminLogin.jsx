@@ -1,36 +1,12 @@
-import React, { useState } from 'react';
-import {
-  Grid,
-  Button,
-  TextField,
-  Typography,
-  Checkbox,
-  FormControlLabel,
-  IconButton,
-  Box,
-  Paper,
-  OutlinedInput,
-  InputAdornment,
-  InputLabel,
-  FormControl,
-  CircularProgress,
-  Snackbar,
-  Alert,
-  Backdrop,
-  Dialog,
-  DialogContent
-} from '@mui/material';
-import { Opacity, Visibility, VisibilityOff } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+
 import { apiPost } from '../../../api/axios';
+import axios from 'axios';
 import CustomTextField from '../../../components/admin/CustomTextField';
 import { snackbarEmitter } from '../../../components/admin/CustomSnackbar';
 import CustomButton from '../../../components/admin/CustomButton';
-import CloseIcon from '@mui/icons-material/Close';
-import { color } from 'chart.js/helpers';
 import './adminLogin.css';
 import CustomTypography from '../../../components/admin/CustomTypography';
-import { left } from '@popperjs/core';
+import { useGoogleLogin } from '@react-oauth/google';
 
 const styles = {
   containerBox: {
@@ -49,7 +25,8 @@ const styles = {
 
   },
   cardPaper: {
-    padding: '2rem',
+    px: 3,
+    py: 1.5,
     borderRadius: '1rem',
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
     backdropFilter: 'blur(10px)',
@@ -74,11 +51,12 @@ const styles = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: '1rem',
+    // marginBottom: '1rem',
     backgroundColor: '#183251',
     borderRadius: '50px',
-    padding: '3px',
-    width: '100%',
+    px: 1.5,
+    py: 0.5,
+    // width:'100%'
   },
   secondaryText: {
     color: 'white',
@@ -108,7 +86,7 @@ const styles = {
   formGrid: {
     display: 'flex',
     justifyContent: 'flex-end',
-    marginBottom: '3px',
+    marginBottom: '10px',
   },
   formCheckbox: {
     color: '#bbb',
@@ -135,7 +113,20 @@ const styles = {
   socialIcon: {
     height: '30px',
   },
+
+  socialBox: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: '50px',
+    padding: '8px 16px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: 1,
+    cursor: 'pointer',
+  }
 };
+
+
 
 
 
@@ -186,7 +177,7 @@ function AdminLogin() {
     const req = { email: loginForm.email, password: loginForm.password };
     try {
       const response = await apiPost('/admin/loginAdmin', req);
-      // console.log("Response :", response.data);
+      console.log("Response :", response.data);
 
       setTimeout(() => {
         setLoading(false);
@@ -266,6 +257,7 @@ function AdminLogin() {
     try {
       const response = await apiPost('/admin/forgot-password', { email: forgotEmail });
 
+
       setTimeout(() => {
         setForgotLoading(false);
         if (response.data.status === 200) {
@@ -287,9 +279,34 @@ function AdminLogin() {
     }
   };
 
+
+const handleGoogleLogin = useGoogleLogin({
+   onSuccess: async (tokenResponse) => {
+      try {
+        const accessToken = tokenResponse.access_token;
+        console.log('Access Token:', accessToken);
+
+        const response = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        console.log('Response:', response.data);
+        
+        const userEmail = response.data.email;
+        console.log('userEmail', userEmail);
+        
+      } catch (error) {
+       snackbarEmitter('Something went wrong', 'error');
+      }
+    },
+    onError: (errorResponse) => console.log('Login Failed:', errorResponse),
+});
+
+
   return (
     <Box sx={styles.containerBox}>
-      <Grid container sx={{display: 'flex', justifyContent: 'center', }}>
+      <Grid container sx={{ display: 'flex', justifyContent: 'center', }}>
         <Box
           sx={{
             position: 'absolute',
@@ -309,17 +326,17 @@ function AdminLogin() {
         </Box>
 
 
-        <Grid item size={{ xs: 11, sm: 8, md: 9}} sx={styles.gridBox} mt={{ xs: 10, md: 0 }}>
+        <Grid item size={{ xs: 11, sm: 8, md: 9 }} sx={styles.gridBox} mt={{ xs: 10, md: 0 }}>
           <Paper elevation={10} sx={styles.cardPaper}>
-             <CustomTypography text=" Welcome to COCKPIT.!" sx={{mb: 2, textAlign: 'center' }} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} />
+            <CustomTypography text=" Welcome to COCKPIT.!" sx={{ mb: 2, textAlign: 'center' }} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} />
 
             <Box sx={styles.centeredBox}>
               <Button sx={styles.toggleButton(activeForm === 'login')} onClick={() => setActiveForm('login')}>
                 Login
               </Button>
-              <Button sx={styles.toggleButton(activeForm === 'register')} onClick={() => setActiveForm('register')}>
+              {/* <Button sx={styles.toggleButton(activeForm === 'register')} onClick={() => setActiveForm('register')}>
                 Register
-              </Button>
+              </Button> */}
             </Box>
 
 
@@ -372,12 +389,31 @@ function AdminLogin() {
 
                   <CustomButton children='Board me' onClick={handleLogin} loading={loading} bgColor='#EAB308' borderRadius='50px' />
 
+
+                </Grid>
+
+                <CustomTypography text='-OR-' fontSize={{ xs: '14px', sm: '17px', md: '18px' }} color='#A3A3A3' fontWeight={600} sx={{ textAlign: 'center' }} />
+
+
+                <Grid container justifyContent="center" gap={2} >
+                  <Box
+                    sx={styles.socialBox}
+                  >
+                    <img src="/images/apple.svg" alt="Apple Login" style={{ height: '24px', width: '24px' }} />
+                  </Box>
+
+                  <Box
+                    sx={styles.socialBox}
+                    onClick={handleGoogleLogin}
+                  >
+                    <img src="/images/google.svg" alt="Google Login" style={{ height: '24px', width: '24px' }} />
+                  </Box>
                 </Grid>
 
               </>
             )}
 
-            {activeForm === 'register' && (
+            {/* {activeForm === 'register' && (
               <>
 
                 <Grid mt={2}>
@@ -434,7 +470,7 @@ function AdminLogin() {
                 <CustomButton children='Register' onClick={handleRegister} loading={loading} bgColor='#EAB308' borderRadius='50px' />
 
               </>
-            )}
+            )} */}
 
           </Paper>
         </Grid>
@@ -491,10 +527,6 @@ function AdminLogin() {
             </Grid>
 
           </Grid>
-
-
-
-
 
         </DialogContent>
       </Dialog>

@@ -1,11 +1,3 @@
-import {
-  FormatBold,
-  FormatItalic,
-  FormatUnderlined,
-} from "@mui/icons-material";
-import { Box, Button, IconButton, TextField } from "@mui/material";
-import { useState } from "react";
-
 function CustomTextArea({
   value = "",
   onChange,

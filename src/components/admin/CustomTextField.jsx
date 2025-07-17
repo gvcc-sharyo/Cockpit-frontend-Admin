@@ -1,6 +1,5 @@
-import React from "react";
-import { Box, TextField } from "@mui/material";
 import CustomTypography from "./CustomTypography";
+
 const CustomTextField = ({
   label,
   required = false,
@@ -12,7 +11,7 @@ const CustomTextField = ({
   bgcolor,
   ...rest
 }) => {
-   console.log('value', value);
+  //  console.log('value', value);
   return (
 
    

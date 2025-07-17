@@ -1,223 +1,435 @@
-import Navbar from "../../../components/admin/Navbar";
-import { useEffect, useState } from "react";
-import {
-    Grid,
-    Typography,
-    Container,
-    Button,
-    IconButton,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    TextField,
-    MenuItem
-} from "@mui/material";
-import EditSquareIcon from '@mui/icons-material/EditSquare';
 import { apiGet, apiPost } from "../../../api/axios";
-import CloseIcon from '@mui/icons-material/Close';
-import InstituteTable from "../../../components/admin/InstituteTable";
+import CustomTable from "../../../components/admin/CustomTable";
+import CustomButton from "../../../components/admin/CustomButton";
+import CustomTextField from "../../../components/admin/CustomTextField";
+import CustomTypography from "../../../components/admin/CustomTypography";
+import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
+import Navbar from "../../../components/admin/Navbar";
+
+const styles = {
+  container: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  title: {
+    fontFamily: "Exo",
+    fontWeight: 500,
+    fontSize: { xs: "18px", md: "24px" },
+    color: "#111827",
+  },
+  buttonWrap: {
+    display: "flex",
+    justifyContent: { xs: "flex-end", sm: "flex-end" },
+  },
+  addBtn: {
+    color: "white",
+    width: "auto",
+    // fontFamily:"Lexend",
+    fontWeight: "300",
+  },
+  dialogTitle: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  formGrid: {
+    display: "flex",
+    gap: 2,
+    mb: 3,
+    justifyContent: { md: "center", xs: "left" },
+  },
+   generateButton: {
+    position: "absolute",
+    right: 0,
+    top: "15%",
+    transform: "translateY(-50%)",
+    color: "#109CF1",
+    textTransform: "none",
+    textDecoration: "underline",
+    minWidth: "auto",
+    padding: 0,
+    fontFamily: "Jost",
+    fontWeight: 400,
+    fontStyle: "normal",
+    fontSize: "14px",
+  },
+};
+
 
 function Institution() {
+  const [openModal, setOpenModal] = useState(false);
+  const [chapterName, setChapterName] = useState([]);
+
+  const [institutes, setInstitutes] = useState([]);
 
 
 
-     const [openModal, setOpenModal] = useState(false);
-         const [chapterName, setChapterName] = useState([]);
-     
-         const handleModalOpen = () => setOpenModal(true);
-         const handleModalClose = () => {
-             setOpenModal(false);
-         };
-     
-     
-         const [formData, setFormData] = useState({
-             instituteName: '',
-             department: '',
-             email: '',
-             phone:'',
-             amount:'',
-             period:'',
-             address: ''
-         });
-         const handleInputChange = (e) => {
-             const { name, value } = e.target;
-             setFormData({ ...formData, [name]: value });
-         };
-     
-         const handleAddInstitute = async () => {
-             const req = {
-                 instituteName: formData.instituteName,
-                 department: formData.department,
-                 email: formData.email,
-                 phone: formData.phone,
-                 subscriptionAmt: formData.amount,
-                 subscriptionPeriod: formData.period,
-                 address: formData.address
-             }
-     
-             try {
-                 const response = await apiPost('/admin/addInstitute', req);
-                 if (response.status === 200) {
-                     alert('Institute added successfully');
-                     fetchInstitute();
-                     handleModalClose();
-                 } else {
-                     alert('Failed to add institute');
-                 }
-             } catch (error) {
-                 console.error('Error adding institute:', error);
-             }
-         }
-     
+  const fetchInstitute = async () => {
+    try {
+      const response = await apiGet("/admin/getAllInstitute");
+      console.log(response.data);
+
+      if (response.data.status === 200 && response.data.data.length === 0) {
+        snackbarEmitter("No institutes found", "info");
+      } else if (response.data.status === 200) {
+        setInstitutes(response.data.data);
+      } else {
+        snackbarEmitter(response.data.message, "error");
+      }
+    } catch (error) {
+      console.error("Error fetching institutes:", error);
+      snackbarEmitter("Something went wrong", "error");
+    }
+  };
+
+  useEffect(() => {
+    fetchInstitute();
+  }, []);
+
+  const handleModalOpen = () => setOpenModal(true);
+  const handleModalClose = () => {
+    setOpenModal(false);
+    setFormData({});
+    setFormErrs({});
+  };
+
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    instituteName: "",
+    department: "",
+    email: "",
+    password: "",
+    phone: "",
+    subscriptionAmt: "",
+    subscriptionPeriod: "",
+    currentAddress: "",
+    permanentAddress: "",
+    transactionId: "",
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const [formErrs, setFormErrs] = useState({});
+
+  const handleErrors = () => {
+    const errs = {};
+
+    if (!formData.instituteName)
+      errs.instituteName = "Institute name is required";
+
+    if (!formData.department) errs.department = "Department is required";
+
+    if (!formData.email) errs.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) errs.email = "Invalid email";
+
+    if (!formData.phone) errs.phone = "Phone number is required";
+
+    if (!formData.subscriptionAmt)
+      errs.subscriptionAmt = "Subscription amount is required";
+
+    if (!formData.subscriptionPeriod)
+      errs.subscriptionPeriod = "Subscription period is required";
+
+    if (!formData.password) errs.password = "Password is required";
+
+    if (!formData.currentAddress)
+      errs.currentAddress = "Current address is required";
+
+    if (!formData.permanentAddress)
+      errs.permanentAddress = "Permanent address is required";
+
+    if (!formData.transactionId)
+      errs.transactionId = "Transaction ID is required";
+
+    setFormErrs(errs);
+    return errs;
+  };
+
+  const handleAddInstitute = async () => {
+    const errors = handleErrors();
+
+    // Correct way to check if any validation errors exist
+    if (Object.keys(errors).length > 0) {
+      return;
+    }
+
+    const req = {
+      instituteName: formData.instituteName,
+      department: formData.department,
+      email: formData.email,
+      phone: formData.phone,
+      password: formData.password,
+      subscriptionAmt: formData.subscriptionAmt,
+      subscriptionPeriod: formData.subscriptionPeriod,
+      currentAddress: formData.currentAddress,
+      permanentAddress: formData.permanentAddress,
+      transactionId: formData.transactionId,
+    };
+
+    try {
+      setLoading(true);
+      const response = await apiPost("/admin/addInstitute", req);
+      console.log(response.data);
+
+      if (response.status === 200) {
+        snackbarEmitter(response.data.message, "success");
+        handleModalClose();
+        setFormData({
+          instituteName: "",
+          department: "",
+          email: "",
+          phone: "",
+          password: "",
+          subscriptionAmt: "",
+          subscriptionPeriod: "",
+          currentAddress: "",
+          permanentAddress: "",
+          transactionId: "",
+        });
+      } else {
+        alert("Failed to add institute");
+      }
+
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
+    } catch (error) {
+      console.error("Error adding institute:", error);
+      snackbarEmitter("Something went wrong", "error");
+
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
+    }
+  };
+
+  const navigate = useNavigate();
+
+  const handleClick = (id) => {
+    navigate(`/admin/institutiondetails`);
+  };
+
+  const handleEdit = (institute) => {
+  navigate(`/admin/institutiondetails`, {
+    state: { instituteId: institute._id },
+  });
+};
 
 
-    return (
-        <>
-            <Navbar title="Institution"  />
 
-            <Container maxWidth="xl" >
+  const handleGeneratePassword = () => {
+    const password = Math.random().toString(36).slice(-8);
+    setFormData({ ...formData, password });
+  };
 
-                <Grid container sx={{ flexDirection: 'column', position: "relative", backgroundColor: '#f8f9fa', padding: '10px' }} mt={-60} ml={30} >
+  const tableHeaders = [
+    "Sr no",
+    "Institute Name",
+    "Number of students",
+    "Status",
+    "Action",
+  ];
 
-                    <Grid sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Grid>
-                            <Typography sx={{ fontSize: '30px' }} gutterBottom >List of Institution</Typography>
+  return (
+    <>
+      <Navbar title="Institution">
+        <Grid container sx={styles.container}>
+          <Grid size={{ xs: 6, sm: 6, md: 6 }}>
+            <CustomTypography
+              text="List of institution"
+              fontWeight={500}
+              fontSize={{ xs: "18px", md: "22px", sm: "20px" }}
+            />
+          </Grid>
+          <Grid>
+            <CustomButton
+              children="Add institute"
+              onClick={handleModalOpen}
+              loading={false}
+              bgColor="#EAB308"
+              sx={{
+                width: { xs: "100%", md: "100%", sm: "100%" },
+                fontSize: { xs: "12px", md: "14px", sm: "14px" },
+              }}
+            />
+          </Grid>
+        </Grid>
 
-                        </Grid>
+        <Grid size={{ xs: 12 }} mt={2}>
+          <CustomTable
+            maxWidth={"100%"}
+            handleClick={handleClick}
+            handleEdit={handleEdit}
+            institutes={institutes}
+            tableHeaders={tableHeaders}
+          />
+        </Grid>
 
+        <Dialog open={openModal} onClose={handleModalClose} fullWidth>
+          <DialogTitle sx={styles.dialogTitle}>
+            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+              Add Institution
+            </Typography>
+            <IconButton onClick={handleModalClose}>
+              <CloseIcon />
+            </IconButton>
+          </DialogTitle>
+          <DialogContent dividers>
+            <Grid container sx={styles.formGrid}>
+              <Grid size={{ xs: 12, md: 5 }}>
+                <CustomTextField
+                  label="Institute Name*"
+                  name="instituteName"
+                  value={formData.instituteName}
+                  onChange={handleInputChange}
+                  placeholder="Enter"
+                  error={!!formErrs.instituteName}
+                  helperText={formErrs.instituteName}
+                />
+              </Grid>
 
-                        <Grid sx={{ display: 'flex', justifyContent: 'flex-end' }} mb={2}>
-                            <Button onClick={handleModalOpen} variant="'outlined" sx={{ backgroundColor: 'orange', color: 'white' }}>+ Add Institute</Button>
-                        </Grid>
-                    </Grid>
+              <Grid size={{ xs: 12, md: 5 }}>
+                <CustomTextField
+                  label="Department*"
+                  name="department"
+                  value={formData.department}
+                  onChange={handleInputChange}
+                  placeholder="Enter"
+                  error={!!formErrs.department}
+                  helperText={formErrs.department}
+                />
+              </Grid>
 
-                    <InstituteTable maxWidth={'100%'}/>
+              <Grid size={{ xs: 12, md: 5 }}>
+                <CustomTextField
+                  label="Email*"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="Enter"
+                  error={!!formErrs.email}
+                  helperText={formErrs.email}
+                />
+              </Grid>
 
-                </Grid>
-            </Container>
+              <Grid size={{ xs: 12, md: 5 }}>
+                <CustomTextField
+                  label="Phone Number*"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  placeholder="Enter"
+                  error={!!formErrs.phone}
+                  helperText={formErrs.phone}
+                />
+              </Grid>
 
-            <Dialog open={openModal} onClose={handleModalClose} maxWidth="sm" fullWidth>
-                <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Add Institution</Typography>
-                    <IconButton onClick={handleModalClose}>
-                        <CloseIcon />
-                    </IconButton>
-                </DialogTitle>
+              <Grid size={{ xs: 12, md: 5 }}>
+                <CustomTextField
+                  label="Label Amount*"
+                  name="subscriptionAmt"
+                  value={formData.subscriptionAmt}
+                  onChange={handleInputChange}
+                  placeholder="Enter"
+                  error={!!formErrs.subscriptionAmt}
+                  helperText={formErrs.subscriptionAmt}
+                />
+              </Grid>
 
-                <DialogContent dividers>
+              <Grid size={{ xs: 12, md: 5 }}>
+                <CustomTextField
+                  label="Subscription Period*"
+                  select
+                  name="subscriptionPeriod"
+                  value={formData.subscriptionPeriod}
+                  onChange={handleInputChange}
+                  placeholder="Enter"
+                  error={!!formErrs.subscriptionPeriod}
+                  helperText={formErrs.subscriptionPeriod}
+                >
+                  <MenuItem value="1">1 month</MenuItem>
+                  <MenuItem value="6">6 months</MenuItem>
+                  <MenuItem value="12">12 months</MenuItem>
+                </CustomTextField>
+              </Grid>
 
-                    <Grid container sx={{ display: 'flex', gap: 3, mb: 3 }}>
-                        <Grid size={{ xs: 6, md: 5 }}>
-                            <Typography sx={{ fontSize: '14px' }} gutterBottom>Institute Name</Typography>
-                            <TextField
-                                fullWidth
-                                label="enter"
-                                name="instituteName"
-                                value={formData.instituteName}
-                                onChange={handleInputChange}
-                            />
-                        </Grid>
-                        <Grid size={{ xs: 6, md: 5 }}>
-                            <Typography sx={{ fontSize: '14px' }} gutterBottom>Department</Typography>
-                            <TextField
-                                fullWidth
-                                label="enter"
-                                name="department"
-                                value={formData.department}
-                                onChange={handleInputChange}
-                            />
-                        </Grid>
-                    </Grid>
-                    <Grid container sx={{ display: 'flex', gap: 3, mb: 3 }}>
-                        <Grid size={{ xs: 6, md: 5 }}>
-                            <Typography sx={{ fontSize: '14px' }} gutterBottom>E-mail</Typography>
-                            <TextField
-                                fullWidth
-                                label="enter"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleInputChange}
-                            />
-                          
-                        </Grid>
-                        <Grid size={{ xs: 6, md: 5 }}>
-                            <Typography sx={{ fontSize: '14px' }} gutterBottom>Phone number</Typography>
-                            <TextField
-                                fullWidth
-                                label="enter"
-                                name="phone"
-                                value={formData.phone}
-                                onChange={handleInputChange}
-                            />
-                          
-                        </Grid>
-                    </Grid>
+              <Grid size={{ xs: 12, md: 5 }}>
+                <Box sx={{ position: "relative" }}>
+                  <CustomTextField
+                    label="Password*"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    placeholder="Enter"
+                    error={!!formErrs.password}
+                    helperText={formErrs.password}
+                    fullWidth
+                  />
+                  <Button
+                    onClick={handleGeneratePassword}
+                    sx={styles.generateButton}
+                  >
+                    Generate
+                  </Button>
+                </Box>
+              </Grid>
 
-                    <Grid container sx={{ display: 'flex', gap: 3, mb: 3 }}>
-                        <Grid size={{ xs: 6, md: 5 }}>
-                            <Typography sx={{ fontSize: '14px' }} gutterBottom>Subscription amount</Typography>
-                            <TextField
-                                fullWidth
-                                label="enter"
-                                name="amount"
-                                value={formData.amount}
-                                onChange={handleInputChange}
-                            />
-                        </Grid>
-                        <Grid size={{ xs: 6, md: 5 }}>
-                            <Typography sx={{ fontSize: '14px' }} gutterBottom>Subscription period</Typography>
-                            <TextField
-                                select
-                                fullWidth
-                                label="enter"
-                                name="period"
-                                value={formData.period}
-                                onChange={handleInputChange}
-                            >
-                                <MenuItem value="1">1 month</MenuItem>
-                                <MenuItem value="6">6 months</MenuItem>
-                                <MenuItem value="12">12 months</MenuItem>
-                            </TextField>
-                        </Grid>
-                    </Grid>
+              <Grid size={{ xs: 12, md: 5 }}>
+                <CustomTextField
+                  label="Transaction ID"
+                  name="transactionId"
+                  value={formData.transactionId}
+                  onChange={handleInputChange}
+                  placeholder="Enter"
+                />
+              </Grid>
 
-                    <Grid container sx={{ display: 'flex', gap: 3, mb: 3 }}>
-                        <Grid size={{ xs: 6, md: 10.5 }}>
-                            <Typography sx={{ fontSize: '14px' }} gutterBottom>Address</Typography>
-                            <TextField
-                                fullWidth
-                                label="enter"
-                                name="address"
-                                value={formData.address}
-                                onChange={handleInputChange}
-                            />
-                          
-                        </Grid>
-                    </Grid>
+              <Grid size={{ xs: 12, md: 10.5 }}>
+                <CustomTextField
+                  label="Current Address*"
+                  name="currentAddress"
+                  value={formData.currentAddress}
+                  onChange={handleInputChange}
+                  placeholder="Enter"
+                  error={!!formErrs.currentAddress}
+                  helperText={formErrs.currentAddress}
+                />
+              </Grid>
 
-                    <Grid item sx={{ display: 'flex', justifyContent: 'center' }}>
-                        <Button
-                            // fullWidth
-                            variant="contained"
-                            sx={{ backgroundColor: 'orange', color: 'white', fontWeight: 'bold' }}
-                            onClick={handleAddInstitute}
-                        >
-                            Add
-                        </Button>
-                    </Grid>
+              <Grid size={{ xs: 12, md: 10.5 }}>
+                <CustomTextField
+                  label="Permanent Address*"
+                  name="permanentAddress"
+                  value={formData.permanentAddress}
+                  onChange={handleInputChange}
+                  placeholder="Enter"
+                  error={!!formErrs.permanentAddress}
+                  helperText={formErrs.permanentAddress}
+                />
+              </Grid>
+            </Grid>
 
-                </DialogContent>
-            </Dialog>
-
-        </>
-    );
+            <Grid
+              item
+              sx={{ display: "flex", justifyContent: "center" }}
+              size={{ xs: 12, md: 6 }}
+            >
+              <CustomButton
+                children="Add"
+                onClick={handleAddInstitute}
+                loading={false}
+                bgColor="#EAB308"
+                sx={{ width: "20%" }}
+              />
+            </Grid>
+          </DialogContent>
+        </Dialog>
+      </Navbar>
+    </>
+  );
 }
-
 export default Institution;

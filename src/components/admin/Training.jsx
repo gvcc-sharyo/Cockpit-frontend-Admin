@@ -1,31 +1,17 @@
-import { useEffect, useState } from "react";
-import {
-  Grid, Button, Box, FormControl, Divider, Radio, RadioGroup, MenuItem,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Typography
-} from "@mui/material";
 import CustomTypography from "./CustomTypography";
 import CustomTextArea from "./CustomTextArea";
-import { useLocation, useNavigate } from "react-router-dom";
 import { apiGet, apiPost, apiPostUpload } from "../../api/axios";
 import CustomButton from "./CustomButton";
 import { snackbarEmitter } from "./CustomSnackbar";
 import CustomTextField from "./CustomTextField";
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 
 
 function Training({ syllabusNav = false, syllabusName, bookName, chapterName, question, syllabusId, chapterId, bookId, report = false, modalClose, bulkButton = false }) {
 
-  console.log("syllabusId", syllabusId);
-  console.log("bookId", bookId);
-  console.log("chapterId", chapterId);
-
-
-
+  // console.log("syllabusId", syllabusId);
+  // console.log("bookId", bookId);
+  // console.log("chapterId", chapterId);
 
   const location = useLocation();
   const [loading, setLoading] = useState(false);
@@ -45,7 +31,7 @@ function Training({ syllabusNav = false, syllabusName, bookName, chapterName, qu
     explanation: question?.explanation || "",
   });
 
-  console.log("form data", formData);
+  // console.log("form data", formData);
 
 
   const [errors, setErrors] = useState({});
@@ -282,7 +268,7 @@ function Training({ syllabusNav = false, syllabusName, bookName, chapterName, qu
   };
 
   const getChapters = async (syllabus = "", book = "") => {
-    console.log("syllabus id for chapters", formData.syllabusId);
+    // console.log("syllabus id for chapters", formData.syllabusId);
 
     try {
 

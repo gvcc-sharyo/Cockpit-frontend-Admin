@@ -1,8 +1,7 @@
 import axios from 'axios';
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-
-
+const token = localStorage.getItem("adminToken");
 
 // const BASE_URL = 'http://13.235.91.167:8000/cockpit';
 // GET
@@ -13,6 +12,8 @@ const BASE_URL = import.meta.env.VITE_API_URL;
 export const apiGet = async (endpoint) => {
   const headers = {
     'Content-Type': 'application/json',
+    ...(token && { Authorization: `Bearer ${token}` }),
+    // 'User-Type': userType
   };
   return await axios.get(`${BASE_URL}${endpoint}`, { headers });
 };
@@ -29,7 +30,11 @@ export const apiGetToken = async (endpoint,  userType='student', data) => {
 };
 
 export const apiPost = async (endpoint, data) => {
-  let headers = {};
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(token && { Authorization: `Bearer ${token}` }),
+    // 'User-Type': userType
+  };
 
   if (!(data instanceof FormData)) {
     headers['Content-Type'] = 'application/json';

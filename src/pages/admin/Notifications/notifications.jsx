@@ -1,14 +1,3 @@
-import React from "react";
-import {
-  Box,
-  Grid,
-  Typography,
-  Button,
-  Card,
-  Checkbox,
-  Avatar,
-  Divider,
-} from "@mui/material";
 import Navbar from "../../../components/admin/Navbar";
 
 const NotificationItem = ({ text, time, unread, bgColor = "#fff" }) => (

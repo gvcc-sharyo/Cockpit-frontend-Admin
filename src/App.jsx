@@ -1,4 +1,3 @@
-import React from 'react';
 import AdminRoute from './routers/AdminRoute';
 
 function App() {
