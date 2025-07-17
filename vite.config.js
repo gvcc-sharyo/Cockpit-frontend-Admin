@@ -53,5 +53,7 @@ export default defineConfig({
        import { Modal } from "@mui/material";
        
     `,
+  server: {
+    port: 4173
   },
 })
