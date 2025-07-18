@@ -5,8 +5,6 @@ import CustomButton from "./CustomButton";
 import { snackbarEmitter } from "./CustomSnackbar";
 import CustomTextField from "./CustomTextField";
 
-
-
 function Training({ syllabusNav = false, syllabusName, bookName, chapterName, question, syllabusId, chapterId, bookId, report = false, modalClose, bulkButton = false }) {
 
   // console.log("syllabusId", syllabusId);
@@ -187,16 +185,8 @@ function Training({ syllabusNav = false, syllabusName, bookName, chapterName, qu
 
           if (report === true) {
             modalClose();
-          } else {
-            // navigate("/admin/trainingQuestion", { state: {category: syllabus.category, syllabusName: formData.syllabus, bookName: formData.book, chapterName: formData.chapter } });
-
-          }
-
-          if (!isUpdate) {
+          } 
             setFormData({
-              syllabus: "",
-              book: "",
-              chapter: "",
               question: "",
               options: [
                 { id: 1, text: "", isCorrect: false },
@@ -205,7 +195,6 @@ function Training({ syllabusNav = false, syllabusName, bookName, chapterName, qu
               explanation: "",
             });
             setErrors({});
-          }
         }, 500);
       } else {
         setLoading(false);
