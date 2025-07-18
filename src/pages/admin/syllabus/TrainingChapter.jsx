@@ -14,7 +14,7 @@ function TrainingChapter() {
     const [filteredBooks, setFilteredBooks] = useState([]);
 
     const [selectedBook, setSelectedBook] = useState(filteredBooks[0]?.bookTitle);
-    const[selectedBookID, setSelectedBookID] = useState(filteredBooks[0]?._id); 
+    const [selectedBookID, setSelectedBookID] = useState(filteredBooks[0]?._id);
 
     const fetchBooks = async () => {
         try {
@@ -41,13 +41,13 @@ function TrainingChapter() {
         }
     };
 
-    const[filteredChapters, setFilteredChapters] = useState([]);
+    const [filteredChapters, setFilteredChapters] = useState([]);
     const fetchChapters = async () => {
         try {
             const response = await apiGet(`/chaptersBySyllabusId/${syllabusID}`);
 
             if (response.data.status === 200) {
-                 const filterChapters = response.data.data.filter((chapter) => chapter.bookId === selectedBookID);
+                const filterChapters = response.data.data.filter((chapter) => chapter.bookId === selectedBookID);
                 setFilteredChapters(filterChapters);
             }
             else {
@@ -64,11 +64,11 @@ function TrainingChapter() {
         // fetchChapters();
     }, [])
 
-   useEffect(() => {
-    if (selectedBookID) {
-        fetchChapters();
-    }
-}, [selectedBookID]);
+    useEffect(() => {
+        if (selectedBookID) {
+            fetchChapters();
+        }
+    }, [selectedBookID]);
 
 
     const [openModal, setOpenModal] = useState(false);
@@ -82,7 +82,7 @@ function TrainingChapter() {
         setOpenModal(false);
         setIsEditing(false);
         setBookData({ bookTitle: '', syllabusID: syllabusID });
-        closeMenu();        
+        closeMenu();
     };
 
     const [openChapterModal, setOpenChapterModal] = useState(false);
@@ -91,7 +91,7 @@ function TrainingChapter() {
     const handleChapterModalOpen = () => setOpenChapterModal(true);
     const handleChapterModalClose = () => {
         setOpenChapterModal(false);
-
+        setIsEditing(false);
         setFormData({
             chapterno: '',
             chaptername: '',
@@ -223,7 +223,7 @@ function TrainingChapter() {
                 setLoading(false);
                 if (response.data.status === 200) {
                     snackbarEmitter(response.data.message, 'success');
-                    
+
                     handleChapterModalClose();
                     handleStatusModalClose();
                 } else {
@@ -367,12 +367,12 @@ function TrainingChapter() {
         setSelectedBookID(book._id);
     }
 
-const bookRefs = useRef({});
-useEffect(() => {
-    if (selectedBookID && bookRefs.current[selectedBookID]) {
-        bookRefs.current[selectedBookID].scrollIntoView({ behavior: 'smooth', inline: 'center' });
-    }
-}, [selectedBookID, filteredBooks]);
+    const bookRefs = useRef({});
+    useEffect(() => {
+        if (selectedBookID && bookRefs.current[selectedBookID]) {
+            bookRefs.current[selectedBookID].scrollIntoView({ behavior: 'smooth', inline: 'center' });
+        }
+    }, [selectedBookID, filteredBooks]);
 
     return (
 
@@ -382,9 +382,9 @@ useEffect(() => {
 
 
                 <Grid sx={{ display: 'flex', alignItems: 'center', gap: '10px' }} mb={2}>
-                    
+
                     <CustomTypography text={syllabusTitle} onClick={() => navigate('/admin/trainingsyllabus')} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
-                   
+
                 </Grid>
 
                 <Grid container sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', }} >
@@ -401,7 +401,7 @@ useEffect(() => {
                     <Box sx={{ display: 'flex', gap: '15px', padding: '10px', width: 'max-content' }}>
                         {
                             filteredBooks.length > 0 && filteredBooks.map((book) => (
-                                <Box  ref={(el) => (bookRefs.current[book._id] = el)} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', boxShadow: 3, borderRadius: '10px', px: 2, py: 1, minWidth: { xs: '45px', md: '120px', sm: '60px' }, bgcolor: selectedBookID === book._id ? '#FFEBAB' : '#fff' }}>
+                                <Box ref={(el) => (bookRefs.current[book._id] = el)} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', boxShadow: 3, borderRadius: '10px', px: 2, py: 1, minWidth: { xs: '45px', md: '120px', sm: '60px' }, bgcolor: selectedBookID === book._id ? '#FFEBAB' : '#fff' }}>
                                     {/* <CustomButton children={book.bookTitle} onClick={() => setSelectedBook(book.bookTitle)} loading={false} bgColor={selectedBook === book.bookTitle ? '#FFEBAB' : '#fff'}
                                         sx={{ color: 'black', py: 0, minWidth: { xs: '45px', md: '120px', sm: '60px' }, fontSize: { xs: '12px', md: '14px', sm: '14px' } }}
                                     /> */}
@@ -648,7 +648,7 @@ useEffect(() => {
                             <CustomTypography text="Do you want to change the status" fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={400} />
                         </Grid>
                         <Grid item>
-                            <Grid  container spacing={2} sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Grid container spacing={2} sx={{ display: 'flex', alignItems: 'center' }}>
                                 <Grid item>
 
                                     <CustomButton children='Yes' onClick={handleAddChapter} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
@@ -684,7 +684,7 @@ useEffect(() => {
                                     <CustomButton children='Yes' onClick={handleDeleteBook} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
                                 </Grid>
                                 <Grid item>
-                                     <CustomButton children='No' onClick={handleDeleteModalClose} bgColor='#BF0000' sx={{ width:'20%', }}/>
+                                    <CustomButton children='No' onClick={handleDeleteModalClose} bgColor='#BF0000' sx={{ width: '20%', }} />
                                 </Grid>
                             </Grid>
                         </Grid>
