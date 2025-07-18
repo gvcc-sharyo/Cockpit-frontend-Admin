@@ -296,11 +296,23 @@ const handleGoogleLogin = useGoogleLogin({
         const userEmail = response.data.email;
         console.log('userEmail', userEmail);
         
+        const userResponse = await apiPost('/AuthLoginAdmin', { email: userEmail });
+        console.log('userResponse', userResponse);
+        
+        if (userResponse.data.status === 200) {
+          snackbarEmitter(userResponse.data.message, 'success');
+          localStorage.setItem('adminToken', userResponse.data.token);
+          localStorage.setItem('adminId', userResponse.data.data._id);
+          navigate('/');
+        } else {
+          snackbarEmitter(userResponse.data.message, 'error');
+        }
+
       } catch (error) {
        snackbarEmitter('Something went wrong', 'error');
       }
     },
-    onError: (errorResponse) => console.log('Login Failed:', errorResponse),
+    // onError: snackbarEmitter('Google login failed', 'error'),
 });
 
 
@@ -396,11 +408,11 @@ const handleGoogleLogin = useGoogleLogin({
 
 
                 <Grid container justifyContent="center" gap={2} >
-                  <Box
+                  {/* <Box
                     sx={styles.socialBox}
                   >
                     <img src="/images/apple.svg" alt="Apple Login" style={{ height: '24px', width: '24px' }} />
-                  </Box>
+                  </Box> */}
 
                   <Box
                     sx={styles.socialBox}
