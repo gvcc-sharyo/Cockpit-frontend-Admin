@@ -185,16 +185,22 @@ function Training({ syllabusNav = false, syllabusName, bookName, chapterName, qu
 
           if (report === true) {
             modalClose();
-          } 
-            setFormData({
-              question: "",
-              options: [
-                { id: 1, text: "", isCorrect: false },
-                { id: 2, text: "", isCorrect: false },
-              ],
-              explanation: "",
-            });
-            setErrors({});
+          }
+          setFormData((prev) => ({
+            syllabus: syllabusNav ? syllabusName : "",
+            book: syllabusNav ? bookName : "",
+            chapter: syllabusNav ? chapterName : "",
+            syllabusId: syllabusNav ? syllabusId : "",
+            bookId: syllabusNav ? bookId : "",
+            chapterId: syllabusNav ? chapterId : "",
+            question: "",
+            options: [
+              { id: 1, text: "", isCorrect: false },
+              { id: 2, text: "", isCorrect: false },
+            ],
+            explanation: "",
+          }));
+          setErrors({});
         }, 500);
       } else {
         setLoading(false);

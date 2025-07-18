@@ -253,10 +253,7 @@ function TrainingSyllabus() {
                     >
                       <MoreHorizIcon />
                     </IconButton>
-
-
                   </Box>
-
 
                   <CardContent onClick={() => handleClick(item)} sx={{ cursor: 'pointer' }}>
                     {/* <Typography sx={{ fontSize: { xs: '12px', sm: '14px', md: '14px', fontWeight: 'bold' } }} component="div">
@@ -266,10 +263,7 @@ function TrainingSyllabus() {
                     <CustomTypography text={item.category} color='#EAB308' fontSize={{ xs: '10px', sm: '13px', md: '13px' }} />
                   </CardContent>
 
-
-
                 </Card>
-
 
               </Grid>
 
