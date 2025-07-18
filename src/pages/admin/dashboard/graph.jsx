@@ -8,7 +8,7 @@ import {
   CategoryScale,
   LinearScale,
   Title,
-  Tooltip,
+  Tooltip as RechartsTooltip,
   Legend,
 } from "chart.js";
 // import { Box, Typography } from "@mui/material";
@@ -20,7 +20,7 @@ ChartJS.register(
   PointElement,
   LineElement,
   Title,
-  Tooltip,
+  RechartsTooltip,
   Legend
 );
 
