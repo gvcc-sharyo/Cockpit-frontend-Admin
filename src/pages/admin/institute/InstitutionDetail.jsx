@@ -2,9 +2,18 @@ import Navbar from "../../../components/admin/Navbar";
 import StudentsTable from "./StudentTable";
 import Address from "./Address";
 import SubscriptionPlan from "./SubscriptionPlan";
+import { apiGet, apiPost } from "../../../api/axios";
 
 function InstitutionDetail() {
   const [value, setValue] = React.useState(0);
+  const location = useLocation();
+  const instituteId = location.state?.instituteId;
+
+  const [instituteid, setInstituteid] = useState(null);
+
+  useEffect(() => {
+    setInstituteid(instituteId);
+  }, [instituteId]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -16,7 +25,7 @@ function InstitutionDetail() {
 
   const styles = {
     card: {
-      width: { xs: "auto", md: "auto",lg:"auto" },
+      width: { xs: "auto", md: "auto", lg: "auto" },
       borderRadius: "8px",
       p: 3,
       fontFamily: "Jost",
@@ -81,7 +90,7 @@ function InstitutionDetail() {
       fontSize: "14px",
     },
     tabRoot: {
-       fontFamily: "Jost",
+      fontFamily: "Jost",
       fontWeight: 400,
       fontSize: "16px",
       textTransform: "none",
@@ -92,15 +101,41 @@ function InstitutionDetail() {
     },
   };
 
+  const [instituteData, setInstituteData] = useState(null);
+
+  const getInstituteDetails = async () => {
+    console.log("Fetching institute details for ID:", instituteId);
+
+    try {
+      const response = await apiPost("/admin/getInstitute", {
+        instituteId: instituteId,
+      });
+      setInstituteData(response.data?.data);
+
+      console.log("Institute Details:", response);
+    } catch (error) {
+      console.error("Failed to fetch institute details:", error);
+    }
+  };
+
+  useEffect(() => {
+    getInstituteDetails();
+  }, []);
+
   return (
     <>
       <Navbar title="Institution">
-        <Grid container spacing={4}>
-          <Grid size={{ xs: 12, md: 3,lg:3,sm:4 }} sx={{width:"auto"}}>
+        <Grid container spacing={2}>
+          <Grid
+            size={{ xs: 12, md: 4, lg: 4, sm: 3 }}
+            sx={{ width: { xs: "100%", md: "auto", sm: "auto" } }}
+          >
             <Paper elevation={3} sx={styles.card}>
               <Box sx={styles.avatarContainer}>
-                <Avatar alt="Cockpit" src="" sx={styles.avatar} />
-                <Typography sx={styles.name}>Cockpit</Typography>
+                <Avatar alt="Institute" src="" sx={styles.avatar} />
+                <Typography sx={styles.name}>
+                  {instituteData?.instituteName || "Institute"}
+                </Typography>
               </Box>
 
               <Typography variant="subtitle2" sx={styles.sectionHeading}>
@@ -118,7 +153,7 @@ function InstitutionDetail() {
                     color="text.secondary"
                     sx={styles.infoSecondary}
                   >
-                    Department
+                    {instituteData?.department || "Department"}
                   </Typography>
                 </Box>
               </Stack>
@@ -128,7 +163,9 @@ function InstitutionDetail() {
                   <CalendarTodayIcon fontSize="small" color="action" />
                 </Box>
                 <Box>
-                  <Typography sx={styles.infoPrimary}>15 March 2020</Typography>
+                  <Typography sx={styles.infoPrimary}>
+                    {new Date(instituteData?.createdAt).toLocaleDateString()}
+                  </Typography>
                   <Typography
                     variant="caption"
                     color="text.secondary"
@@ -153,12 +190,10 @@ function InstitutionDetail() {
                     color="text.secondary"
                     sx={styles.contactLabel}
                   >
-                    {" "}
-                    Email{" "}
+                    Email
                   </Typography>
                   <Typography variant="body1" sx={styles.contactValue}>
-                    {" "}
-                    cockpit@gmail.com{" "}
+                    {instituteData?.email || "N/A"}
                   </Typography>
                 </Box>
               </Stack>
@@ -176,15 +211,15 @@ function InstitutionDetail() {
                     Phone
                   </Typography>
                   <Typography variant="body1" sx={styles.contactValue}>
-                    0987654321
+                    {instituteData?.phone || "N/A"}
                   </Typography>
                 </Box>
               </Stack>
             </Paper>
           </Grid>
 
-          <Grid size={{ xs: 12, md: 9,lg:9,sm:8 }} sx={{ width: "100%" }}>
-            <Box sx={{ width: "auto" }}>
+          <Grid size={{ xs: 12, md: 8, lg: 8, sm: 7 }} sx={{ width: "100%" }}>
+            <Box sx={{ width: "100%" }}>
               <Tabs
                 value={value}
                 onChange={handleChange}
@@ -204,22 +239,22 @@ function InstitutionDetail() {
                     color: value === 1 ? "#EAB308" : "inherit",
                   }}
                 />
-                <Tab
+                {/* <Tab
                   label="Address"
                   sx={{
                     ...styles.tabRoot,
                     color: value === 2 ? "#EAB308" : "inherit",
                   }}
-                />
+                /> */}
               </Tabs>
 
               {/* Tab Panels start here */}
               <TabPanel value={value} index={0}>
-                <StudentsTable />
+                <StudentsTable instituteId={instituteId} />
               </TabPanel>
 
               <TabPanel value={value} index={1}>
-                <SubscriptionPlan />
+                <SubscriptionPlan  instituteId={instituteId} />
               </TabPanel>
 
               <TabPanel value={value} index={2}>

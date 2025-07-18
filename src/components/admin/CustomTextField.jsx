@@ -11,7 +11,7 @@ const CustomTextField = ({
   bgcolor,
   ...rest
 }) => {
-   console.log('value', value);
+  //  console.log('value', value);
   return (
 
    

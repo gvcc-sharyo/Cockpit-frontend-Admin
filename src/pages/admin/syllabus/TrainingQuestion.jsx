@@ -11,9 +11,9 @@ function TrainingQuestion() {
     const location = useLocation();
     const { category, syllabusName, bookName, chapterName, activeBook, syllabusid, chapterId, bookid } = location.state || {};
 
-    console.log("syllabus id", syllabusid);
-    console.log("chapter id", chapterId);
-    console.log("book id", bookid);
+    // console.log("syllabus id", syllabusid);
+    // console.log("chapter id", chapterId);
+    // console.log("book id", bookid);
 
 
 
@@ -168,7 +168,7 @@ function TrainingQuestion() {
             isactive: formData.isactive
         }
 
-        console.log('is active', req.isactive);
+        // console.log('is active', req.isactive);
 
 
 

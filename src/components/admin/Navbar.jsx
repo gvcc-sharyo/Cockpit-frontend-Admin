@@ -40,7 +40,7 @@ const Navbar = ({ title, children }) => {
   const getProfile = async () => {
     try {
       const response = await apiGet(`/admin/getAdmin?adminId=${adminId}`);
-      console.log("admin data",response.data.data);
+      // console.log("admin data",response.data.data);
       
 
       if (response.data.status === 200) {
@@ -445,7 +445,8 @@ const Navbar = ({ title, children }) => {
               <Avatar sx={{ width: 25, height: 25, }}
                 src={adminData.profileimage}
               >
-                {adminData?.firstname.charAt(0).toUpperCase()}
+                {adminData?.firstname?.charAt(0).toUpperCase()}
+
               </Avatar>
             </Box>
           </Toolbar>
@@ -617,7 +618,7 @@ const Navbar = ({ title, children }) => {
               <Avatar sx={{ width: 40, height: 40 }}
                 src={adminData.profileimage}
               >
-                {adminData?.firstname.charAt(0).toUpperCase()}</Avatar>
+                {adminData?.firstname?.charAt(0)?.toUpperCase()}</Avatar>
               <Grid sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
                 {/* <Typography variant="body1">

@@ -6,9 +6,9 @@ function AddQuestion() {
 
   const { syllabusName, bookName, chapterName, question, syllabusId, chapterId, bookId } = location.state || {};
 
-console.log('training cquestion syllabus id',syllabusId);
-console.log('training cquestion chapter id',chapterId);
-console.log('training cquestion book id',bookId);
+// console.log('training cquestion syllabus id',syllabusId);
+// console.log('training cquestion chapter id',chapterId);
+// console.log('training cquestion book id',bookId);
 
 
   return (

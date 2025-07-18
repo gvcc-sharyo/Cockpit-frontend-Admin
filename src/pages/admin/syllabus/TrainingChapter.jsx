@@ -201,7 +201,7 @@ function TrainingChapter() {
             status: formData.status
         };
 
-        console.log('req', req.book);
+        // console.log('req', req.book);
 
 
         // If editing, add chapterId to the request body
@@ -209,7 +209,7 @@ function TrainingChapter() {
             req.chapterId = chapterId;
             req.isactive = isActive;
 
-            console.log('isActive', isActive);
+            // console.log('isActive', isActive);
 
         }
 

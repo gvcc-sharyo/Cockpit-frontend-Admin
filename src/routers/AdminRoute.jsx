@@ -20,7 +20,7 @@ const AdminRoute = () => {
 
   const AuthRoute = () => {
     const isAuthenticated = !!localStorage.getItem("adminToken");
-    console.log('isAuthenticated value', isAuthenticated);
+    // console.log('isAuthenticated value', isAuthenticated);
     
     return isAuthenticated ? <Outlet /> : <Navigate to="/adminlogin" />;
   };

@@ -93,7 +93,7 @@ function StudentProfile() {
         try {
             setLoading(true);
             const response = await apiPost("/admin/addInstitute", req);
-            console.log(response.data.message);
+            // console.log(response.data.message);
             if (response.status === 200) {
                 snackbarEmitter(response.data.message, "success");
                 handleModalClose();
