@@ -29,9 +29,9 @@ export default defineConfig({
       
       import {
         AccountCircle, ExpandLess, ExpandMore, ArrowDropDown as ArrowDropDownIcon, AddSharp as AddSharpIcon, ArrowBack as ArrowBackIcon,
-        BorderLeft, FormatBold, FormatItalic, FormatUnderlined,
+        BorderLeft,
         CheckBox as CheckBoxIcon, CheckBoxOutlineBlank as CheckBoxOutlineBlankIcon, Close as CloseIcon, 
-        CheckCircle as CheckCircleIcon, CancelRounded as CancelRoundedIcon, Camera as CameraAltIcon,
+        CheckCircle as CheckCircleIcon, CancelRounded as CancelRoundedIcon, CameraAlt as CameraAltIcon,
         Delete, Delete as DeleteIcon,Email as EmailOutlinedIcon,EditSquare as EditSquareIcon,Smartphone as SmartphoneIcon,CloudUpload as CloudUploadIcon,
         Edit,ExpandMore as ExpandMoreIcon,
         FacebookOutlined as FacebookOutlinedIcon, FiberManualRecordSharp as FiberManualRecordSharpIcon, Fingerprint as FingerprintIcon, Facebook, FormatBold  as FormatBold,FormatItalic as FormatItalic,FormatUnderlined as FormatUnderlined, 
