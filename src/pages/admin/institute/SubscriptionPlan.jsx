@@ -1,5 +1,7 @@
 import { apiPost } from "../../../api/axios";
 import { differenceInDays, addMonths } from "date-fns";
+import CustomTextField from "../../../components/admin/CustomTextField";
+import CustomButton from "../../../components/admin/CustomButton";
 
 const styles = {
   container: {
@@ -163,51 +165,69 @@ const styles = {
 
 const SubscriptionPlan = ({ instituteId }) => {
   const [subscriptionsHistory, setSubscriptionsHistory] = useState([]);
-  const [openModal, setOpenModal] = useState(false);
-  const handleModalOpen = () => setOpenModal(true);
-  const handleModalClose = () => setOpenModal(false);
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    subscriptionAmt: "",
+    subscriptionPeriod: "",
+    transactionId: "",
+  });
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const subscriptionPlan = async () => {
+    try {
+      const response = await apiPost(`/admin/addInstituteSubscription`, {
+        instituteId,
+        ...formData,
+      });
+      console.log("Subscription plan response:", response);
+      setOpen(false);
+    } catch (error) {
+      console.error("Error fetching subscription plan:", error);
+    }
+  };
+
+  const subscriptionHistory = async () => {
+    try {
+      const response = await apiPost(`/admin/instituteSubscriptionHistory`, {
+        instituteId,
+      });
+
+      const formatted = response.data.data?.map((item, index) => ({
+        ...item,
+        invoice: `INVOICE-${index + 1}`,
+        date: new Date(item.createdAt).toLocaleDateString(),
+        status: item.status === "Active" ? "Paid" : "Cancelled",
+        amount: `₹${item.subscriptionAmt}`,
+      }));
+
+      setSubscriptionsHistory(formatted);
+      console.log("Subscription history response:", response);
+    } catch (error) {
+      console.error("Error fetching subscription history:", error);
+    }
+  };
 
   useEffect(() => {
-    const subscriptionPlan = async () => {
-      try {
-        await apiPost(`/admin/addInstituteSubscription`, { instituteId });
-      } catch (error) {
-        console.error("Error fetching subscription plan:", error);
-      }
-    };
-
-    const subscriptionHistory = async () => {
-      try {
-        const response = await apiPost(`/admin/instituteSubscriptionHistory`, {
-          instituteId,
-        });
-        console.log("Subscription History Response:", response.data.data);
-
-        const formatted = response.data.data?.map((item, index) => ({
-          ...item,
-          invoice: `INVOICE-${index + 1}`,
-          date: new Date(item.createdAt).toLocaleDateString(),
-          status: item.status === "Active" ? "Paid" : "Cancelled",
-          amount: `₹${item.subscriptionAmt}` || 0,
-        }));
-
-        setSubscriptionsHistory(formatted);
-      } catch (error) {
-        console.error("Error fetching subscription history:", error);
-      }
-    };
-
-    subscriptionPlan();
+   
     subscriptionHistory();
-  }, [instituteId]);
+  }, []);
 
   let latestSubscription = null;
 
   for (let i = 0; i < subscriptionsHistory.length; i++) {
     let sub = subscriptionsHistory[i];
     if (sub.status === "Paid") {
-      if (latestSubscription === null || new Date(sub.createdAt) > new Date(latestSubscription.createdAt)) {
+      if (
+        latestSubscription === null ||
+        new Date(sub.createdAt) > new Date(latestSubscription.createdAt)
+      ) {
         latestSubscription = sub;
       }
     }
@@ -231,9 +251,6 @@ const SubscriptionPlan = ({ instituteId }) => {
   let timeDiff = endDate.getTime() - today.getTime();
   let daysLeft = Math.max(Math.ceil(timeDiff / (1000 * 60 * 60 * 24)), 0);
 
-
-
-
   return (
     <>
       <Paper
@@ -253,10 +270,7 @@ const SubscriptionPlan = ({ instituteId }) => {
               Your subscription plan will expire soon. Please upgrade!
             </Typography>
             <Typography sx={styles.leftGrid.price}>
-              ₹1500{" "}
-              <span style={{ fontWeight: 400 }}>
-                / 1 month
-              </span>
+              ₹1500 <span style={{ fontWeight: 400 }}>/ 1 month</span>
             </Typography>
           </Grid>
 
@@ -266,7 +280,11 @@ const SubscriptionPlan = ({ instituteId }) => {
                 ? `${daysLeft} Day${daysLeft > 1 ? "s" : ""} Left`
                 : "Expired"}
             </Typography>
-            <Button variant="contained" sx={styles.rightGrid.button} onClick={handleModalOpen}>
+            <Button
+              variant="contained"
+              sx={styles.rightGrid.button}
+              onClick={() => setOpen(true)}
+            >
               Upgrade
             </Button>
           </Grid>
@@ -324,6 +342,77 @@ const SubscriptionPlan = ({ instituteId }) => {
           </Table>
         </TableContainer>
       </Paper>
+
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle
+          sx={{
+            fontWeight: 700,
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography variant="h6">Add Institution</Typography>
+          <IconButton onClick={() => setOpen(false)}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+
+        <DialogContent sx={{ pt: 2 }}>
+          <Grid container spacing={3}>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <CustomTextField
+                label="Subscription Amount"
+                name="subscriptionAmt"
+                value={formData.subscriptionAmt}
+                onChange={handleChange}
+                placeholder="Enter"
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12, md: 6 }}>
+              <CustomTextField
+                label="Subscription Period"
+                name="period"
+                select
+                fullWidth
+                required
+                value={formData.subscriptionPeriod}
+                onChange={handleChange}
+                placeholder="Enter"
+              >
+                <MenuItem value="30 days">1 Month</MenuItem>
+                <MenuItem value="90 days">3 Months</MenuItem>
+                <MenuItem value="180 days">6 Months</MenuItem>
+              </CustomTextField>
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <CustomTextField
+                label="Transaction ID"
+                name="transactionId"
+                value={formData.transactionId}
+                onChange={handleChange}
+                placeholder="Enter Transaction ID"
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+
+        <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
+          <CustomButton
+            children="Add"
+            bgColor="#EAB308"
+            sx={{ width: "20%" }}
+            onClick={() => {
+              subscriptionPlan();
+            }}
+          />
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
