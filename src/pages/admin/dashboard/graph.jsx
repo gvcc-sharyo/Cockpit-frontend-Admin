@@ -20,7 +20,7 @@ ChartJS.register(
   PointElement,
   LineElement,
   Title,
-  Tooltip as RechartsTooltip,
+  RechartsTooltip,
   Legend
 );
 
