@@ -136,7 +136,7 @@ const handleSubmit = async (e) => {
     { name: "firstname", placeholder: "First Name", value: formData.firstname },
     { name: "lastname", placeholder: "Last Name", value: formData.lastname },
     { name: "phone", placeholder: "Mobile Number", value: formData.phone },
-    { name: "email", placeholder: "Email Address", value: email },
+    { name: "email", placeholder: "Email Address", value: email , disabled: true},
   ];
 
   const addressFields = [
@@ -167,7 +167,8 @@ const handleSubmit = async (e) => {
             </Grid>
             {inputFields.map((field) => (
               <Grid key={field.name} size={{ xs: 12, md: 6 }}>
-               <CustomTextField name={field.name} placeholder={field.placeholder} value={field.value} onChange={handleChange} required error={!!errors[field.name]} helperText={errors[field.name]} />
+               <CustomTextField name={field.name} placeholder={field.placeholder} value={field.value} onChange={handleChange} required error={!!errors[field.name]} helperText={errors[field.name]}
+               {...(field.disabled && { disabled: true })}  />
               </Grid>
             ))}
             <Grid size={{ xs: 12, md: 6 }}>
@@ -182,7 +183,8 @@ const handleSubmit = async (e) => {
             </Grid>
             {addressFields.map((field) => (
               <Grid key={field.name} size={field.size}>
-                <CustomTextField required name={field.name} placeholder={field.placeholder} value={field.value} onChange={handleChange} error={!!errors[field.name]} helperText={errors[field.name]} />
+                <CustomTextField required name={field.name} placeholder={field.placeholder} value={field.value} onChange={handleChange} error={!!errors[field.name]} helperText={errors[field.name]}
+                 />
               </Grid>
             ))}
             <Grid size={{ xs: 12 }} sx={styles.buttonsContainer}>
