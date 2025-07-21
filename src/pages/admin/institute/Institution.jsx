@@ -191,7 +191,7 @@ function Institution() {
           transactionId: "",
         });
       } else {
-        alert("Failed to add institute");
+        snackbarEmitter("Failed to add institute", "error");
       }
 
       setTimeout(() => {
@@ -209,15 +209,13 @@ function Institution() {
 
   const navigate = useNavigate();
 
-  const handleClick = (id) => {
+  const handleClick = () => {
     navigate(`/admin/institutiondetails`);
   };
 
   const handleEdit = (institute) => {
-  navigate(`/admin/institutiondetails`, {
-    state: { instituteId: institute._id },
-  });
-};
+    navigate(`/admin/institutiondetails`, { state: { instituteId: institute._id } });
+  };
 
 
 
@@ -226,24 +224,14 @@ function Institution() {
     setFormData({ ...formData, password });
   };
 
-  const tableHeaders = [
-    "Sr no",
-    "Institute Name",
-    "Number of students",
-    "Status",
-    "Action",
-  ];
+  const tableHeaders = ["Sr no","Institute Name","Number of students","Status","Action"];
 
   return (
     <>
       <Navbar title="Institution">
         <Grid container sx={styles.container}>
           <Grid size={{ xs: 6, sm: 6, md: 6 }}>
-            <CustomTypography
-              text="List of institution"
-              fontWeight={500}
-              fontSize={{ xs: "18px", md: "22px", sm: "20px" }}
-            />
+            <CustomTypography text="List of institution" fontWeight={500} fontSize={{ xs: "18px", md: "22px", sm: "20px" }} />
           </Grid>
           <Grid>
             <CustomButton

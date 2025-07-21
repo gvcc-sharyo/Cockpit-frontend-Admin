@@ -5,9 +5,7 @@ import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import CustomTextField from "../../../components/admin/CustomTextField";
 
 const Pricing = () => {
-  const [forms, setForms] = useState([
-    { planName: "", price: "", duration: "", isNew: true },
-  ]);
+  const [forms, setForms] = useState([{ planName: "", price: "", duration: "", isNew: true },]);
 
   const [errors, setErrors] = useState([{}]);
   const [loadingIndex, setLoadingIndex] = useState(null);
@@ -27,11 +25,16 @@ const Pricing = () => {
     if (field === "price" && value !== "" && !/^\d*$/.test(value)) {
       return; // Ignore non-numeric input
     }
+
+
+
     const updatedForms = [...forms];
     updatedForms[index][field] = value;
     setForms(updatedForms);
     clearError(index, field);
   };
+
+
   const validate = ({ planName, price, duration }) => {
     const errs = {};
     if (!planName?.trim()) errs.planName = "Plan Name is required";
@@ -53,11 +56,7 @@ const Pricing = () => {
       return setValidationErrors(index, validationErrors);
     setLoadingIndex(index);
     try {
-      const payload = {
-        planName: form.planName.trim(),
-        price: parseInt(form.price),
-        duration: form.duration.trim(),
-      };
+      const payload = { planName: form.planName.trim(), price: parseInt(form.price), duration: form.duration.trim() };
       // console.log("Submitting form:", payload);
       const { data } = await apiPost("/admin/createPricing", payload);
       const updatedForms = [...forms];

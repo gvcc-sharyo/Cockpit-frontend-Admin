@@ -3,6 +3,9 @@ import Navbar from "../../../components/admin/Navbar";
 import CustomTextField from "../../../components/admin/CustomTextField";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import CustomButton from "../../../components/admin/CustomButton";
+import styles from "./profilestyles.js";
+
+
 
 const Profile = () => {
   const adminId = localStorage.getItem("adminId");
@@ -143,72 +146,7 @@ const handleSubmit = async (e) => {
   { name: "zipcode", placeholder: "ZipCode", value: formData.zipcode, size: { xs: 12, md: 4 } }
 ];
 
-  const styles = {
-    card: {
-      borderRadius: 4,
-      p: { md: 6, xs: 1 },
-      backgroundColor: "#fff",
-    },
-    profileImageContainer: {
-      justifyContent: { xs: "center", md: "left" },
-      display: "flex",
-    },
-    profileImageBox: {
-      width: 100,
-      height: 100,
-      border: "1px solid #ccc",
-      borderRadius: 2,
-      backgroundColor: "#F5F5F5",
-      cursor: "pointer",
-      overflow: "hidden",
-      position: "relative",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    profileImageLabel: {
-      width: "100%",
-      height: "100%",
-      cursor: "pointer",
-    },
-    profileImage: {
-      width: "100%",
-      height: "100%",
-      objectFit: "cover",
-      borderRadius: "8px",
-    },
-    dobTextField: {
-      "& .MuiOutlinedInput-root": {
-        height: "45px",
-        borderRadius: "10px",
-      },
-    },
-    buttonsContainer: {
-      display: "flex",
-      justifyContent: "flex-end",
-      gap: 2,
-    },
-    cancelButton: {
-      backgroundColor: "#fff",
-      borderRadius: "10px",
-      px: 4,
-      width: { xs: "auto", sm: "auto" },
-      color: "black",
-      fontFamily: "Jost",
-      fontWeight: 300,
-      fontSize: "16px",
-      textTransform: "none",
-      "&:hover": { backgroundColor: "#fff" },
-    },
-    saveButton: {
-      px: 4,
-      width: { xs: "auto", sm: "auto" },
-      fontFamily: "Jost",
-      fontWeight: 300,
-      fontSize: "16px",
-    },
-  };
-
+ 
   return (
     <Navbar title="Profile">
       <Box>
@@ -218,15 +156,7 @@ const handleSubmit = async (e) => {
               <Box sx={styles.profileImageBox}>
                 <label htmlFor="profile-upload" style={styles.profileImageLabel}>
                   {profileImage ? (
-                    <img
-                      src={
-                        profileImage instanceof File
-                          ? URL.createObjectURL(profileImage)
-                          : profileImage
-                      }
-                      alt="Profile"
-                      style={styles.profileImage}
-                    />
+                    <img src={profileImage instanceof File ? URL.createObjectURL(profileImage) : profileImage} alt="Profile" style={styles.profileImage} />
                   ) : (
                     <CameraAltIcon fontSize="large" />
                   )}
