@@ -220,7 +220,6 @@ function Institution() {
 };
 
 
-
   const handleGeneratePassword = () => {
     const password = Math.random().toString(36).slice(-8);
     setFormData({ ...formData, password });
