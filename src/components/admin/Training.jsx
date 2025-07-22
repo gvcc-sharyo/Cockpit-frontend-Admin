@@ -78,13 +78,7 @@ function Training({ syllabusNav = false, syllabusName, bookName, chapterName, qu
     if (name === "book") {
       const selected = book.find((b) => b._id === value);
 
-      setFormData((prev) => ({
-        ...prev,
-        book: selected?.bookTitle,
-        bookId: selected?._id || "",
-        chapter: "",
-        chapterId: ""
-      }));
+      setFormData((prev) => ({...prev, book: selected?.bookTitle, bookId: selected?._id || "", chapter: "", chapterId: ""}));
       setErrors((prev) => ({ ...prev, book: undefined }));
       getChapters(formData.syllabus, value);
       setChapters([]);
@@ -102,11 +96,8 @@ function Training({ syllabusNav = false, syllabusName, bookName, chapterName, qu
       return;
     }
 
-    // ✅ Generic fallback for other fields like "question"
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    // ✅ Generic fallback for other fields lik "question"
+    setFormData((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 

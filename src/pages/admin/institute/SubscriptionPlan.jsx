@@ -2,6 +2,7 @@ import { apiPost } from "../../../api/axios";
 import { differenceInDays, addMonths } from "date-fns";
 import CustomTextField from "../../../components/admin/CustomTextField";
 import CustomButton from "../../../components/admin/CustomButton";
+import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 
 const styles = {
   container: {
@@ -18,16 +19,10 @@ const styles = {
     "&::-webkit-scrollbar": {
       width: "4px",
     },
-    "&::-webkit-scrollbar-track": {
-      backgroundColor: "#f1f1f1",
-      borderRadius: "10px",
-    },
+
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: "#EAB308",
       borderRadius: "10px",
-    },
-    "&::-webkit-scrollbar-thumb:hover": {
-      backgroundColor: "#EAB308",
     },
   },
   heading: {
@@ -186,10 +181,17 @@ const SubscriptionPlan = ({ instituteId }) => {
         instituteId,
         ...formData,
       });
-      console.log("Subscription plan response:", response);
+      snackbarEmitter(response.data.message, "success");
+      setFormData({
+        subscriptionAmt: "",
+        subscriptionPeriod: "",
+        transactionId: "",
+      });
+      // console.log("Subscription plan response:", response);
       setOpen(false);
     } catch (error) {
-      console.error("Error fetching subscription plan:", error);
+      snackbarEmitter("Error adding subscription plan", "error");
+      // console.error("Error fetching subscription plan:", error);
     }
   };
 
@@ -208,16 +210,14 @@ const SubscriptionPlan = ({ instituteId }) => {
       }));
 
       setSubscriptionsHistory(formatted);
-      console.log("Subscription history response:", response);
+      // console.log("Subscription history response:", response);
     } catch (error) {
       console.error("Error fetching subscription history:", error);
     }
   };
-
   useEffect(() => {
-   
     subscriptionHistory();
-  }, []);
+  });
 
   let latestSubscription = null;
 
@@ -264,13 +264,14 @@ const SubscriptionPlan = ({ instituteId }) => {
         <Grid container spacing={2} alignItems="center">
           <Grid size={{ xs: 12, md: 8 }}>
             <Typography sx={styles.leftGrid.title}>
-              Subscription Plan
+              {" "}
+              Subscription Plan{" "}
             </Typography>
             <Typography sx={styles.leftGrid.subtitle}>
               Your subscription plan will expire soon. Please upgrade!
             </Typography>
             <Typography sx={styles.leftGrid.price}>
-              ₹1500 <span style={{ fontWeight: 400 }}>/ 1 month</span>
+              ₹1500 <span style={{ fontWeight: 400 }}>/ 1 month</span>{" "}
             </Typography>
           </Grid>
 
@@ -377,7 +378,7 @@ const SubscriptionPlan = ({ instituteId }) => {
             <Grid size={{ xs: 12, md: 6 }}>
               <CustomTextField
                 label="Subscription Period"
-                name="period"
+                name="subscriptionPeriod" 
                 select
                 fullWidth
                 required

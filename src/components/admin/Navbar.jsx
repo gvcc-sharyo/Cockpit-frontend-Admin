@@ -327,6 +327,7 @@ const Navbar = ({ title, children }) => {
               </ListItem> 
 
               <ListItem
+              <ListItem
                 button
                 onClick={() => handleNavigate('/admin/studentProfile')}
                 sx={{

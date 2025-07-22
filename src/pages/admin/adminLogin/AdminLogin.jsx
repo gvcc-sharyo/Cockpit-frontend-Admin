@@ -196,7 +196,8 @@ function AdminLogin() {
     } catch (error) {
       setTimeout(() => {
         setLoading(false);
-        snackbarEmitter('Something went wrong', 'error');
+
+        snackbarEmitter(error.message, 'error');
       }, 500);
     }
   };
