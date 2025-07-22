@@ -16,9 +16,7 @@ export const apiGet = async (endpoint) => {
   return await axios.get(`${BASE_URL}${endpoint}`, { headers });
 };
 
-export const apiGetToken = async (endpoint,  userType='student', data) => {
-  const tokenType = userType === 'student' ? 'authToken' : 'adminToken';
-  const token = localStorage.getItem(tokenType);
+export const apiGetToken = async (endpoint) => {
   const headers = {
     'Content-Type': 'application/json',
     ...(token && { Authorization: `Bearer ${token}` }),

@@ -251,7 +251,7 @@ function Institution() {
             maxWidth={"100%"}
             handleClick={handleClick}
             handleEdit={handleEdit}
-            institutes={institutes}
+            tableData={institutes}
             tableHeaders={tableHeaders}
           />
         </Grid>

@@ -3,7 +3,7 @@ import CustomButton from "../../../components/admin/CustomButton";
 import CustomTypography from "../../../components/admin/CustomTypography";
 import CustomTable from "../../../components/admin/CustomTable";
 import CustomTextField from "../../../components/admin/CustomTextField";
-import { apiGet, apiPost } from "../../../api/axios";
+import { apiGet, apiGetToken, apiPost } from "../../../api/axios";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 
 
@@ -82,37 +82,39 @@ function StudentProfile() {
         }
         try {
             setLoading(true);
-            const response = await apiPost("/admin/addInstituteStudent", formData);
-            // console.log(response);
-            if (response.status === 200) {
-                snackbarEmitter(response.data.message, "success");
-                handleModalClose();
-                setFormData({
-                   firstName: "",
-                   lastName: "",
-                   email: "",
-                   phone: "",
-                   gender: "",
-                   password: "",
-                   address: "",
-                });
-                setTimeout(() => {
+            const response = await apiPost("/institute/addInstituteStudent", formData);
+
+            setTimeout(() => {
+
+                if (response.status === 200) {
                     setLoading(false);
-                }, 500);
-            } else {
-                
-                snackbarEmitter(response.data.message, "error");
-                setTimeout(() => {
-                    setLoading(false);
-                }, 500);
-            }
+                    snackbarEmitter(response.data.message, "success");
+                    handleModalClose();
+                    setFormData({
+                        firstName: "",
+                        lastName: "",
+                        email: "",
+                        phone: "",
+                        gender: "",
+                        password: "",
+                        address: "",
+                    });
+
+                }
+                else {
+
+                    snackbarEmitter(response.data.message, "error");
+                }
+                getStudents();
+
+            }, 500);
+
         } catch (error) {
-            console.error("Error adding institute:", error);
+           snackbarEmitter("Something went wrong", "error");
         }
     };
 
-
-
+    const [students, setStudents] = useState([]);
 
     const getStudents = async () => {
         try {
@@ -124,35 +126,35 @@ function StudentProfile() {
                 snackbarEmitter(response.data.message, "error");
             }
         } catch (error) {
-            console.error("Error fetching students:", error);
+            snackbarEmitter("Something went wrong", "error");
         }
     };
 
 
     useEffect(() => {
         getStudents();
-    });
+    }, []);
 
     const tableHeaders = ['Sr No', 'First Name', 'Last Name', 'Gender', 'Phone', 'Status', 'Action'];
-
-
+    const tableData = students.map((student, index) => [student.firstName, student.lastName, student.gender, '9090909090']);
+    
     const styles = {
         container: {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
         },
-         dialogTitle: {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-    },
-    formGrid: {
-        display: "flex",
-        gap: 2,
-        mb: 3,
-        justifyContent: { md: "center", xs: "left" },
-    },
+        dialogTitle: {
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+        },
+        formGrid: {
+            display: "flex",
+            gap: 2,
+            mb: 3,
+            justifyContent: { md: "center", xs: "left" },
+        },
     }
 
     return (
@@ -174,10 +176,8 @@ function StudentProfile() {
             </Grid>
 
             <Grid mt={2}>
-                <CustomTable maxWidth={"100%"} tableHeaders={tableHeaders} />
+                <CustomTable maxWidth={"100%"} tableHeaders={tableHeaders} tableData={tableData} />
             </Grid>
-
-
 
             <Dialog open={openModal} onClose={handleModalClose} fullWidth>
                 <DialogTitle sx={styles.dialogTitle}>
@@ -226,7 +226,7 @@ function StudentProfile() {
                                 <MenuItem value="male">Male</MenuItem>
                                 <MenuItem value="female">Female</MenuItem>
                                 <MenuItem value="other">Other</MenuItem>
-                                
+
                             </CustomTextField>
                         </Grid>
                         <Grid size={{ xs: 12, md: 5 }}>
@@ -252,7 +252,7 @@ function StudentProfile() {
                             />
                         </Grid>
 
-                         <Grid size={{ xs: 12, md: 5 }}>
+                        <Grid size={{ xs: 12, md: 5 }}>
                             <CustomTextField
                                 label="Password*"
                                 name="password"
@@ -278,7 +278,7 @@ function StudentProfile() {
 
                     </Grid>
                     <Grid item sx={{ display: "flex", justifyContent: "center" }} size={{ xs: 12, md: 6 }}>
-                        <CustomButton children='Add' loading={false} bgColor='#EAB308' sx={{ width: '20%' }}  onClick={handleSubmit}/>
+                        <CustomButton children='Add' loading={false} bgColor='#EAB308' sx={{ width: '20%' }} onClick={handleSubmit} />
                     </Grid>
                 </DialogContent>
             </Dialog>
