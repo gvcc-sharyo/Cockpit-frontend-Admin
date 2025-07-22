@@ -326,7 +326,7 @@ const Navbar = ({ title, children }) => {
                 <CustomTypography text='Institution' color={isActive('/admin/institution') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
               </ListItem>
 
-              {/* <ListItem
+              <ListItem
                 button
                 onClick={() => handleNavigate('/admin/studentProfile')}
                 sx={{
@@ -346,7 +346,7 @@ const Navbar = ({ title, children }) => {
                   <img src="/images/3-User.svg" alt="img" />
                 </ListItemIcon>
                 <CustomTypography text='Student profile' color={isActive('/admin/studentProfile') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
-              </ListItem> */}
+              </ListItem>
 
             </List>
           </Box>

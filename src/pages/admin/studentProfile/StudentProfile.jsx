@@ -3,6 +3,8 @@ import CustomButton from "../../../components/admin/CustomButton";
 import CustomTypography from "../../../components/admin/CustomTypography";
 import CustomTable from "../../../components/admin/CustomTable";
 import CustomTextField from "../../../components/admin/CustomTextField";
+import { apiGet, apiPost } from "../../../api/axios";
+import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 
 
 function StudentProfile() {
@@ -72,46 +74,34 @@ function StudentProfile() {
         return errs;
     };
 
-    const handleAddStudent = async () => {
+    const handleSubmit = async () => {
         const errors = handleErrors();
 
         if (errors.length > 0) {
             return;
         }
-
-
-        const req = {
-            // instituteName: formData.instituteName,
-            // department: formData.department,
-            // email: formData.email,
-            // phone: formData.phone,
-            // subscriptionAmt: formData.amount,
-            // subscriptionPeriod: formData.period,
-            // address: formData.address,
-        };
-
         try {
             setLoading(true);
-            const response = await apiPost("/admin/addInstitute", req);
-            // console.log(response.data.message);
+            const response = await apiPost("/admin/addInstituteStudent", formData);
+            // console.log(response);
             if (response.status === 200) {
                 snackbarEmitter(response.data.message, "success");
                 handleModalClose();
                 setFormData({
-                    instituteName: "",
-                    department: "",
-                    email: "",
-                    phone: "",
-                    amount: "",
-                    period: "",
-                    address: "",
+                   firstName: "",
+                   lastName: "",
+                   email: "",
+                   phone: "",
+                   gender: "",
+                   password: "",
+                   address: "",
                 });
                 setTimeout(() => {
                     setLoading(false);
                 }, 500);
             } else {
-                alert("Failed to add institute");
-                // Even on failure, delay loader stop by 2 seconds
+                
+                snackbarEmitter(response.data.message, "error");
                 setTimeout(() => {
                     setLoading(false);
                 }, 500);
@@ -120,6 +110,28 @@ function StudentProfile() {
             console.error("Error adding institute:", error);
         }
     };
+
+
+
+
+    const getStudents = async () => {
+        try {
+            const response = await apiGet("/institute/getAllInstituteStudents");
+            console.log("Fetched students:", response.data.data);
+            if (response.status === 200) {
+                setStudents(response.data.data);
+            } else {
+                snackbarEmitter(response.data.message, "error");
+            }
+        } catch (error) {
+            console.error("Error fetching students:", error);
+        }
+    };
+
+
+    useEffect(() => {
+        getStudents();
+    });
 
     const tableHeaders = ['Sr No', 'First Name', 'Last Name', 'Gender', 'Phone', 'Status', 'Action'];
 
@@ -266,7 +278,7 @@ function StudentProfile() {
 
                     </Grid>
                     <Grid item sx={{ display: "flex", justifyContent: "center" }} size={{ xs: 12, md: 6 }}>
-                        <CustomButton children='Add' loading={false} bgColor='#EAB308' sx={{ width: '20%' }} />
+                        <CustomButton children='Add' loading={false} bgColor='#EAB308' sx={{ width: '20%' }}  onClick={handleSubmit}/>
                     </Grid>
                 </DialogContent>
             </Dialog>
