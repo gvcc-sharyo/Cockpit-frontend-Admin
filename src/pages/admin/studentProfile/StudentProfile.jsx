@@ -41,6 +41,7 @@ function StudentProfile() {
         setOpenModal(false);
         setFormData({});
         setFormErrs({});
+        setIsEditMode(false);
     }
 
     const [loading, setLoading] = useState(false);
@@ -80,9 +81,16 @@ function StudentProfile() {
         if (errors.length > 0) {
             return;
         }
+        if(isEditMode){
+            formData.id = editingStudentId;
+        }
+
+
         try {
+            const endPoint= isEditMode ? `/institute/updateInstituteStudent` : `/institute/addInstituteStudent`;
+        
             setLoading(true);
-            const response = await apiPost("/institute/addInstituteStudent", formData);
+            const response = await apiPost(endPoint, formData);
 
             setTimeout(() => {
 
@@ -135,9 +143,29 @@ function StudentProfile() {
         getStudents();
     }, []);
 
+const [isEditMode, setIsEditMode] = useState(false);
+const [editingStudentId, setEditingStudentId] = useState(null);
+
+    const handleEdit = (student) => {
+    setIsEditMode(true);
+    setEditingStudentId(student._id); 
+    setFormData({
+        firstName: student.firstName || "",
+        lastName: student.lastName || "",
+        email: student.email || "",
+        phone: student.phone || "",
+        gender: student.gender || "",
+        password: student.password || "", 
+        address: student.address || "",
+    });
+    setOpenModal(true);
+};
+
+
     const tableHeaders = ['Sr No', 'First Name', 'Last Name', 'Gender', 'Phone', 'Status', 'Action'];
     const tableData = students.map((student, index) => [student.firstName, student.lastName, student.gender, '9090909090']);
-    
+
+
     const styles = {
         container: {
             display: "flex",
@@ -164,7 +192,6 @@ function StudentProfile() {
                 container
                 sx={styles.container}
                 size={{ xs: 12, sm: 11, md: 11 }}
-
             >
                 <Grid size={{ xs: 6, sm: 6, md: 6 }}>
                     <CustomTypography text='Students' fontWeight={500} fontSize={{ xs: "18px", md: "22px", sm: "20px" }} />
@@ -176,7 +203,7 @@ function StudentProfile() {
             </Grid>
 
             <Grid mt={2}>
-                <CustomTable maxWidth={"100%"} tableHeaders={tableHeaders} tableData={tableData} />
+                <CustomTable maxWidth={"100%"} tableHeaders={tableHeaders} tableData={tableData} handleEdit={handleEdit}/>
             </Grid>
 
             <Dialog open={openModal} onClose={handleModalClose} fullWidth>
@@ -278,7 +305,7 @@ function StudentProfile() {
 
                     </Grid>
                     <Grid item sx={{ display: "flex", justifyContent: "center" }} size={{ xs: 12, md: 6 }}>
-                        <CustomButton children='Add' loading={false} bgColor='#EAB308' sx={{ width: '20%' }} onClick={handleSubmit} />
+                        <CustomButton children={isEditMode ? "Update" : "Add"} loading={false} bgColor='#EAB308' sx={{ width: '20%' }} onClick={handleSubmit} />
                     </Grid>
                 </DialogContent>
             </Dialog>

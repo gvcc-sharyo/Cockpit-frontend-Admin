@@ -65,7 +65,7 @@ function CustomTable({
 
                 <TableCell>
                   <IconButton
-                    onClick={() => handleEdit?.(data)} // safely call handleEdit
+                    onClick={() => handleEdit(data)} // safely call handleEdit
                   >
                     <img
                       src="/images/edit.svg"
