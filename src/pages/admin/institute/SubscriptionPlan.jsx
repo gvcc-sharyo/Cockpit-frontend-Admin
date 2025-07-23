@@ -203,7 +203,7 @@ const SubscriptionPlan = ({ instituteId }) => {
 
       const formatted = response.data.data?.map((item, index) => ({
         ...item,
-        invoice: `INVOICE-${index + 1}`,
+        invoice: `Invoice-${index + 1}`,
         date: new Date(item.createdAt).toLocaleDateString(),
         status: item.status === "Active" ? "Paid" : "Cancelled",
         amount: `₹${item.subscriptionAmt}`,

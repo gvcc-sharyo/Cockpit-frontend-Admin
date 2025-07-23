@@ -40,7 +40,7 @@ const styles = {
     mb: 3,
     justifyContent: { md: "center", xs: "left" },
   },
-   generateButton: {
+  generateButton: {
     position: "absolute",
     right: 0,
     top: "15%",
@@ -57,23 +57,22 @@ const styles = {
   },
 };
 
-
 function Institution() {
   const [openModal, setOpenModal] = useState(false);
   const [chapterName, setChapterName] = useState([]);
 
   const [institutes, setInstitutes] = useState([]);
-  const [id,setId]=useState();
+  const [id, setId] = useState();
 
   const fetchInstitute = async () => {
     try {
       const response = await apiGet("/admin/getAllInstitute");
-      // console.log(response.data);
-       if (response.data.status === 200) {
+      // console.log("Response data:", response.data);
+      if (response.data?.status === 200) {
         setInstitutes(response.data.data);
       } 
     } catch (error) {
-      snackbarEmitter(response.data.message, "error");
+      snackbarEmitter(error?.response?.data?.message || "Something went wrong", "error");
     }
   };
 
@@ -83,9 +82,7 @@ function Institution() {
 
   const handleModalOpen = () => setOpenModal(true);
   const handleModalClose = () => {
-    setOpenModal(false);
-    setFormData({});
-    setFormErrs({});
+    setOpenModal(false); setFormData({}); setFormErrs({});
   };
 
   const [loading, setLoading] = useState(false);
@@ -101,6 +98,7 @@ function Institution() {
     permanentAddress: "",
     transactionId: "",
   });
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -143,6 +141,24 @@ function Institution() {
     return errs;
   };
 
+
+
+  const resetFormData = () => {
+  setFormData({
+    instituteName: "",
+    department: "",
+    email: "",
+    phone: "",
+    password: "",
+    subscriptionAmt: "",
+    subscriptionPeriod: "",
+    currentAddress: "",
+    permanentAddress: "",
+    transactionId: "",
+  });
+};
+
+
   const handleAddInstitute = async () => {
     const errors = handleErrors();
 
@@ -151,6 +167,33 @@ function Institution() {
       return;
     }
 
+    try {
+      setLoading(true);
+      // console.log("Adding institute with data:", formData);
+      const response = await apiPost("/admin/addInstitute", formData);
+      // console.log("Response data:", response.data);
+      fetchInstitute();
+
+      if (response.status === 200) {
+        snackbarEmitter(response.data.message, "success");
+        handleModalClose();
+        resetFormData();
+      } else {
+        snackbarEmitter("Failed to add institute", "error");
+      }
+
+      setTimeout(() => {setLoading(false);}, 2000);
+    } catch (error) {
+      // console.error("Error adding institute:", error);
+      snackbarEmitter("Something went wrong", "error");
+
+      setTimeout(() => { setLoading(false);}, 2000);
+    }
+  };
+
+  const updateInstituteStudents = async (id) => {
+
+    
     const req = {
       instituteName: formData.instituteName,
       department: formData.department,
@@ -165,65 +208,38 @@ function Institution() {
     };
 
     try {
-      setLoading(true);
-      console.log("Adding institute with data:", req);
-      if(id) {
-        const response = await apiPost("/admin/updateInstitute", { ...req, instituteId: institute._id });
-       
-        
-        console.log("Response data:", response.data);
-      } else {
-        const response = await apiPost("/admin/addInstitute", req);
-        console.log("Response data:", response.data);
-      }
-      console.log("Response data:", response.data);
-      fetchInstitute();
-
-
-      if (response.status === 200) {
+      const response = await apiPost("/admin/updateInstitute", { instituteId:id, ...req });
+      // console.log("Update response:", response.data);
+      if (response.data.status === 200) {
         snackbarEmitter(response.data.message, "success");
+        resetFormData();
         handleModalClose();
-        setFormData({
-          instituteName: "",
-          department: "",
-          email: "",
-          phone: "",
-          password: "",
-          subscriptionAmt: "",
-          subscriptionPeriod: "",
-          currentAddress: "",
-          permanentAddress: "",
-          transactionId: "",
-        });
-      } else {
-        snackbarEmitter("Failed to add institute", "error");
-      }
-
-      setTimeout(() => {
-        setLoading(false);
-      }, 2000);
+      } 
     } catch (error) {
-      console.error("Error adding institute:", error);
       snackbarEmitter("Something went wrong", "error");
-
-      setTimeout(() => {
-        setLoading(false);
-      }, 2000);
     }
   };
+
+
+
+
+
 
   const navigate = useNavigate();
 
   const handleClick = (institute) => {
-    navigate(`/admin/institutiondetails`, { state: { instituteId: institute._id } });
+    // console.log("Navigating to institute details for:", institute._id);
+    navigate(`/admin/institutiondetails`, {
+      state: { instituteId: institute._id },
+    });
   };
 
-  const handleEdit = async(institute) => {
 
+  const handleEdit = async (institute) => {
     const response = await apiPost(`/admin/getInstitute`, { instituteId: institute._id });
-    setId(response.data.data._id);
-    
-    console.log(response.data.data);
+    setId(institute._id);
+
+    // console.log(response.data.data);
     handleModalOpen();
     setFormData({
       instituteName: response.data.data.instituteName,
@@ -236,30 +252,56 @@ function Institution() {
       currentAddress: response.data.data.currentAddress,
       permanentAddress: response.data.data.permanentAddress,
       transactionId: response.data.data.transactionId,
-    }); 
-    
-  //  console.log("Edit clicked for institute:", institute._id);
+    });
+
+    //  console.log("Edit clicked for institute:", institute._id);
   };
 
-
-
-  const handleGeneratePassword = async() => {
-
+  const handleGeneratePassword = async () => {
     const response = await apiGet("/admin/instituteAutogeneratedPassword");
     // console.log("Generated password:", response);
     const password = response.data.data;
     setFormData({ ...formData, password });
   };
-  
 
-  const tableHeaders = ["Sr no","Institute Name","Number of students","Status","Action"];
+  const tableHeaders = ["Sr no","Institute Name","Number of students","Status","Action",];
+
+  const table = institutes.map((institute) => ({
+    institute,
+    row: [
+      <Box onClick={() => handleClick(institute)} sx={{ cursor: "pointer" }}>
+        {institute.instituteName}
+      </Box>,
+      <Box onClick={() => handleClick(institute)} sx={{ cursor: "pointer" }}>
+        {institute.totalStudents}
+      </Box>,
+      <Box onClick={() => handleClick(institute)} sx={{ cursor: "pointer" }}>
+        <CustomButton
+          children={institute.isactive ? "Active" : "Inactive"}
+          loading={false}
+          bgColor={institute.isactive ? "#109CF1" : "#F44336"}
+          sx={{
+            width: { xs: "50px", sm: "60px", md: "70px" },
+            fontSize: { xs: "10px", sm: "11px", md: "12px" },
+          }}
+        />
+      </Box>,
+      <IconButton onClick={(e) => { e.stopPropagation(); handleEdit(institute); }}>
+        <img src="/images/edit.svg" alt="Edit" style={{ width: 20, height: 20 }} />
+      </IconButton>,
+    ],
+  }));
 
   return (
     <>
       <Navbar title="Institution">
         <Grid container sx={styles.container}>
           <Grid size={{ xs: 6, sm: 6, md: 6 }}>
-            <CustomTypography text="List of institution" fontWeight={500} fontSize={{ xs: "18px", md: "22px", sm: "20px" }} />
+            <CustomTypography
+              text="List of institution"
+              fontWeight={500}
+              fontSize={{ xs: "18px", md: "22px", sm: "20px" }}
+            />
           </Grid>
           <Grid>
             <CustomButton
@@ -278,9 +320,7 @@ function Institution() {
         <Grid size={{ xs: 12 }} mt={2}>
           <CustomTable
             maxWidth={"100%"}
-            handleClick={handleClick}
-            handleEdit={handleEdit}
-            tableData={institutes}
+            tableData={table}
             tableHeaders={tableHeaders}
           />
         </Grid>
@@ -435,8 +475,8 @@ function Institution() {
               size={{ xs: 12, md: 6 }}
             >
               <CustomButton
-                children= { id ? "Update" : "Add"}
-                onClick={handleAddInstitute}
+                children={id ? "Update" : "Add"}
+                onClick={() => (id ? updateInstituteStudents(id) : handleAddInstitute())}
                 loading={false}
                 bgColor="#EAB308"
                 sx={{ width: "20%" }}
