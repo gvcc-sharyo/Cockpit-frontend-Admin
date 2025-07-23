@@ -17,9 +17,9 @@ import StudentDetail from '../pages/admin/studentProfile/StudentDetail';
 import Test from '../pages/admin/database/Test/Test';
 
 const AdminRoute = () => {
-
+  
   const AuthRoute = () => {
-    const isAuthenticated = !!localStorage.getItem("adminToken");
+    const isAuthenticated = !!localStorage.getItem("adminToken") || !!localStorage.getItem("instituteToken");
     // console.log('isAuthenticated value', isAuthenticated);
     
     return isAuthenticated ? <Outlet /> : <Navigate to="/adminlogin" />;

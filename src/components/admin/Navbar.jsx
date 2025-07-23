@@ -8,6 +8,8 @@ const Navbar = ({ title, children }) => {
   const location = useLocation();
 
   const adminId = localStorage.getItem('adminId');
+  const adminToken = localStorage.getItem('adminToken');
+  const instituteToken = localStorage.getItem('instituteToken');
 
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -75,7 +77,14 @@ const Navbar = ({ title, children }) => {
   };
 
   const confirmLogout = () => {
-    localStorage.removeItem('adminToken');
+    if(adminToken){
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminId');
+    }
+    if(instituteToken){
+      localStorage.removeItem('instituteToken');
+      localStorage.removeItem('instituteId');
+    }
     setOpen(false);
     navigate('/adminlogin');
   };
