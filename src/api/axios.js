@@ -1,7 +1,13 @@
 import axios from 'axios';
-const BASE_URL = import.meta.env.VITE_API_URL;
+const url = import.meta.env.VITE_API_URL;
 
-const token = localStorage.getItem("adminToken");
+const checkToken = localStorage.getItem("adminToken");
+const instituteId = localStorage.getItem("instituteId");
+
+const token = instituteId ? localStorage.getItem("instituteToken") : checkToken;
+
+const BASE_URL = instituteId ? `${url}/institute` : url;
+
 
 // const BASE_URL = 'http://13.235.91.167:8000/cockpit';
 

@@ -218,9 +218,9 @@ function AdminLogin() {
 
         if (response.data.status === 200) {
           snackbarEmitter(response.data.message, 'success');
-          localStorage.setItem('adminToken', response.data.token);
-          localStorage.setItem('adminId', response.data.data._id);
-          setLoginForm({ email: '', password: '' });
+          localStorage.setItem('instituteToken', response.data.token);
+          localStorage.setItem('instituteId', response.data.data._id);
+          setInsLoginForm({ email: '', password: '' });
           navigate('/');
         } else {
           snackbarEmitter(response.data.message, 'error');

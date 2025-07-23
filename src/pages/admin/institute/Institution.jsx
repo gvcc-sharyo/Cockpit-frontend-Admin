@@ -67,20 +67,12 @@ function Institution() {
   const fetchInstitute = async () => {
     try {
       const response = await apiGet("/admin/getAllInstitute");
-      console.log("Response data:", response.data);
+      // console.log("Response data:", response.data);
       if (response.data?.status === 200) {
         setInstitutes(response.data.data);
-      } else {
-        snackbarEmitter(
-          response.data?.message || "Failed to fetch institutes",
-          "error"
-        );
-      }
+      } 
     } catch (error) {
-      snackbarEmitter(
-        error?.response?.data?.message || "Something went wrong",
-        "error"
-      );
+      snackbarEmitter(error?.response?.data?.message || "Something went wrong", "error");
     }
   };
 
@@ -90,9 +82,7 @@ function Institution() {
 
   const handleModalOpen = () => setOpenModal(true);
   const handleModalClose = () => {
-    setOpenModal(false);
-    setFormData({});
-    setFormErrs({});
+    setOpenModal(false); setFormData({}); setFormErrs({});
   };
 
   const [loading, setLoading] = useState(false);
@@ -108,6 +98,7 @@ function Institution() {
     permanentAddress: "",
     transactionId: "",
   });
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -150,7 +141,25 @@ function Institution() {
     return errs;
   };
 
-  const handleAddInstitute = async (institute) => {
+
+
+  const resetFormData = () => {
+  setFormData({
+    instituteName: "",
+    department: "",
+    email: "",
+    phone: "",
+    password: "",
+    subscriptionAmt: "",
+    subscriptionPeriod: "",
+    currentAddress: "",
+    permanentAddress: "",
+    transactionId: "",
+  });
+};
+
+
+  const handleAddInstitute = async () => {
     const errors = handleErrors();
 
     // Correct way to check if any validation errors exist
@@ -158,6 +167,33 @@ function Institution() {
       return;
     }
 
+    try {
+      setLoading(true);
+      // console.log("Adding institute with data:", formData);
+      const response = await apiPost("/admin/addInstitute", formData);
+      // console.log("Response data:", response.data);
+      fetchInstitute();
+
+      if (response.status === 200) {
+        snackbarEmitter(response.data.message, "success");
+        handleModalClose();
+        resetFormData();
+      } else {
+        snackbarEmitter("Failed to add institute", "error");
+      }
+
+      setTimeout(() => {setLoading(false);}, 2000);
+    } catch (error) {
+      // console.error("Error adding institute:", error);
+      snackbarEmitter("Something went wrong", "error");
+
+      setTimeout(() => { setLoading(false);}, 2000);
+    }
+  };
+
+  const updateInstituteStudents = async (id) => {
+
+    
     const req = {
       instituteName: formData.instituteName,
       department: formData.department,
@@ -172,54 +208,22 @@ function Institution() {
     };
 
     try {
-      setLoading(true);
-      console.log("Adding institute with data:", req);
-      if (id) {
-        const response = await apiPost("/admin/updateInstitute", {
-          ...req,
-          instituteId: institute._id,
-        });
-
-        console.log("Response data:", response.data);
-        // setId(null);
-      } else {
-        const response = await apiPost("/admin/addInstitute", req);
-        console.log("Response data:", response.data);
-      }
-
-      fetchInstitute();
-
-      if (response.status === 200) {
+      const response = await apiPost("/admin/updateInstitute", { instituteId:id, ...req });
+      // console.log("Update response:", response.data);
+      if (response.data.status === 200) {
         snackbarEmitter(response.data.message, "success");
+        resetFormData();
         handleModalClose();
-        setFormData({
-          instituteName: "",
-          department: "",
-          email: "",
-          phone: "",
-          password: "",
-          subscriptionAmt: "",
-          subscriptionPeriod: "",
-          currentAddress: "",
-          permanentAddress: "",
-          transactionId: "",
-        });
-      } else {
-        snackbarEmitter("Failed to add institute", "error");
-      }
-
-      setTimeout(() => {
-        setLoading(false);
-      }, 2000);
+      } 
     } catch (error) {
-      console.error("Error adding institute:", error);
       snackbarEmitter("Something went wrong", "error");
-
-      setTimeout(() => {
-        setLoading(false);
-      }, 2000);
     }
   };
+
+
+
+
+
 
   const navigate = useNavigate();
 
@@ -232,12 +236,10 @@ function Institution() {
 
 
   const handleEdit = async (institute) => {
-    const response = await apiPost(`/admin/getInstitute`, {
-      instituteId: institute._id,
-    });
-    setId(response.data.data._id);
+    const response = await apiPost(`/admin/getInstitute`, { instituteId: institute._id });
+    setId(institute._id);
 
-    console.log(response.data.data);
+    // console.log(response.data.data);
     handleModalOpen();
     setFormData({
       instituteName: response.data.data.instituteName,
@@ -262,13 +264,7 @@ function Institution() {
     setFormData({ ...formData, password });
   };
 
-  const tableHeaders = [
-    "Sr no",
-    "Institute Name",
-    "Number of students",
-    "Status",
-    "Action",
-  ];
+  const tableHeaders = ["Sr no","Institute Name","Number of students","Status","Action",];
 
   const table = institutes.map((institute) => ({
     institute,
@@ -290,17 +286,8 @@ function Institution() {
           }}
         />
       </Box>,
-      <IconButton
-        onClick={(e) => {
-          e.stopPropagation(); 
-          handleEdit(institute);
-        }}
-      >
-        <img
-          src="/images/edit.svg"
-          alt="Edit"
-          style={{ width: 20, height: 20 }}
-        />
+      <IconButton onClick={(e) => { e.stopPropagation(); handleEdit(institute); }}>
+        <img src="/images/edit.svg" alt="Edit" style={{ width: 20, height: 20 }} />
       </IconButton>,
     ],
   }));
@@ -489,7 +476,7 @@ function Institution() {
             >
               <CustomButton
                 children={id ? "Update" : "Add"}
-                onClick={handleAddInstitute}
+                onClick={() => (id ? updateInstituteStudents(id) : handleAddInstitute())}
                 loading={false}
                 bgColor="#EAB308"
                 sx={{ width: "20%" }}
