@@ -43,7 +43,7 @@ const Navbar = ({ title, children }) => {
     try {
       const response = await apiGet(`/admin/getAdmin?adminId=${adminId}`);
       // console.log("admin data",response.data.data);
-      
+
 
       if (response.data.status === 200) {
         setAdminData({
@@ -77,11 +77,11 @@ const Navbar = ({ title, children }) => {
   };
 
   const confirmLogout = () => {
-    if(adminToken){
+    if (adminToken) {
       localStorage.removeItem('adminToken');
       localStorage.removeItem('adminId');
     }
-    if(instituteToken){
+    if (instituteToken) {
       localStorage.removeItem('instituteToken');
       localStorage.removeItem('instituteId');
     }
@@ -229,28 +229,30 @@ const Navbar = ({ title, children }) => {
 
               <Collapse in={openDatabase} timeout="auto" unmountOnExit>
                 {/* <List component="div" disablePadding> */}
-                  <ListItem
-                    button
-                    sx={{
-                      pl: 4,
-                      mb: 1,
-                      borderRadius: 2,
-                      bgcolor: isActive('/admin/trainingAdd') ? '#EAB308' : 'white',
-                      // color: isActive('/admin/trainingAdd') ? 'white' : 'black',
-                      cursor: 'pointer',
-                      ":hover": {
-                        color: 'black'
-                      }
-                    }}
-                    onClick={() => handleNavigate('/admin/trainingAdd')}
-                  >
-                    <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
-                      <img src="/images/database.svg" alt="img" />
-                    </ListItemIcon>
-                    <CustomTypography text='Training' color={isActive('/admin/trainingAdd') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
-                  </ListItem>
+                <ListItem
+                  button
+                  sx={{
+                    pl: 4,
+                    mb: 1,
+                    borderRadius: 2,
+                    bgcolor: isActive('/admin/trainingAdd') ? '#EAB308' : 'white',
+                    // color: isActive('/admin/trainingAdd') ? 'white' : 'black',
+                    cursor: 'pointer',
+                    ":hover": {
+                      color: 'black'
+                    }
+                  }}
+                  onClick={() => handleNavigate('/admin/trainingAdd')}
+                >
+                  <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
+                    <img src="/images/database.svg" alt="img" />
+                  </ListItemIcon>
+                  <CustomTypography text='Training' color={isActive('/admin/trainingAdd') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
+                </ListItem>
 
-                      <ListItem
+                {
+                  instituteToken &&
+                  <ListItem
                     button
                     sx={{
                       pl: 4,
@@ -270,23 +272,24 @@ const Navbar = ({ title, children }) => {
                     </ListItemIcon>
                     <CustomTypography text='Test' color={isActive('/admin/test') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
                   </ListItem>
+                }
 
-                  <ListItem
-                    button
-                    sx={{
-                      pl: 4,
-                      borderRadius: 2,
-                      bgcolor: isActive('/admin/feedback') ? '#EAB308' : 'white',
-                      // color: isActive('/admin/feedback') ? 'white' : 'black',
-                      cursor: 'pointer',
-                    }}
-                    onClick={() => handleNavigate('/admin/feedback')}
-                  >
-                    <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
-                      <img src="/images/database.svg" alt="Feedback" />
-                    </ListItemIcon>
-                    <CustomTypography text='Feedback' color={isActive('/admin/feedback') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
-                  </ListItem>
+                <ListItem
+                  button
+                  sx={{
+                    pl: 4,
+                    borderRadius: 2,
+                    bgcolor: isActive('/admin/feedback') ? '#EAB308' : 'white',
+                    // color: isActive('/admin/feedback') ? 'white' : 'black',
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => handleNavigate('/admin/feedback')}
+                >
+                  <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
+                    <img src="/images/database.svg" alt="Feedback" />
+                  </ListItemIcon>
+                  <CustomTypography text='Feedback' color={isActive('/admin/feedback') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
+                </ListItem>
                 {/* </List> */}
               </Collapse>
 
@@ -312,32 +315,32 @@ const Navbar = ({ title, children }) => {
                 <CustomTypography text='Pricing' color={isActive('/admin/pricing') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
               </ListItem>
 
-{
-  adminToken &&
-   <ListItem
-                button
-                onClick={() => handleNavigate('/admin/institution')}
-                sx={{
-                  fontWeight: 'bold',
-                  borderRadius: 2,
-                  mb: 1,
-                  bgcolor: isActive('/admin/institution') ? '#EAB308' : 'white',
-                  // color: isActive('/admin/pricing') ? 'white' : 'black',
-                  cursor: 'pointer',
-                  ":hover": {
-                    color: 'black'
-                  },
+              {
+                adminToken &&
+                <ListItem
+                  button
+                  onClick={() => handleNavigate('/admin/institution')}
+                  sx={{
+                    fontWeight: 'bold',
+                    borderRadius: 2,
+                    mb: 1,
+                    bgcolor: isActive('/admin/institution') ? '#EAB308' : 'white',
+                    // color: isActive('/admin/pricing') ? 'white' : 'black',
+                    cursor: 'pointer',
+                    ":hover": {
+                      color: 'black'
+                    },
 
-                }}
-              >
-                <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
-                  <img src="/images/institution.svg" alt="institution" />
-                </ListItemIcon>
-                <CustomTypography text='Institution' color={isActive('/admin/institution') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
-              </ListItem>
-}
-               
-                
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
+                    <img src="/images/institution.svg" alt="institution" />
+                  </ListItemIcon>
+                  <CustomTypography text='Institution' color={isActive('/admin/institution') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
+                </ListItem>
+              }
+
+
 
               <ListItem
                 button
@@ -359,7 +362,7 @@ const Navbar = ({ title, children }) => {
                   <img src="/images/3-User.svg" alt="img" />
                 </ListItemIcon>
                 <CustomTypography text='Student profile' color={isActive('/admin/studentProfile') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
-              </ListItem> 
+              </ListItem>
 
             </List>
           </Box>
@@ -409,7 +412,7 @@ const Navbar = ({ title, children }) => {
         </DialogContent>
         <DialogActions sx={{ display: 'flex', gap: 0.5, mb: 1 }} >
           <CustomButton children='Logout' onClick={confirmLogout} bgColor='#EAB308' sx={{ width: { xs: '50%', md: '30%', sm: '30%' }, fontSize: { xs: '11px', md: '13px', sm: '13px' } }} />
-           <CustomButton children='Cancel' onClick={handleClose} bgColor='#BF0000' sx={{ width: { xs: '50%', md: '30%', sm: '30%' }, fontSize: { xs: '11px', md: '13px', sm: '13px' } }} />
+          <CustomButton children='Cancel' onClick={handleClose} bgColor='#BF0000' sx={{ width: { xs: '50%', md: '30%', sm: '30%' }, fontSize: { xs: '11px', md: '13px', sm: '13px' } }} />
         </DialogActions>
       </Dialog>
 
