@@ -115,7 +115,7 @@ function StudentsTable({ instituteId }) {
       <TableContainer>
         <Table stickyHeader>
           <TableHead>
-            <TableRow>{["S/N","First Name","Last Name","Gender", "Phone Number", "Action",].map((head, idx) => (
+            <TableRow>{["S/N","First Name","Last Name","Gender", "Phone Number", ].map((head, idx) => (
                 <TableCell key={idx} sx={styles.tableHeadCell}>
                   {head}
                 </TableCell>
@@ -130,7 +130,7 @@ function StudentsTable({ instituteId }) {
                 <TableCell sx={styles.tableCell}>{row.lastName}</TableCell>
                 <TableCell sx={styles.tableCell}>{row.gender}</TableCell>
                 <TableCell sx={styles.tableCell}>{row.phone}</TableCell>
-                <TableCell sx={styles.tableCell}><IconButton><img src="/images/edit.svg" alt="Edit" style={{ width: '20px', height: '20px' }} /></IconButton></TableCell>
+                {/* <TableCell sx={styles.tableCell}><IconButton><img src="/images/edit.svg" alt="Edit" style={{ width: '20px', height: '20px' }} /></IconButton></TableCell> */}
               </TableRow>
             ))}
           </TableBody>

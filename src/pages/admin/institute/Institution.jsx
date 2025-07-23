@@ -143,7 +143,7 @@ function Institution() {
     return errs;
   };
 
-  const handleAddInstitute = async () => {
+  const handleAddInstitute = async (institute) => {
     const errors = handleErrors();
 
     // Correct way to check if any validation errors exist
@@ -169,14 +169,14 @@ function Institution() {
       console.log("Adding institute with data:", req);
       if(id) {
         const response = await apiPost("/admin/updateInstitute", { ...req, instituteId: institute._id });
-       
         
         console.log("Response data:", response.data);
+        setId(null);
       } else {
         const response = await apiPost("/admin/addInstitute", req);
         console.log("Response data:", response.data);
       }
-      console.log("Response data:", response.data);
+      
       fetchInstitute();
 
 
