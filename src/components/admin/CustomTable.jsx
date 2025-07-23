@@ -1,16 +1,16 @@
-
 import CustomTypography from "./CustomTypography";
 import CustomButton from "./CustomButton";
 
 function CustomTable({
   maxWidth = "100%",
-  handleClick = () => { },
-  handleEdit,
   tableData = [],
   tableHeaders = [],
 }) {
+  // Define local handlers instead of expecting them from props
+ 
+
   return (
-    <Grid>
+    <Grid container>
       <TableContainer
         component={Paper}
         elevation={0}
@@ -22,11 +22,17 @@ function CustomTable({
           overflowX: "auto",
         }}
       >
-        <Table>
+        <Table stickyHeader>
           <TableHead>
             <TableRow>
               {tableHeaders.map((header, index) => (
-                <TableCell key={index}>
+                <TableCell
+                  key={index}
+                  sx={{
+                    textAlign: "center",
+                    verticalAlign: "middle",
+                  }}
+                >
                   <CustomTypography
                     text={header}
                     fontSize={{ xs: "12px", sm: "14px", md: "14px" }}
@@ -37,43 +43,37 @@ function CustomTable({
               ))}
             </TableRow>
           </TableHead>
+
           <TableBody>
             {tableData.map((data, index) => (
-              <TableRow key={index} sx={{ borderBottom: "1px solid #e0e0e0" }}>
-                <TableCell>{index + 1}</TableCell>
+              <TableRow
+                key={index}
+                sx={{
+                  borderBottom: "1px solid #e0e0e0",
+                  cursor: "pointer",
+                }}
+              
+              >
+                <TableCell
+                  sx={{
+                    textAlign: "center",
+                    verticalAlign: "middle",
+                  }}
+                >
+                  {index + 1}
+                </TableCell>
 
-                {
-                  data.map((item, index) => (
-                    <TableCell sx={{ cursor: "pointer" }}
-                      onClick={() => handleClick(data)} key={index}>{item}</TableCell>
-                  ))
-                }
-
-                {/* <TableCell>{data.totalStudents}</TableCell> */}
-
-                <TableCell>
-                  <CustomButton
-                    children={data.isactive ? "Active" : "Inactive"}
-                    loading={false}
-                    bgColor={data.isactive ? "#109CF1" : "#F44336"}
+                {(data.row || []).map((item, i) => (
+                  <TableCell
+                    key={i}
                     sx={{
-                      width: { xs: "50px", sm: "60px", md: "70px" },
-                      fontSize: { xs: "10px", sm: "11px", md: "12px" },
+                      textAlign: "center",
+                      verticalAlign: "middle",
                     }}
-                  />
-                </TableCell>
-
-                <TableCell>
-                  <IconButton
-                    onClick={() => handleEdit(data)} // safely call handleEdit
                   >
-                    <img
-                      src="/images/edit.svg"
-                      alt="Edit"
-                      style={{ width: 20, height: 20 }}
-                    />
-                  </IconButton>
-                </TableCell>
+                    {item}
+                  </TableCell>
+                ))}
               </TableRow>
             ))}
           </TableBody>
