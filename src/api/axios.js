@@ -4,10 +4,8 @@ const BASE_URL = import.meta.env.VITE_API_URL;
 const token = localStorage.getItem("adminToken");
 
 // const BASE_URL = 'http://13.235.91.167:8000/cockpit';
+
 // GET
-
-
-
 
 export const apiGet = async (endpoint) => {
   const headers = {
@@ -18,9 +16,7 @@ export const apiGet = async (endpoint) => {
   return await axios.get(`${BASE_URL}${endpoint}`, { headers });
 };
 
-export const apiGetToken = async (endpoint,  userType='student', data) => {
-  const tokenType = userType === 'student' ? 'authToken' : 'adminToken';
-  const token = localStorage.getItem(tokenType);
+export const apiGetToken = async (endpoint) => {
   const headers = {
     'Content-Type': 'application/json',
     ...(token && { Authorization: `Bearer ${token}` }),

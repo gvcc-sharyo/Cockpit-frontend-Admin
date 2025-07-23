@@ -134,9 +134,11 @@ function AdminLogin() {
   const [activeForm, setActiveForm] = useState('login');
 
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const [insloginForm, setInsLoginForm] = useState({ email: '', password: '' });
   const [registerForm, setRegisterForm] = useState({ email: '', username: '', password: '' });
 
   const [loginErrors, setLoginErrors] = useState({});
+  const [insloginErrors, setInsLoginErrors] = useState({});
   const [registerErrors, setRegisterErrors] = useState({});
 
   const [showPassword, setShowPassword] = useState(false);
@@ -155,14 +157,13 @@ function AdminLogin() {
     return Object.keys(errors).length === 0;
   };
 
-  const validateRegisterForm = () => {
-    const errors = {};
-    if (!registerForm.email) errors.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(registerForm.email)) errors.email = 'Invalid email';
-    if (!registerForm.username) errors.username = 'Username is required';
-    if (!registerForm.password) errors.password = 'Password is required';
+  const validateInsLoginForm = () => {
+        const errors = {};
+    if (!insloginForm.email) errors.email = 'Email is required';
+    else if (!/\S+@\S+\.\S+/.test(insloginForm.email)) errors.email = 'Invalid email';
+    if (!insloginForm.password) errors.password = 'Password is required';
 
-    setRegisterErrors(errors);
+    setInsLoginErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
@@ -177,6 +178,39 @@ function AdminLogin() {
     const req = { email: loginForm.email, password: loginForm.password };
     try {
       const response = await apiPost('/admin/loginAdmin', req);
+      console.log("Response :", response.data);
+
+      setTimeout(() => {
+        setLoading(false);
+
+        if (response.data.status === 200) {
+          snackbarEmitter(response.data.message, 'success');
+          localStorage.setItem('adminToken', response.data.token);
+          localStorage.setItem('adminId', response.data.data._id);
+          setLoginForm({ email: '', password: '' });
+          navigate('/');
+        } else {
+          snackbarEmitter(response.data.message, 'error');
+        }
+      }, 500)
+
+    } catch (error) {
+      setTimeout(() => {
+        setLoading(false);
+
+        snackbarEmitter(error.message, 'error');
+      }, 500);
+    }
+  };
+  const handleInsLogin = async () => {
+    // e.preventDefault();
+    if (!validateInsLoginForm()) return;
+
+    setLoading(true);
+
+    const req = { email: insloginForm.email, password: insloginForm.password };
+    try {
+      const response = await apiPost('/institute/loginInstitute', req);
       console.log("Response :", response.data);
 
       setTimeout(() => {
@@ -281,8 +315,8 @@ function AdminLogin() {
   };
 
 
-const handleGoogleLogin = useGoogleLogin({
-   onSuccess: async (tokenResponse) => {
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
       try {
         const accessToken = tokenResponse.access_token;
         console.log('Access Token:', accessToken);
@@ -293,13 +327,13 @@ const handleGoogleLogin = useGoogleLogin({
           },
         });
         console.log('Response:', response.data);
-        
+
         const userEmail = response.data.email;
         console.log('userEmail', userEmail);
-        
+
         const userResponse = await apiPost('/AuthLoginAdmin', { email: userEmail });
         console.log('userResponse', userResponse);
-        
+
         if (userResponse.data.status === 200) {
           snackbarEmitter(userResponse.data.message, 'success');
           localStorage.setItem('adminToken', userResponse.data.token);
@@ -310,11 +344,11 @@ const handleGoogleLogin = useGoogleLogin({
         }
 
       } catch (error) {
-       snackbarEmitter('Something went wrong', 'error');
+        snackbarEmitter('Something went wrong', 'error');
       }
     },
     // onError: snackbarEmitter('Google login failed', 'error'),
-});
+  });
 
 
   return (
@@ -345,11 +379,11 @@ const handleGoogleLogin = useGoogleLogin({
 
             <Box sx={styles.centeredBox}>
               <Button sx={styles.toggleButton(activeForm === 'login')} onClick={() => setActiveForm('login')}>
-                Login
+                Admin Login
               </Button>
-              {/* <Button sx={styles.toggleButton(activeForm === 'register')} onClick={() => setActiveForm('register')}>
-                Register
-              </Button> */}
+              <Button sx={styles.toggleButton(activeForm === 'register')} onClick={() => setActiveForm('register')}>
+                Institute Login
+              </Button>
             </Box>
 
 
@@ -426,64 +460,76 @@ const handleGoogleLogin = useGoogleLogin({
               </>
             )}
 
-            {/* {activeForm === 'register' && (
+            {activeForm === 'register' && (
               <>
-
-                <Grid mt={2}>
+                <Grid item >
                   <CustomTextField
-                    label='Email'
+                    label="Email"
                     name="email"
-                    value={registerForm.email}
-                    onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })}
+                    value={insloginForm.email}
+                    onChange={(e) => setInsLoginForm({ ...insloginForm, email: e.target.value })}
                     placeholder="Email"
-                    error={!!registerErrors.email}
-                    helperText={registerErrors.email}
+                    error={!!insloginErrors.email}
+                    helperText={insloginErrors.email}
                     borderRadius='50px'
+
                   />
 
                 </Grid>
 
-                <Grid mt={2}>
+                <Grid item mt={2}>
                   <CustomTextField
-                    label='Username'
-                    name="username"
-                    value={registerForm.username}
-                    onChange={(e) => setRegisterForm({ ...registerForm, username: e.target.value })}
-                    placeholder="Username"
-                    error={!!registerErrors.username}
-                    helperText={registerErrors.username}
-                    borderRadius='50px'
-                  />
-                </Grid>
-
-                <Grid mt={2} mb={4}>
-                  <CustomTextField
-                    label='Password'
+                    label="Access Key"
                     name="password"
-                    type={showRegPassword ? 'text' : 'password'}
-                    value={registerForm.password}
-                    onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
+                    type={showPassword ? 'text' : 'password'}
+                    value={insloginForm.password}
+                    onChange={(e) => setInsLoginForm({ ...insloginForm, password: e.target.value })}
                     placeholder="Access Key"
-                    error={!!registerErrors.password}
-                    helperText={registerErrors.password}
-                    borderRadius='50px'
+                    error={!!insloginErrors.password}
+                    helperText={insloginErrors.password}
+                    borderRadius="50px"
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
-                          <IconButton onClick={() => setShowRegPassword(!showRegPassword)} edge="end">
-                            {showRegPassword ? <Visibility /> : <VisibilityOff />}
+                          <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                            {showPassword ? <Visibility /> : <VisibilityOff />}
                           </IconButton>
                         </InputAdornment>
                       ),
                     }}
                   />
+                </Grid>
+
+                <Grid container alignItems="center" gap={1} sx={styles.formGrid} mt={2} >
+
+                  {/* <Typography onClick={() => setForgotDialogOpen(true)} variant="body2" sx={{ ...styles.secondaryText, cursor: 'pointer' }} gutterBottom>Forgot Password?</Typography> */}
+                  <CustomTypography text='Forgot Password?' onClick={handleForgotClick} sx={{ cursor: 'pointer' }} />
+
+                  <CustomButton children='Board me' onClick={handleInsLogin} loading={loading} bgColor='#EAB308' borderRadius='50px' />
 
                 </Grid>
 
-                <CustomButton children='Register' onClick={handleRegister} loading={loading} bgColor='#EAB308' borderRadius='50px' />
+                <CustomTypography text='-OR-' fontSize={{ xs: '14px', sm: '17px', md: '18px' }} color='#A3A3A3' fontWeight={600} sx={{ textAlign: 'center' }} />
+
+
+                <Grid container justifyContent="center" gap={2} >
+                  {/* <Box
+                    sx={styles.socialBox}
+                  >
+                    <img src="/images/apple.svg" alt="Apple Login" style={{ height: '24px', width: '24px' }} />
+                  </Box> */}
+
+                  <Box
+                    sx={styles.socialBox}
+                    onClick={handleGoogleLogin}
+                  >
+                    <img src="/images/google.svg" alt="Google Login" style={{ height: '24px', width: '24px' }} />
+                  </Box>
+                </Grid>
+
 
               </>
-            )} */}
+            )}
 
           </Paper>
         </Grid>

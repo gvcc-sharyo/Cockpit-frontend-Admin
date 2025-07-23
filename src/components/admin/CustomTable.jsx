@@ -4,9 +4,9 @@ import CustomButton from "./CustomButton";
 
 function CustomTable({
   maxWidth = "100%",
-  handleClick = () => {},
+  handleClick = () => { },
   handleEdit,
-  institutes = [],
+  tableData = [],
   tableHeaders = [],
 }) {
   return (
@@ -38,24 +38,24 @@ function CustomTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {institutes.map((institute, index) => (
+            {tableData.map((data, index) => (
               <TableRow key={index} sx={{ borderBottom: "1px solid #e0e0e0" }}>
                 <TableCell>{index + 1}</TableCell>
 
-                <TableCell
-                  sx={{ cursor: "pointer" }}
-                  onClick={() => handleClick(institute)}
-                >
-                  {institute.instituteName}
-                </TableCell>
+                {
+                  data.map((item, index) => (
+                    <TableCell sx={{ cursor: "pointer" }}
+                      onClick={() => handleClick(data)} key={index}>{item}</TableCell>
+                  ))
+                }
 
-                <TableCell>{institute.totalStudents}</TableCell>
+                {/* <TableCell>{data.totalStudents}</TableCell> */}
 
                 <TableCell>
                   <CustomButton
-                    children={institute.isactive ? "Active" : "Inactive"}
+                    children={data.isactive ? "Active" : "Inactive"}
                     loading={false}
-                    bgColor={institute.isactive ? "#109CF1" : "#F44336"}
+                    bgColor={data.isactive ? "#109CF1" : "#F44336"}
                     sx={{
                       width: { xs: "50px", sm: "60px", md: "70px" },
                       fontSize: { xs: "10px", sm: "11px", md: "12px" },
@@ -65,7 +65,7 @@ function CustomTable({
 
                 <TableCell>
                   <IconButton
-                    onClick={() => handleEdit?.(institute)} // safely call handleEdit
+                    onClick={() => handleEdit(data)} // safely call handleEdit
                   >
                     <img
                       src="/images/edit.svg"

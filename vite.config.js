@@ -33,7 +33,7 @@ export default defineConfig({
         CheckBox as CheckBoxIcon, CheckBoxOutlineBlank as CheckBoxOutlineBlankIcon, Close as CloseIcon, 
         CheckCircle as CheckCircleIcon, CancelRounded as CancelRoundedIcon, CameraAlt as CameraAltIcon,
         Delete, Delete as DeleteIcon,Email as EmailOutlinedIcon,EditSquare as EditSquareIcon,Smartphone as SmartphoneIcon,CloudUpload as CloudUploadIcon,
-        Edit,ExpandMore as ExpandMoreIcon,
+        Edit,ExpandMore as ExpandMoreIcon, ExpandLess as ExpandLessIcon,
         FacebookOutlined as FacebookOutlinedIcon, FiberManualRecordSharp as FiberManualRecordSharpIcon, Fingerprint as FingerprintIcon, Facebook, FormatBold  as FormatBold,FormatItalic as FormatItalic,FormatUnderlined as FormatUnderlined, 
         MoreHoriz as MoreHorizIcon, Instagram as InstagramIcon, Instagram,
         KeyboardArrowDown as KeyboardArrowDownIcon, KeyboardArrowRight as KeyboardArrowRightIcon,
