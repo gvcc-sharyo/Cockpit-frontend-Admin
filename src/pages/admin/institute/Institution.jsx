@@ -324,7 +324,7 @@ function Institution() {
         <Dialog open={openModal} onClose={handleModalClose} fullWidth>
           <DialogTitle sx={styles.dialogTitle}>
             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              Add Institution
+              {id ? "Update" : "Add"} Institution
             </Typography>
             <IconButton onClick={handleModalClose}>
               <CloseIcon />
