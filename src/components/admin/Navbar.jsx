@@ -10,6 +10,7 @@ const Navbar = ({ title, children }) => {
   const adminId = localStorage.getItem('adminId');
   const adminToken = localStorage.getItem('adminToken');
   const instituteToken = localStorage.getItem('instituteToken');
+  const instituteId = localStorage.getItem('instituteId');
 
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -41,7 +42,8 @@ const Navbar = ({ title, children }) => {
 
   const getProfile = async () => {
     try {
-      const response = await apiGet(`/admin/getAdmin?adminId=${adminId}`);
+    
+      const response = instituteId? await apiGet('/admin/getInstitute', { instituteId: instituteId } ) : await apiGet(`/admin/getAdmin?adminId=${adminId}`);
       // console.log("admin data",response.data.data);
 
 
