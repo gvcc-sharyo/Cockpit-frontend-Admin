@@ -8,6 +8,7 @@ const Navbar = ({ title, children }) => {
   const location = useLocation();
 
   const adminId = localStorage.getItem('adminId');
+  const instituteId = localStorage.getItem('instituteId');
   const adminToken = localStorage.getItem('adminToken');
   const instituteToken = localStorage.getItem('instituteToken');
 

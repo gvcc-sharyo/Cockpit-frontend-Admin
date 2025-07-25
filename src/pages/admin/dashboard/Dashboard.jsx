@@ -5,6 +5,7 @@ import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import Graph from "./graph";
 import CustomTypography from "../../../components/admin/CustomTypography";
 import classes from "./dashboardtemp.js";
+import StudentsTable from "../institute/StudentTable.jsx";
 
 
 
@@ -37,6 +38,7 @@ function Dashboard() {
   const getTotals = async () => {
     try {
       const response = await apiGet(`/subscription/getTotalRevenue?adminId=${adminId}`);
+      console.log("response", response);
 
       if (response.data.status === 200) {
         setTotals(response.data.data);  
@@ -70,6 +72,8 @@ function Dashboard() {
     navigate(route, { state: {reportID} });
   };
 
+  const instituteId = localStorage.getItem('instituteId');
+
 
 
   return (
@@ -97,7 +101,7 @@ function Dashboard() {
 
 
             <Grid size={{ xs: 10, md: 12,lg:6.5  }}>
-              <Graph />
+              {instituteId ? <StudentsTable /> : <Graph />}
             </Grid>
 
 
@@ -107,9 +111,7 @@ function Dashboard() {
                 <CustomTypography text='Report' fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={600} />
                 { reports.length === 0 ?
                  <CustomTypography text='No pending reports' fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} /> 
-
                  :
-                
                 reports.map((report, index) => (
                   <Box mt={2}>
                     <CustomTypography text={report?.userId?.username} fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
