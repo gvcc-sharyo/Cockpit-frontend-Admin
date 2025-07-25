@@ -5,7 +5,6 @@ import CustomTextField from "../../../components/admin/CustomTextField";
 import CustomTypography from "../../../components/admin/CustomTypography";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import Navbar from "../../../components/admin/Navbar";
-import { use } from "react";
 
 const styles = {
   container: {
@@ -59,7 +58,6 @@ const styles = {
 
 function Institution() {
   const [openModal, setOpenModal] = useState(false);
-  const [chapterName, setChapterName] = useState([]);
 
   const [institutes, setInstitutes] = useState([]);
   const [id, setId] = useState();
@@ -161,8 +159,6 @@ function Institution() {
 
   const handleAddInstitute = async () => {
     const errors = handleErrors();
-
-    // Correct way to check if any validation errors exist
     if (Object.keys(errors).length > 0) {
       return;
     }
@@ -172,6 +168,8 @@ function Institution() {
       // console.log("Adding institute with data:", formData);
       const response = await apiPost("/admin/addInstitute", formData);
       // console.log("Response data:", response.data);
+
+      console.log("Response status:", response);
       fetchInstitute();
 
       if (response.status === 200) {
@@ -191,6 +189,9 @@ function Institution() {
     }
   };
 
+
+
+
   const updateInstituteStudents = async (id) => {
 
     
@@ -200,11 +201,11 @@ function Institution() {
       email: formData.email,
       phone: formData.phone,
       password: formData.password,
-      subscriptionAmt: formData.subscriptionAmt,
-      subscriptionPeriod: formData.subscriptionPeriod,
+      // subscriptionAmt: formData.subscriptionAmt,
+      // subscriptionPeriod: formData.subscriptionPeriod,
       currentAddress: formData.currentAddress,
       permanentAddress: formData.permanentAddress,
-      transactionId: formData.transactionId,
+      // transactionId: formData.transactionId,
     };
 
     try {
@@ -221,10 +222,6 @@ function Institution() {
   };
 
 
-
-
-
-
   const navigate = useNavigate();
 
   const handleClick = (institute) => {
@@ -239,14 +236,14 @@ function Institution() {
     const response = await apiPost(`/admin/getInstitute`, { instituteId: institute._id });
     setId(institute._id);
 
-    // console.log(response.data.data);
+    console.log(response);
     handleModalOpen();
     setFormData({
       instituteName: response.data.data.instituteName,
       department: response.data.data.department,
       email: response.data.data.email,
       phone: response.data.data.phone,
-      password: response.data.data.password,
+     // password: response.data.data.password,
       subscriptionAmt: response.data.data.subscriptionAmt,
       subscriptionPeriod: String(response.data.data.subscriptionPeriod ?? ""),
       currentAddress: response.data.data.currentAddress,
@@ -254,7 +251,6 @@ function Institution() {
       transactionId: response.data.data.transactionId,
     });
 
-    //  console.log("Edit clicked for institute:", institute._id);
   };
 
   const handleGeneratePassword = async () => {

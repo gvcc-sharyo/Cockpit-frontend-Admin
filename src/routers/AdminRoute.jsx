@@ -46,7 +46,7 @@ const AdminRoute = () => {
         <Route path="/admin/pricing" element={<Pricing />} />
         <Route path="/admin/profile" element={<Profile />} />
         <Route path="/admin/studentProfile" element={<StudentProfile />} />
-        <Route path="/admin/studentDetail" element={<StudentDetail />} />
+        <Route path="/admin/studentDetails" element={<StudentDetail />} />
         <Route path="/admin/test" element={<Test />} />
         </Route>
         

@@ -9,30 +9,6 @@ import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 function StudentProfile() {
   const [openModal, setOpenModal] = useState(false);
 
-  // const [institutes, setInstitutes] = useState([])
-
-  // const fetchInstitute = async () => {
-  //     try {
-  //         const response = await apiGet('/admin/getInstitute');
-
-  //         if (response.data.status === 200 && response.data.data.length === 0) {
-  //             snackbarEmitter('No institutes found', 'info');
-  //         }
-  //         else if (response.data.status === 200) {
-  //             setInstitutes(response.data.data);
-  //         }
-  //         else {
-  //             snackbarEmitter(response.data.message, 'error');
-  //         }
-
-  //     } catch (error) {
-  //         snackbarEmitter('Something went wrong', 'error');
-  //     }
-  // };
-
-  // useEffect(() => {
-  //     fetchInstitute();
-  // }, [])
 
   const handleModalOpen = () => setOpenModal(true);
   const handleModalClose = () => {
@@ -73,38 +49,41 @@ function StudentProfile() {
     return errs;
   };
 
+
+ const handleReset = () => {
+  setFormData({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    gender: "",
+    password: "",
+    address: "",
+  });
+};
+
+      
+
   const handleSubmit = async () => {
     const errors = handleErrors();
 
     if (errors.length > 0) {
       return;
     }
-    if (isEditMode) {
-      formData.id = editingStudentId;
-    }
-
+    
     try {
-      const endPoint = isEditMode
-        ? `/institute/updateInstituteStudent`
-        : `/institute/addInstituteStudent`;
+      
 
       setLoading(true);
-      const response = await apiPost(endPoint, formData);
+      const response = await apiPost(`/addInstituteStudent`, formData);
 
       setTimeout(() => {
         if (response.status === 200) {
           setLoading(false);
           snackbarEmitter(response.data.message, "success");
           handleModalClose();
-          setFormData({
-            firstName: "",
-            lastName: "",
-            email: "",
-            phone: "",
-            gender: "",
-            password: "",
-            address: "",
-          });
+          handleReset();
+         
         } else {
           snackbarEmitter(response.data.message, "error");
         }
@@ -115,18 +94,20 @@ function StudentProfile() {
     }
   };
 
+
+
+
   const [students, setStudents] = useState([]);
 
   const getStudents = async () => {
     try {
-      const response = await apiGet("/institute/getAllInstituteStudents");
+      const response = await apiGet("/getAllInstituteStudents");
       console.log("Fetched students:", response.data.data);
       if (response.status === 200) {
         setStudents(response.data.data);
-      } else {
-        snackbarEmitter(response.data.message, "error");
-      }
+      } 
     } catch (error) {
+      console.error("Error fetching students:", error);
       snackbarEmitter("Something went wrong", "error");
     }
   };
@@ -135,11 +116,15 @@ function StudentProfile() {
     getStudents();
   }, []);
 
+
+
+
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingStudentId, setEditingStudentId] = useState(null);
 
   const handleEdit = (student) => {
     setIsEditMode(true);
+    console.log("Editing student:", student);
     setEditingStudentId(student._id);
     setFormData({
       firstName: student.firstName || "",
@@ -150,24 +135,55 @@ function StudentProfile() {
       password: student.password || "",
       address: student.address || "",
     });
+    console.log("Form data set for edit:", formData);
     setOpenModal(true);
   };
 
-  const tableHeaders = [
-    "Sr No",
-    "First Name",
-    "Last Name",
-    "Gender",
-    "Phone",
-    "Status",
-    "Action",
-  ];
-  const tableData = students.map((student, index) => [
-    student.firstName,
-    student.lastName,
-    student.gender,
-    "9090909090",
-  ]);
+  
+      
+
+  const tableHeaders = [  "Sr No","First Name", "Last Name", "Gender", "Phone", "Status", "Action",];
+
+  const tableData = students.map((student) => ({
+    row: [
+      <Box onClick={() => handleClick(student)} sx={{ cursor: "pointer" }}>
+
+     { student.firstName}
+      </Box>,
+      <Box onClick={() => handleClick(student)} sx={{ cursor: "pointer" }}>
+        {student.lastName}
+      </Box>,
+      <Box onClick={() => handleClick(student)} sx={{ cursor: "pointer" }}>
+        {student.gender}
+      </Box>,
+      <Box onClick={() => handleClick(student)} sx={{ cursor: "pointer" }}>
+        {student.phone}
+      </Box>,
+      <Box onClick={() => handleClick(student)} sx={{ cursor: "pointer" }}>
+        {"Active"}
+      </Box>,
+
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation();
+          handleEdit(student);
+        }}
+      >
+        <img
+          src="/images/edit.svg"
+          alt="Edit"
+          style={{ width: 20, height: 20 }}
+        />
+      </IconButton>, 
+    ],
+  }));
+
+  const navigate = useNavigate();
+
+  const handleClick = (student) => {
+    console.log("Navigating to student details for:", student._id);
+    navigate(`/admin/studentDetails`, { state: { studentId: student._id },});
+  };
 
   const styles = {
     container: {
