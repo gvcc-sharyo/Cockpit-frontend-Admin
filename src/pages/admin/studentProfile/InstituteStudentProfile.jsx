@@ -173,7 +173,7 @@ function AdminStudentProfile() {
 
   const handleClick = (student) => {
     console.log("Navigating to student details for:", student._id);
-    navigate(`/admin/studentDetails`, { state: { studentId: student._id } });
+    navigate(`/admin/studentPerformance`, { state: { studentId: student._id } });
   };
 
   const handleGeneratePassword = () => {
