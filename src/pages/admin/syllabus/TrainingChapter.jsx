@@ -19,7 +19,7 @@ function TrainingChapter() {
     const fetchBooks = async () => {
         try {
             const response = await apiGet(`/booksBySyllabusId/${syllabusID}`);
-
+            
             if (response.data.status === 200) {
                 const bookList = response.data.data;
 
