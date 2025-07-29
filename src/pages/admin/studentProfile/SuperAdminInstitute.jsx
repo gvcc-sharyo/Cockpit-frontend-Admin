@@ -77,6 +77,7 @@ function SuperAdminStudentProfile() {
   };
 
   return (
+    <>
     <Grid container sx={styles.container} size={{ xs: 12, sm: 11, md: 11 }}>
         <Grid size={{ xs: 12, sm: 12, md: 12 }}>
           <CustomTypography
@@ -86,7 +87,9 @@ function SuperAdminStudentProfile() {
           />
         </Grid>
 
-        <Grid size={{ xs: 12, sm: 12, md: 12 }} mt={2}>
+        
+      </Grid>
+      <Grid mt={2}>
           <CustomTable
             maxWidth={"100%"}
             tableHeaders={tableHeaders}
@@ -94,7 +97,7 @@ function SuperAdminStudentProfile() {
             
           />
         </Grid>
-      </Grid>
+    </>
   );
 }
 export default SuperAdminStudentProfile;
