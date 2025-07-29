@@ -382,7 +382,7 @@ function Institution() {
 
               <Grid size={{ xs: 12, md: 5 }}>
                 <CustomTextField
-                  label="Label Amount*"
+                  label="Subscription Amount*"
                   name="subscriptionAmt"
                   value={formData.subscriptionAmt}
                   onChange={handleInputChange}

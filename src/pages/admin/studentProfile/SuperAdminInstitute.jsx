@@ -9,17 +9,13 @@ import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 function SuperAdminStudentProfile() {
   const [openModal, setOpenModal] = useState(false);
 
-
-
- 
-  
   const [students, setStudents] = useState([]);
 
   const getStudents = async () => {
     try {
       const response = await apiGet("/admin/getAllStudents");
       console.log("Fetched students:", response.data.data);
-      if (response.status === 200) {
+      if (response.data.status === 200) {
         setStudents(response.data.data);
       }
     } catch (error) {
@@ -70,13 +66,6 @@ function SuperAdminStudentProfile() {
        />,
      ],
   }));
-
-
-  
-
- 
-
-  
 
   const styles = {
     container: {

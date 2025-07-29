@@ -11,6 +11,7 @@ import StudentsTable from "../institute/StudentTable.jsx";
 
 function Dashboard() {
   const adminId = localStorage.getItem("adminId");
+  const instituteId = localStorage.getItem("instituteId");
 
   const [reports, setReports] = useState([]);
 
@@ -56,23 +57,12 @@ function Dashboard() {
     getTotals();
   }, []);
 
- 
-  const stats = [
-    {
-      title: "Total Users", number: totals.totalUsers,icon: <img src="/images/users.svg" alt="Users" width={"130%"} />,
-    },
-    {
-      title: "Total Revenue", number: totals.totalRevenue, icon: <img src="/images/revenue.svg" alt="Revenue" width={"130%"} />,
-    },
-  ];
 
   const navigate = useNavigate();
 
   const handleNavigate = (route, reportID) => {
     navigate(route, { state: {reportID} });
   };
-
-  const instituteId = localStorage.getItem('instituteId');
 
 
 
@@ -81,19 +71,36 @@ function Dashboard() {
       <Navbar title={"Dashboard"}>
         <Box sx={{ backgroundColor: "#f8f9fa", p: 2 }}>
           <Grid container spacing={2}>
-            {stats.map(({ title, number, icon }) => (
-              <Grid size={{ xs: 6, md:6,sm:6 }} key={title}>
+              <Grid size={{ xs: 6, md:6,sm:6 }} >
                 <Box sx={classes.statsBox}>
                   <Box>
  
-                    <CustomTypography text={title} fontSize={{ xs: '10px', sm: '12px', md: '12px' }} mb={0} fontWeight={600} />
+                    <CustomTypography text={"Total users"} fontSize={{ xs: '10px', sm: '12px', md: '12px' }} mb={0} fontWeight={600} />
                    
-                    <CustomTypography text={number} fontSize={{ xs: '12px', sm: '14px', md: '14x' }}  mb={0} fontWeight={600} />
+                    <CustomTypography text={totals.totalUsers} fontSize={{ xs: '12px', sm: '14px', md: '14x' }}  mb={0} fontWeight={600} />
                   </Box>
-                  <Box sx={classes.iconBox}>{icon}</Box>
+                  <Box sx={classes.iconBox} component='img' src='/images/users.svg'></Box>
+                </Box>
+
+              </Grid>
+              {
+                adminId &&
+                 <Grid size={{ xs: 6, md:6,sm:6 }} >
+
+                <Box sx={classes.statsBox}>
+                  <Box>
+ 
+                    <CustomTypography text={"Total Revenue"} fontSize={{ xs: '10px', sm: '12px', md: '12px' }} mb={0} fontWeight={600} />
+                   
+                    <CustomTypography text={totals.totalRevenue} fontSize={{ xs: '12px', sm: '14px', md: '14x' }}  mb={0} fontWeight={600} />
+                  </Box>
+                  <Box sx={classes.iconBox} component='img' src='/images/revenue.svg'></Box>
                 </Box>
               </Grid>
-            ))}
+
+              }
+             
+          
           </Grid>
 
           {/* New Report Box */}
