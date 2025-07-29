@@ -87,6 +87,29 @@ function AdminStudentProfile() {
     }
   };
 
+  const updateStudent = async (editingStudentId) => {
+    setLoading(true);
+    try {
+      const response = await apiPost("/updateInstituteStudent", {
+        id: editingStudentId,
+        ...formData,
+      });
+       setTimeout(() => {
+        if (response.status === 200) {
+          setLoading(false);
+          snackbarEmitter(response.data.message, "success");
+          handleModalClose();
+          handleReset();
+        } else {
+          snackbarEmitter(response.data.message, "error");
+        }
+        getStudents();
+      }, 500);
+    } catch (error) {
+      console.error("Error updating student:", error);
+    }
+  };
+
   const [students, setStudents] = useState([]);
 
   const getStudents = async () => {
@@ -173,7 +196,9 @@ function AdminStudentProfile() {
 
   const handleClick = (student) => {
     console.log("Navigating to student details for:", student._id);
-    navigate(`/admin/studentPerformance`, { state: { studentId: student._id } });
+    navigate(`/admin/studentPerformance`, {
+      state: { studentId: student._id },
+    });
   };
 
   const handleGeneratePassword = () => {
@@ -366,11 +391,16 @@ function AdminStudentProfile() {
             size={{ xs: 12, md: 6 }}
           >
             <CustomButton
-              children={isEditMode ? "Update" : "Add"}
+              children={editingStudentId ? "Update" : "Add"}
               loading={false}
               bgColor="#EAB308"
               sx={{ width: "20%" }}
-              onClick={handleSubmit}
+              onClick={() =>
+                editingStudentId
+                  ? updateStudent(editingStudentId)
+                  : handleSubmit()
+              }
+              // onClick={ isEditMode ? updateStudent(): handleSubmit()}
             />
           </Grid>
         </DialogContent>
