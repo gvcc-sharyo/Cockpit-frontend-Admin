@@ -215,6 +215,7 @@ function Institution() {
         snackbarEmitter(response.data.message, "success");
         resetFormData();
         handleModalClose();
+        fetchInstitute();
       } 
     } catch (error) {
       snackbarEmitter("Something went wrong", "error");
