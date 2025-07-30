@@ -295,7 +295,9 @@ const Navbar = ({ title, children }) => {
                 {/* </List> */}
               </Collapse>
 
-              <ListItem
+              {
+                adminToken &&
+                <ListItem
                 button
                 onClick={() => handleNavigate('/admin/pricing')}
                 sx={{
@@ -316,6 +318,10 @@ const Navbar = ({ title, children }) => {
                 </ListItemIcon>
                 <CustomTypography text='Pricing' color={isActive('/admin/pricing') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
               </ListItem>
+
+              }
+
+              
 
               {
                 adminToken &&

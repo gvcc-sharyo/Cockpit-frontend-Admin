@@ -19,7 +19,7 @@ function TrainingChapter() {
     const fetchBooks = async () => {
         try {
             const response = await apiGet(`/booksBySyllabusId/${syllabusID}`);
-            
+
             if (response.data.status === 200) {
                 const bookList = response.data.data;
 
@@ -281,7 +281,15 @@ function TrainingChapter() {
 
     const [openStatusModal, setOpenStatusModal] = useState(false);
     const handleStatusModalOpen = () => setOpenStatusModal(true);
-    const handleStatusModalClose = () => setOpenStatusModal(false);
+    const handleStatusModalClose = () => {
+        setOpenStatusModal(false);
+        setIsEditing(false);
+        setFormData({
+            chapterno: '',
+            chaptername: '',
+            status: ''
+        });
+    }
 
     const handleStatusClick = (chapter) => {
         setFormData({
