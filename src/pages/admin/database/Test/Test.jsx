@@ -8,6 +8,7 @@ import Navbar from "../../../../components/admin/Navbar";
 
 function Test() {
   const [openModal, setOpenModal] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
 
   const handleModalOpen = () => setOpenModal(true);
   const handleModalClose = () => {
@@ -21,6 +22,8 @@ function Test() {
     syllabusId: "",
     bookId: "",
   });
+
+  const [selectedId, setSelectedId] = useState(null);
 
   const [errors, setErrors] = useState({});
 
@@ -40,13 +43,12 @@ function Test() {
   const getTest = async () => {
     try {
       const response = await apiGet("/getTestAll");
-    //   console.log("Fetched students:", response);
-    
+      //   console.log("Fetched students:", response);
       if (response.status === 200) {
         setTest(response.data.data);
       }
     } catch (error) {
-    //   console.error("Error fetching students:", error);
+      //   console.error("Error fetching students:", error);
       snackbarEmitter("Something went wrong", "error");
     }
   };
@@ -108,16 +110,37 @@ function Test() {
     }
   };
 
- const handleDelete = async (id) => {
-  try {
-    const response = await apiDelete(`/deleteTest/${id}`);
-    console.log(response);
-    getTest();
-  } catch (error) {
-    console.error("Error:", error);
-  }
-};
+  const handleDelete = async (id) => {
+    try {
+      const response = await apiDelete(`/deleteTest/${id}`);
+      console.log(response);
+      getTest();
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
+  const handleDialogBox = (id) => {
+    setSelectedId(id);
+    setOpenDialog(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedId) return;
+
+    try {
+      const response = await handleDelete(selectedId);
+      console.log(response);
+    } finally {
+      setOpenDialog(false);
+      setSelectedId(null);
+    }
+  };
+
+  const handleNavigate = (id) => {
+    console.log("Eye Icon Clicked", id);
+    //   navigate("/", { state: { id } });
+  };
 
   const tableHeaders = [
     "Sr No",
@@ -132,11 +155,18 @@ function Test() {
       <Box>{test.testName}</Box>,
       <Box>{test.marks}</Box>,
       <Box>{test.duration}</Box>,
-      <Box gap={1}>
-        <IconButton onClick={() => console.log(test._id)} color="primary">
+      <Box sx={{display:{xs:"flex",md:"inline"}}}>
+        <IconButton
+          onClick={() => handleNavigate(test._id)}
+          sx={{ color: "#EAB308" }}
+        >
           <Visibility />
         </IconButton>
-        <IconButton onClick={() => handleDelete(test._id)} color="error">
+
+        <IconButton
+          onClick={() => handleDialogBox(test._id)}
+          sx={{ color: "#EAB308" }}
+        >
           <Delete />
         </IconButton>
       </Box>,
@@ -148,7 +178,7 @@ function Test() {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
-      px:2
+      px: 2,
     },
     dialogTitle: {
       display: "flex",
@@ -188,7 +218,7 @@ function Test() {
           </Grid>
         </Grid>
 
-        <Grid mt={2} size={{p:2}}>
+        <Grid mt={2} size={{ p: 2 }}>
           <CustomTable
             maxWidth={"100%"}
             tableHeaders={tableHeaders}
@@ -297,11 +327,40 @@ function Test() {
                   loading={false}
                   bgColor="#EAB308"
                   sx={{ width: "50%" }}
-                  onClick={handleSubmit} 
+                  onClick={handleSubmit}
                 />
               </Grid>
             </Grid>
           </DialogContent>
+        </Dialog>
+
+        <Dialog
+          open={openDialog}
+          onClose={() => setOpenDialog(false)}
+          fullWidth
+          maxWidth="xs"
+        >
+          <DialogTitle>Confirm Deletion</DialogTitle>
+          <DialogContent>
+            <Typography>Are you sure you want to delete </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => setOpenDialog(false)}
+              variant="outlined"
+              sx={{ textTransform: "none" }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmDelete}
+              variant="contained"
+              color="error"
+              sx={{ textTransform: "none" }}
+            >
+              Delete
+            </Button>
+          </DialogActions>
         </Dialog>
       </Navbar>
     </>
