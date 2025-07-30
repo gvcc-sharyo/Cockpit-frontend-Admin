@@ -249,7 +249,7 @@ function AdminStudentProfile() {
 
   return (
     <>
-      <Grid container sx={styles.container} size={{ xs: 12, sm: 11, md: 11 }}>
+      <Grid container sx={styles.container} size={{ xs: 12, sm: 12, md: 12 }}>
         <Grid size={{ xs: 6, sm: 6, md: 6 }}>
           <CustomTypography
             text="Students"
