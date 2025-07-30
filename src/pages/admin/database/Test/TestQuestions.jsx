@@ -1,3 +1,4 @@
+import { EditSquare } from "@mui/icons-material";
 import { apiDelete, apiGet, apiPost } from "../../../../api/axios";
 import CustomButton from "../../../../components/admin/CustomButton";
 import { snackbarEmitter } from "../../../../components/admin/CustomSnackbar";
@@ -6,7 +7,7 @@ import CustomTextField from "../../../../components/admin/CustomTextField";
 import CustomTypography from "../../../../components/admin/CustomTypography";
 import Navbar from "../../../../components/admin/Navbar";
 
-function Test() {
+function TestQuestions() {
   const [openModal, setOpenModal] = useState(false);
 
   const handleModalOpen = () => setOpenModal(true);
@@ -35,14 +36,13 @@ function Test() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const [test, setTest] = useState([]);
+  const [testQuestions, setTestQuestions] = useState([]);
 
-  const getTest = async () => {
+  const getTestQuestions = async () => {
     try {
-      const response = await apiGet("/getTestAll");
+      const response = await apiGet(`/getTestQuestionsByTestId/${testId}`);
     //   console.log("Fetched students:", response);
-    
-      if (response.status === 200) {
+      if (response.data.status === 200) {
         setTest(response.data.data);
       }
     } catch (error) {
@@ -52,96 +52,43 @@ function Test() {
   };
 
   useEffect(() => {
-    getTest();
-    getSyllabus();
-    getBooks();
+    getTestQuestions();
   }, []);
 
-  const [syllabus, setSyllabus] = useState([]);
-
-  const getSyllabus = async () => {
-    try {
-      const response = await apiGet("/getSyllabus");
-      //   console.log("Fetched syllabus:", response);
-      if (response.status === 200) {
-        setSyllabus(response.data.data);
-      }
-    } catch (error) {
-      console.error("Error :", error);
-    }
-  };
-
-  const [books, setBooks] = useState([]);
-
-  const getBooks = async () => {
-    try {
-      const response = await apiGet("/getBooks");
-      console.log("Fetched Books:", response);
-      if (response.status === 200) {
-        setBooks(response.data.books);
-      }
-    } catch (error) {
-      console.error("Error :", error);
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!validateForm()) return;
-
-    try {
-      const response = await apiPost("/createTest", formData);
-      console.log("Success:", response);
-      getTest();
-
-      // Reset form after successful submission
-      setFormData({
-        testName: "",
-        syllabusId: "",
-        bookId: "",
-        duration: "",
-        marks: "",
-      });
-      setErrors({});
-      handleModalClose();
-    } catch (error) {
-      console.error("Submit failed:", error);
-    }
-  };
-
- const handleDelete = async (id) => {
-  try {
-    const response = await apiDelete(`/deleteTest/${id}`);
-    console.log(response);
-    getTest();
-  } catch (error) {
-    console.error("Error:", error);
-  }
-};
 
 
   const tableHeaders = [
     "Sr No",
-    "Test Name",
-    "Marks",
-    "Duration (in Minutes)",
+    "Questions",
+    "Active",
     "Action",
   ];
 
-  const tableData = test.map((test) => ({
+  const tableData = testQuestions.map((testquestions) => ({
     row: [
-      <Box>{test.testName}</Box>,
-      <Box>{test.marks}</Box>,
-      <Box>{test.duration}</Box>,
-      <Box gap={1}>
-        <IconButton onClick={() => console.log(test._id)} color="primary">
-          <Visibility />
-        </IconButton>
-        <IconButton onClick={() => handleDelete(test._id)} color="error">
-          <Delete />
+      <Box>{testquestions.question}</Box>,
+      <CustomButton children={testquestions.isactive === true ? 'Active' : 'Inactive'} onClick={() => handleStatusClick(testquestions)} loading={false} bgColor={testquestions.isactive === true ? '#109CF1' : '#D61508'} sx={{ width: { xs: '20%', sm: '20%', md: '20%' }, fontSize: { xs: '10px', sm: '11px', md: '12px' }, }} />,
+      <Box>
+        <IconButton  color="primary">
+          <EditSquareIcon sx={{ color: '#EAB308', fontSize: { xs: '18px', sm: '20px' } }} />
         </IconButton>
       </Box>,
     ],
   }));
+
+  const handleEditClick = (question) => {
+        navigate('/admin/addQuestion/', {
+            state: {
+                syllabusName: syllabusName,
+                bookName: bookName,
+                chapterName: chapterName,
+                question: question,
+                syllabusId: syllabusid,
+                chapterId: chapterId,
+                bookId: bookid
+            }
+        });
+    };
 
   const styles = {
     container: {
@@ -169,15 +116,15 @@ function Test() {
         <Grid container sx={styles.container} size={{ xs: 12, sm: 12, md: 12 }}>
           <Grid size={{ xs: 6, sm: 6, md: 6 }}>
             <CustomTypography
-              text="Test"
+              text="Test Questions"
               fontWeight={500}
               fontSize={{ xs: "18px", md: "22px", sm: "20px" }}
             />
           </Grid>
           <Grid>
             <CustomButton
-              children="+ Add Test"
-              onClick={handleModalOpen}
+              children="+ Add Questions"
+            //   onClick={handleNavigate}
               loading={false}
               bgColor="#EAB308"
               sx={{
@@ -307,4 +254,4 @@ function Test() {
     </>
   );
 }
-export default Test;
+export default TestQuestions;
