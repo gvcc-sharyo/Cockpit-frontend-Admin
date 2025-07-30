@@ -170,10 +170,7 @@ function TrainingQuestion() {
 
         // console.log('is active', req.isactive);
 
-
-
         setLoading(true);
-
 
         try {
             const response = await apiPost('/updateQuestion', req);

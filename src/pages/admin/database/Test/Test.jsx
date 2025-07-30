@@ -137,9 +137,11 @@ function Test() {
     }
   };
 
+  const navigate = useNavigate();
+
   const handleNavigate = (id) => {
-    console.log("Eye Icon Clicked", id);
-    //   navigate("/", { state: { id } });
+    // console.log("Eye Icon Clicked", id);
+      navigate("/admin/testQuestions", { state: { testId : id} });
   };
 
   const tableHeaders = [
@@ -355,8 +357,8 @@ function Test() {
             <Button
               onClick={handleConfirmDelete}
               variant="contained"
-              color="error"
-              sx={{ textTransform: "none" }}
+            //   color="#EAB308"
+              sx={{ textTransform: "none", backgroundColor: "#EAB308" }}
             >
               Delete
             </Button>

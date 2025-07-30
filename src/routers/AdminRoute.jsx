@@ -15,6 +15,7 @@ import InstitutionDetail from '../pages/admin/institute/InstitutionDetail';
 import StudentProfile from '../pages/admin/studentProfile/StudentProfile';
 import StudentPerformance from '../pages/admin/studentProfile/StudentPerformance';
 import Test from '../pages/admin/database/Test/Test';
+import TestQuestions from '../pages/admin/database/Test/TestQuestions';
 
 const AdminRoute = () => {
   
@@ -48,6 +49,7 @@ const AdminRoute = () => {
         <Route path="/admin/studentProfile" element={<StudentProfile />} />
         <Route path="/admin/studentPerformance" element={<StudentPerformance />} />
         <Route path="/admin/test" element={<Test />} />
+        <Route path="/admin/testQuestions" element={<TestQuestions />} />
         </Route>
         
       </Routes>
