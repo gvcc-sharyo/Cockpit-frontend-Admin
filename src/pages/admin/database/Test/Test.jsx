@@ -5,8 +5,10 @@ import CustomTable from "../../../../components/admin/CustomTable";
 import CustomTextField from "../../../../components/admin/CustomTextField";
 import CustomTypography from "../../../../components/admin/CustomTypography";
 import Navbar from "../../../../components/admin/Navbar";
+import { getAdminRoutePrefix } from "../../../../utils/RoutePrefix";
 
 function Test() {
+  const routePrefix = getAdminRoutePrefix();
   const [openModal, setOpenModal] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -141,7 +143,7 @@ function Test() {
 
   const handleNavigate = (id) => {
     // console.log("Eye Icon Clicked", id);
-      navigate("/admin/testQuestions", { state: { testId : id} });
+      navigate(`${routePrefix}/testQuestions`, { state: { testId : id} });
   };
 
   const tableHeaders = [

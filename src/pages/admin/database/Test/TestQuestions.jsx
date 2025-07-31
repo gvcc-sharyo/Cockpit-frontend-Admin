@@ -7,9 +7,11 @@ import CustomTextField from "../../../../components/admin/CustomTextField";
 import CustomTypography from "../../../../components/admin/CustomTypography";
 import Navbar from "../../../../components/admin/Navbar";
 import { set } from "date-fns";
+import { getAdminRoutePrefix } from "../../../../utils/RoutePrefix";
 
 function TestQuestions() {
     const navigate = useNavigate();
+    const routePrefix = getAdminRoutePrefix();
 
     const location = useLocation();
     const {testId} = location.state;
@@ -59,17 +61,15 @@ function TestQuestions() {
     }));
 
     const handleEditClick = (question) => {
-        // navigate('/admin/addTestQuestion/', {
-        //     state: {
-        //         question: question,
-        //     }
-        // });
-        console.log("Edit Clicked", question);
-
+        navigate(`${routePrefix}/addTestQuestion`, {
+            state: {
+                editQuestion: question,
+            }
+        });
     };
 
     const handleNavigate = (id) => {
-        // navigate("/testQuestions", { state: { testId : id} });
+        navigate(`${routePrefix}/addTestQuestion`, { state: { testId : testId} });
     };
 
     const [formData, setFormData] = useState({

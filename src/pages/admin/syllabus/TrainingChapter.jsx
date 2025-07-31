@@ -4,11 +4,13 @@ import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import CustomTextField from "../../../components/admin/CustomTextField";
 import CustomButton from "../../../components/admin/CustomButton";
 import CustomTypography from "../../../components/admin/CustomTypography";
+import { getAdminRoutePrefix } from "../../../utils/RoutePrefix";
 
 function TrainingChapter() {
     const [books, setBooks] = useState([]);
     const [chapters, setChapters] = useState([]);
     const location = useLocation();
+    const routePrefix = getAdminRoutePrefix();
     const { syllabusTitle, syllabusID, category, selectBook, activeBookID } = location.state;
 
     const [filteredBooks, setFilteredBooks] = useState([]);
@@ -247,7 +249,7 @@ function TrainingChapter() {
     const navigate = useNavigate();
 
     const handleChapterClick = (chapter) => {
-        navigate('/admin/trainingQuestion', {
+        navigate(`${routePrefix}/trainingQuestion`, {
             state: {
                 category: category,
                 syllabusName: syllabusTitle,
@@ -391,7 +393,7 @@ function TrainingChapter() {
 
                 <Grid sx={{ display: 'flex', alignItems: 'center', gap: '10px' }} mb={2}>
 
-                    <CustomTypography text={syllabusTitle} onClick={() => navigate('/admin/trainingsyllabus')} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
+                    <CustomTypography text={syllabusTitle} onClick={() => navigate(`${routePrefix}/trainingsyllabus`)} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
 
                 </Grid>
 

@@ -16,42 +16,42 @@ import StudentProfile from '../pages/admin/studentProfile/StudentProfile';
 import StudentPerformance from '../pages/admin/studentProfile/StudentPerformance';
 import Test from '../pages/admin/database/Test/Test';
 import TestQuestions from '../pages/admin/database/Test/TestQuestions';
+import AddTestQuestion from '../pages/admin/database/Test/AddTestQuestion';
 
 const AdminRoute = () => {
-  
+  const instituteId = localStorage.getItem("instituteId");
+  const routePrefix = instituteId ? "/admin/institute" : "/admin";
+
   const AuthRoute = () => {
     const isAuthenticated = !!localStorage.getItem("adminToken") || !!localStorage.getItem("instituteToken");
-    // console.log('isAuthenticated value', isAuthenticated);
-    
     return isAuthenticated ? <Outlet /> : <Navigate to="/adminlogin" />;
   };
 
   return (
     <BrowserRouter>
       <Routes>
-        {/* <Route path="/" element={<AdminLogin />} /> */}
         <Route path="/adminlogin" element={<AdminLogin />} />
         <Route path="/resetpassword/:token" element={<ResetPassword />} />
-        
+
         <Route element={<AuthRoute />}>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/admin/trainingsyllabus" element={<TrainingSyllabus />} />
-        <Route path="/admin/feedback" element={<Feedback />} />
-        <Route path="/admin/trainingChapter" element={<TrainingChapter />} />
-        <Route path="/admin/trainingQuestion" element={<TrainingQuestion />} />
-        <Route path="/admin/addQuestion" element={<AddQuestion />} />
-        <Route path="/admin/trainingAdd" element={<TrainingAdd />} />
-        <Route path="/admin/institution" element={<Institution />} />
-        <Route path="/admin/institutiondetails" element ={<InstitutionDetail />} />
-        <Route path="/admin/notifications" element={<Notifications />} />
-        <Route path="/admin/pricing" element={<Pricing />} />
-        <Route path="/admin/profile" element={<Profile />} />
-        <Route path="/admin/studentProfile" element={<StudentProfile />} />
-        <Route path="/admin/studentPerformance" element={<StudentPerformance />} />
-        <Route path="/admin/test" element={<Test />} />
-        <Route path="/admin/testQuestions" element={<TestQuestions />} />
+          <Route path={`${routePrefix}/dashboard`} element={<Dashboard />} />
+          <Route path={`${routePrefix}/trainingsyllabus`} element={<TrainingSyllabus />} />
+          <Route path={`${routePrefix}/feedback`} element={<Feedback />} />
+          <Route path={`${routePrefix}/trainingChapter`} element={<TrainingChapter />} />
+          <Route path={`${routePrefix}/trainingQuestion`} element={<TrainingQuestion />} />
+          <Route path={`${routePrefix}/addQuestion`} element={<AddQuestion />} />
+          <Route path={`${routePrefix}/trainingAdd`} element={<TrainingAdd />} />
+          <Route path={`${routePrefix}/institution`} element={<Institution />} />
+          <Route path={`${routePrefix}/institutiondetails`} element={<InstitutionDetail />} />
+          <Route path={`${routePrefix}/notifications`} element={<Notifications />} />
+          <Route path={`${routePrefix}/pricing`} element={<Pricing />} />
+          <Route path={`${routePrefix}/profile`} element={<Profile />} />
+          <Route path={`${routePrefix}/studentProfile`} element={<StudentProfile />} />
+          <Route path={`${routePrefix}/studentPerformance`} element={<StudentPerformance />} />
+          <Route path={`${routePrefix}/test`} element={<Test />} />
+          <Route path={`${routePrefix}/testQuestions`} element={<TestQuestions />} />
+          <Route path={`${routePrefix}/addTestQuestion`} element={<AddTestQuestion />} />
         </Route>
-        
       </Routes>
     </BrowserRouter>
   );

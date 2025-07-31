@@ -9,6 +9,8 @@ import styles from "./profilestyles.js";
 
 const Profile = () => {
   const adminId = localStorage.getItem("adminId");
+  const instituteId = localStorage.getItem("instituteId");
+
   const [email, setEmail] = useState("");
   const [formData, setFormData] = useState({
     username: "",
@@ -33,9 +35,9 @@ const Profile = () => {
       try {
         const {
           data: { data },
-        } = await apiGet(`/admin/getAdmin?adminId=${adminId}`);
+        } = instituteId? await apiGet('/getInstitute' ) : await apiGet(`/admin/getAdmin?adminId=${adminId}`);
         const newFormData = {
-          username: data.username || "",
+          username: (data.username || data.instituteName) || "",
           dob: data.dob?.split("T")[0] || "",
           phone: data.phone || "",
           firstname: data.firstname || "",
@@ -100,7 +102,9 @@ const handleSubmit = async (e) => {
     }
 
     const payload = { adminId, ...formData, profileimage: uploadedImageUrl };
-    const { data } = await apiPost("/admin/updateAdmin", payload);
+    const payload1 = {...formData, profileimage: uploadedImageUrl };
+
+    const { data } = instituteId ? await apiPost("/institute/updateInstitute", payload1) : await apiPost("/admin/updateAdmin", payload);
 
     if (data.status === 200) {
       setTimeout(() => {

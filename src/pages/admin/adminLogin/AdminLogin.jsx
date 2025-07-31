@@ -1,12 +1,12 @@
 
 import { apiPost } from '../../../api/axios';
-import axios from 'axios';
 import CustomTextField from '../../../components/admin/CustomTextField';
 import { snackbarEmitter } from '../../../components/admin/CustomSnackbar';
 import CustomButton from '../../../components/admin/CustomButton';
 import './adminLogin.css';
 import CustomTypography from '../../../components/admin/CustomTypography';
 import { useGoogleLogin } from '@react-oauth/google';
+import { act } from 'react';
 
 const styles = {
   containerBox: {
@@ -158,7 +158,7 @@ function AdminLogin() {
   };
 
   const validateInsLoginForm = () => {
-        const errors = {};
+    const errors = {};
     if (!insloginForm.email) errors.email = 'Email is required';
     else if (!/\S+@\S+\.\S+/.test(insloginForm.email)) errors.email = 'Invalid email';
     if (!insloginForm.password) errors.password = 'Password is required';
@@ -188,7 +188,7 @@ function AdminLogin() {
           localStorage.setItem('adminToken', response.data.token);
           localStorage.setItem('adminId', response.data.data._id);
           setLoginForm({ email: '', password: '' });
-          navigate('/');
+          navigate('/admin/dashboard');
         } else {
           snackbarEmitter(response.data.message, 'error');
         }
@@ -221,7 +221,7 @@ function AdminLogin() {
           localStorage.setItem('instituteToken', response.data.token);
           localStorage.setItem('instituteId', response.data.data._id);
           setInsLoginForm({ email: '', password: '' });
-          navigate('/');
+          navigate('/admin/institute/dashboard');
         } else {
           snackbarEmitter(response.data.message, 'error');
         }
@@ -289,6 +289,8 @@ function AdminLogin() {
     setForgotError('');
     setForgotLoading(true);
 
+    const endpoint = activeForm === 'login' ? '/admin/forgot-password' : '/institute/forgotPassword';
+
     try {
       const response = await apiPost('/admin/forgot-password', { email: forgotEmail });
 
@@ -331,14 +333,22 @@ function AdminLogin() {
         const userEmail = response.data.email;
         console.log('userEmail', userEmail);
 
-        const userResponse = await apiPost('/AuthLoginAdmin', { email: userEmail });
+        const endpoint = activeForm === 'instituteLogin' ? '/AuthLoginInstitute' : '/AuthLoginAdmin';
+        const userResponse = await apiPost(endpoint, { email: userEmail });
         console.log('userResponse', userResponse);
 
         if (userResponse.data.status === 200) {
           snackbarEmitter(userResponse.data.message, 'success');
-          localStorage.setItem('adminToken', userResponse.data.token);
-          localStorage.setItem('adminId', userResponse.data.data._id);
-          navigate('/');
+          if (activeForm === 'instituteLogin') {
+            localStorage.setItem('instituteToken', userResponse.data.token);
+            localStorage.setItem('instituteId', userResponse.data.data._id);
+           
+          } else {
+            localStorage.setItem('adminToken', userResponse.data.token);
+            localStorage.setItem('adminId', userResponse.data.data._id);
+          }
+
+           activeForm === 'login' ? navigate('/admin/dashboard') : navigate('/admin/institute/dashboard');
         } else {
           snackbarEmitter(userResponse.data.message, 'error');
         }
@@ -381,7 +391,7 @@ function AdminLogin() {
               <Button sx={styles.toggleButton(activeForm === 'login')} onClick={() => setActiveForm('login')}>
                 Admin Login
               </Button>
-              <Button sx={styles.toggleButton(activeForm === 'register')} onClick={() => setActiveForm('register')}>
+              <Button sx={styles.toggleButton(activeForm === 'instituteLogin')} onClick={() => setActiveForm('instituteLogin')}>
                 Institute Login
               </Button>
             </Box>
@@ -460,7 +470,7 @@ function AdminLogin() {
               </>
             )}
 
-            {activeForm === 'register' && (
+            {activeForm === 'instituteLogin' && (
               <>
                 <Grid item >
                   <CustomTextField

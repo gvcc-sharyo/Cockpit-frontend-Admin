@@ -5,6 +5,7 @@ import CustomTextField from "../../../components/admin/CustomTextField";
 import CustomTypography from "../../../components/admin/CustomTypography";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import Navbar from "../../../components/admin/Navbar";
+import { getAdminRoutePrefix } from "../../../utils/RoutePrefix";
 
 const styles = {
   container: {
@@ -61,6 +62,7 @@ function Institution() {
 
   const [institutes, setInstitutes] = useState([]);
   const [id, setId] = useState();
+  const routePrefix = getAdminRoutePrefix();
 
   const fetchInstitute = async () => {
     try {
@@ -227,7 +229,7 @@ function Institution() {
 
   const handleClick = (institute) => {
     // console.log("Navigating to institute details for:", institute._id);
-    navigate(`/admin/institutiondetails`, {
+    navigate(`${routePrefix}/institutiondetails`, {
       state: { instituteId: institute._id },
     });
   };

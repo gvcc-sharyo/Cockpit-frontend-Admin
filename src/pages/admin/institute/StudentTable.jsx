@@ -10,7 +10,6 @@ const styles = {
     height: "auto",
     maxHeight: "600px", 
     overflow: "auto",
-
    
     "&::-webkit-scrollbar": {
       width: "4px",
@@ -77,10 +76,6 @@ const styles = {
 function StudentsTable({ instituteId }) {
 
    const [students, setStudents] = useState([]);
-
-
-
-
 
 
   const getInstituteDetails = async () => {

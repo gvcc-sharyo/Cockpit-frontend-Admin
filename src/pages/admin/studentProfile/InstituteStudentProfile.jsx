@@ -5,9 +5,11 @@ import CustomTable from "../../../components/admin/CustomTable";
 import CustomTextField from "../../../components/admin/CustomTextField";
 import { apiGet, apiGetToken, apiPost } from "../../../api/axios";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
+import { getAdminRoutePrefix } from "../../../utils/RoutePrefix";
 
 function AdminStudentProfile() {
   const [openModal, setOpenModal] = useState(false);
+  const routePrefix = getAdminRoutePrefix();
 
   const handleModalOpen = () => setOpenModal(true);
   const handleModalClose = () => {
@@ -196,7 +198,7 @@ function AdminStudentProfile() {
 
   const handleClick = (student) => {
     console.log("Navigating to student details for:", student._id);
-    navigate(`/admin/studentPerformance`, {
+    navigate(`${routePrefix}/studentPerformance`, {
       state: { studentId: student._id },
     });
   };

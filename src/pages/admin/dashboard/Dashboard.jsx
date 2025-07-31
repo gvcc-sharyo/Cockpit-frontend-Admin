@@ -6,12 +6,14 @@ import Graph from "./graph";
 import CustomTypography from "../../../components/admin/CustomTypography";
 import classes from "./dashboardtemp.js";
 import StudentsTable from "../institute/StudentTable.jsx";
+import { getAdminRoutePrefix } from "../../../utils/RoutePrefix.jsx";
 
 
 
 function Dashboard() {
   const adminId = localStorage.getItem("adminId");
   const instituteId = localStorage.getItem("instituteId");
+  const routePrefix = getAdminRoutePrefix();
 
   const [reports, setReports] = useState([]);
 
@@ -61,7 +63,7 @@ function Dashboard() {
   const navigate = useNavigate();
 
   const handleNavigate = (route, reportID) => {
-    navigate(route, { state: {reportID} });
+    navigate( `${routePrefix}${route}`, { state: {reportID} });
   };
 
 
@@ -125,7 +127,7 @@ function Dashboard() {
                     <Box sx={classes.reportLine}>
                        <CustomTypography text={` Has reported a question on ${report?.questionId?.syllabus}`} color='#718096' fontSize={{ xs: '10px', sm: '12px', md: '12px' }} mb={0} fontWeight={400} />
      
-                      <CustomTypography text='Reply' onClick={() => handleNavigate(`/admin/feedback`, report?._id)} color='#EAB308' fontSize={{ xs: '10px', sm: '12px', md: '12px' }} mb={0} fontWeight={600} sx={{ cursor: 'pointer' }} />
+                      <CustomTypography text='Reply' onClick={() => handleNavigate(`/feedback`, report?._id)} color='#EAB308' fontSize={{ xs: '10px', sm: '12px', md: '12px' }} mb={0} fontWeight={600} sx={{ cursor: 'pointer' }} />
                     </Box>
                   </Box>
                 ))}
