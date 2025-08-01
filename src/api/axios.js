@@ -1,10 +1,11 @@
 import axios from 'axios';
 const url = import.meta.env.VITE_API_URL;
 
-const checkToken = localStorage.getItem("adminToken");
+const adminToken = localStorage.getItem("adminToken");
+const instituteToken = localStorage.getItem("instituteToken");
 const instituteId = localStorage.getItem("instituteId");
 
-const token = instituteId ? localStorage.getItem("instituteToken") : checkToken;
+const token = instituteId ? instituteToken : adminToken;
 
 const BASE_URL = instituteId ? `${url}/institute` : url;
 

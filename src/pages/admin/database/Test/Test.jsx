@@ -75,14 +75,28 @@ function Test() {
     }
   };
 
+  const handleSyllabusChange = async (e) => {
+  const syllabusId = e.target.value;
+
+  // Update form state
+  setFormData((prev) => ({
+    ...prev,
+    syllabusId,
+    bookId: "",
+  }));
+
+  // Fetch books for the selected syllabus
+  await getBooks(syllabusId);
+};
+
   const [books, setBooks] = useState([]);
 
-  const getBooks = async () => {
+  const getBooks = async (syllabusId) => {
     try {
-      const response = await apiGet("/getBooks");
+      const response = await apiGet(`/booksBySyllabusId/${syllabusId}`);
       console.log("Fetched Books:", response);
-      if (response.status === 200) {
-        setBooks(response.data.books);
+      if (response.data.status === 200) {
+        setBooks(response.data.data);
       }
     } catch (error) {
       console.error("Error :", error);
@@ -261,9 +275,8 @@ function Test() {
                   label="Syllabus*"
                   select
                   value={formData.syllabusId}
-                  onChange={(e) =>
-                    setFormData({ ...formData, syllabusId: e.target.value })
-                  }
+                  onChange={handleSyllabusChange}
+                 
                   error={!!errors.syllabusId}
                   helperText={errors.syllabusId}
                 >

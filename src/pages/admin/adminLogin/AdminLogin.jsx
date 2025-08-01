@@ -333,7 +333,7 @@ function AdminLogin() {
         const userEmail = response.data.email;
         console.log('userEmail', userEmail);
 
-        const endpoint = activeForm === 'instituteLogin' ? '/AuthLoginInstitute' : '/AuthLoginAdmin';
+        const endpoint = activeForm === 'instituteLogin' ? '/institute/AuthLoginInstitute' : '/AuthLoginAdmin';
         const userResponse = await apiPost(endpoint, { email: userEmail });
         console.log('userResponse', userResponse);
 

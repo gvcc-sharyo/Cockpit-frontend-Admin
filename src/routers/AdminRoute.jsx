@@ -19,17 +19,23 @@ import TestQuestions from '../pages/admin/database/Test/TestQuestions';
 import AddTestQuestion from '../pages/admin/database/Test/AddTestQuestion';
 
 const AdminRoute = () => {
-  const instituteId = localStorage.getItem("instituteId");
+
+   let adminToken = localStorage.getItem("adminToken");
+    let instituteToken = localStorage.getItem("instituteToken");
+    let instituteId = localStorage.getItem("instituteId");
+  
   const routePrefix = instituteId ? "/admin/institute" : "/admin";
 
   const AuthRoute = () => {
-    const isAuthenticated = !!localStorage.getItem("adminToken") || !!localStorage.getItem("instituteToken");
+    const isAuthenticated = !!adminToken || !!instituteToken;
     return isAuthenticated ? <Outlet /> : <Navigate to="/adminlogin" />;
   };
+  
 
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={adminToken || instituteToken ? <Navigate to={`${routePrefix}/dashboard`} /> : <Navigate to="/adminlogin" />} />
         <Route path="/adminlogin" element={<AdminLogin />} />
         <Route path="/resetpassword/:token" element={<ResetPassword />} />
 

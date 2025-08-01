@@ -81,14 +81,17 @@ const Navbar = ({ title, children }) => {
   };
 
   const confirmLogout = () => {
-    if (adminToken) {
-      localStorage.removeItem('adminToken');
-      localStorage.removeItem('adminId');
-    }
-    if (instituteToken) {
-      localStorage.removeItem('instituteToken');
-      localStorage.removeItem('instituteId');
-    }
+    // if (adminToken) {
+    //   localStorage.removeItem('adminToken');
+    //   localStorage.removeItem('adminId');
+    // }
+    // if (instituteToken) {
+    //   localStorage.removeItem('instituteToken');
+    //   localStorage.removeItem('instituteId');
+    // }
+
+    localStorage.clear();
+    // window.location.reload();
     setOpen(false);
     navigate('/adminlogin');
   };
