@@ -7,6 +7,7 @@
     profileImageContainer: {
       justifyContent: { xs: "center", md: "left" },
       display: "flex",
+      gap: 3,
     },
     profileImageBox: {
       width: 100,
@@ -17,7 +18,7 @@
       cursor: "pointer",
       overflow: "hidden",
       position: "relative",
-      display: "flex",
+      // display: "flex",
       justifyContent: "center",
       alignItems: "center",
     },
