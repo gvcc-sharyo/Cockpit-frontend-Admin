@@ -1,4 +1,4 @@
-import { apiGet, apiPost } from "../../../api/axios";
+import { apiGet, apiPost, apiPostUpload } from "../../../api/axios";
 import Navbar from "../../../components/admin/Navbar";
 import CustomTextField from "../../../components/admin/CustomTextField";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
@@ -31,17 +31,18 @@ const InstituteProfile = () => {
           data: { data },
         } = await apiGet('/getInstitute')
         const newFormData = {
-          instituteName: data.instituteName || "",
-          phone: data.phone || "",
-          department: data.department || "",
-          address: data.currentAddress || "",
-          subsrciptionAmt: data.subsrciptionAmt || "",
-          subscriptionPeriod: data.subscriptionPeriod || "",
+          instituteName: data.institeDetails.instituteName || "",
+          phone: data.institeDetails.phone || "",
+          department: data.institeDetails.department || "",
+          address: data.institeDetails.currentAddress || "",
+          subsrciptionAmt: data.subscriptionDetails.subscriptionAmt || "",
+          subscriptionPeriod: data.subscriptionDetails.subscriptionPeriod || "",
         };
         setFormData(newFormData);
         setInitialFormData(newFormData);
-        setProfileImage(data.profileimage || "");
-        setEmail(data.email);
+        setProfileImage(data.institeDetails.profileimage || "");
+        setLogoImage(data.institeDetails.logo || "");
+        setEmail(data.institeDetails.email);
       } catch (error) {
         snackbarEmitter("Error fetching profile", "error");
       }
@@ -51,19 +52,17 @@ const InstituteProfile = () => {
 
   const validate = () => {
     const errs = {};
-    if (!formData.instituteName.trim()) errs.firstname = "Institute name is required";
-    if (!formData.phone.trim()) {
+    if (!formData.instituteName) errs.firstname = "Institute name is required";
+    if (!formData.phone) {
       errs.phone = "Phone number is required";
     } else if (!/^\d{10}$/.test(formData.phone)) {
       errs.phone = "Enter Valid Phone Number";
     }
-    if (!email.trim()) errs.email = "Email is required";
-    if (!formData.address.trim()) errs.address = "Address is required";
+    if (!email) errs.email = "Email is required";
+    if (!formData.address) errs.address = "Address is required";
     return errs;
   };
 
-
-  const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
@@ -73,33 +72,29 @@ const InstituteProfile = () => {
       return;
     }
     setErrors({});
-    setLoading(true);
+    // setLoading(true);
     try {
-      let uploadedImageUrl = profileImage;
+      const formDataToSend = new FormData();
+      formDataToSend.append("instituteName", formData.instituteName);
+      formDataToSend.append("email", email);
+      formDataToSend.append("phone", formData.phone);
+      formDataToSend.append("department", formData.department);
+      formDataToSend.append("permanentAddress", formData.address);
 
       if (profileImage instanceof File) {
-        const formDataImage = new FormData();
-        formDataImage.append("image", profileImage);
-        const { data } = await apiPost(`/admin/uploadAdminImage?adminId=${adminId}`, formDataImage);
-        uploadedImageUrl = data.data.profileimage;
+        formDataToSend.append("profileimage", profileImage);
+      }
+      if (logoImage instanceof File) {
+        formDataToSend.append("logo", logoImage);
       }
 
-      const payload = { adminId, ...formData, profileimage: uploadedImageUrl };
-      const payload1 = { ...formData, profileimage: uploadedImageUrl };
 
-      const { data } = instituteId ? await apiPost("/institute/updateInstitute", payload1) : await apiPost("/admin/updateAdmin", payload);
-
-      if (data.status === 200) {
-        setTimeout(() => {
-          snackbarEmitter(data.message, "success");
-          setLoading(false);
-          navigate(0)
-        }, 500);
+      const response = await apiPostUpload("/updateInstitute", formDataToSend);
+      setLoading(false);
+      if (response.data.status === 200) {
+        snackbarEmitter(response.data.message, "success");
       } else {
-        setTimeout(() => {
-          snackbarEmitter(data.message, "warning");
-          setLoading(false);
-        }, 500);
+        snackbarEmitter(response.data.message, "error");
       }
     } catch (error) {
       setLoading(false);
@@ -119,6 +114,8 @@ const InstituteProfile = () => {
   const handleLogoChange = ({ target: { files } }) => {
     const file = files[0];
     if (file) setLogoImage(file);
+    console.log("logo image", logoImage);
+
   };
 
   const handleCancel = () => setFormData(initialFormData);
@@ -150,23 +147,15 @@ const InstituteProfile = () => {
 
             </Box>
             <Box sx={styles.profileImageBox}>
-              <label htmlFor="profile-upload" style={styles.profileImageLabel}>
+              <label htmlFor="logo-upload" style={styles.profileImageLabel}>
                 {logoImage ? (
                   <img src={logoImage instanceof File ? URL.createObjectURL(logoImage) : logoImage} alt="image" style={styles.profileImage} />
                 ) : (
-                  <>
-                    {/* <img src='/images/logosample.png' alt="image" style={styles.profileImage} /> */}
-                    <CustomTypography
-                      text="Click here to upload logo"
-                      fontSize={{ xs: '9px', sm: '10px', md: '11px' }}
-                      fontWeight={500}
-                      color="#666"
-                    />
-                  </>
+                  <CameraAltIcon fontSize="large" />
 
                 )}
               </label>
-              <input type="file" id="profile-upload" accept="image/*" style={{ display: "none" }} onChange={handleLogoChange} />
+              <input type="file" id="logo-upload" accept="image/*" style={{ display: "none" }} onChange={handleLogoChange} />
 
             </Box>
 
