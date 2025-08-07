@@ -4,6 +4,7 @@ import ArrowCircleLeftRoundedIcon from "@mui/icons-material/ArrowCircleLeftRound
 import ReactSpeedometer from "react-d3-speedometer";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import { apiGet, apiPost } from "../../../api/axios";
 
 
 function StudentPerformance() {
@@ -16,10 +17,21 @@ function StudentPerformance() {
   const [syllabus, setSyllabus] = useState([]);
   const userData = JSON.parse(localStorage.getItem('user'));
 
-  // const handleClick = (title, id) => {
-  //   console.log(title, id, "paramssssss");
-  //   navigate('/chapter', { state: { title, id } });
-  // };
+   const location = useLocation();
+  const { studentId } = location.state || {};
+
+  useEffect(() => {
+    if (studentId) {
+      console.log("Received studentId:", studentId);
+      // You can now call an API using studentId here
+    } else {
+      console.warn("No studentId received in navigation state");
+    }
+  }, [studentId]);
+
+
+
+
   let data;
   useEffect(() => {
     const fetchFlightLogData = async () => {
