@@ -50,7 +50,7 @@ const styles = {
 };
 
 
-function CustomTable({ maxWidth = "100%", tableData = [], tableHeaders = [] }) {
+function CustomTable({ maxWidth = "100%", tableData = [], tableHeaders = [], handleRowClick }) {
   return (
     <Grid container>
       <TableContainer component={Paper} elevation={0} sx={{ ...styles.container, maxWidth }}>

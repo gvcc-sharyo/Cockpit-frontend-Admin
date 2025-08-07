@@ -197,9 +197,8 @@ function AdminStudentProfile() {
   const navigate = useNavigate();
 
   const handleClick = (student) => {
-    console.log("Navigating to student details for:", student._id);
     navigate(`${routePrefix}/studentPerformance`, {
-      state: { studentId: student._id },
+      state: { student: student },
     });
   };
 
@@ -214,6 +213,7 @@ function AdminStudentProfile() {
     setFormData((prev) => ({ ...prev, password }));
     console.log("Generated password:", password);
   };
+
 
   const styles = {
     container: {

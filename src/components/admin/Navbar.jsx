@@ -44,8 +44,8 @@ const Navbar = ({ title, children }) => {
 
   const getProfile = async () => {
     try {
-    
-      const response = instituteId? await apiGet('/getInstitute' ) : await apiGet(`/admin/getAdmin?adminId=${adminId}`);
+
+      const response = instituteId ? await apiGet('/getInstitute') : await apiGet(`/admin/getAdmin?adminId=${adminId}`);
       // console.log("admin data",response.data.data);
 
 
@@ -97,14 +97,14 @@ const Navbar = ({ title, children }) => {
   };
 
   const suggestionsList = [
- 
-      { label: 'Dashboard', path: `${routePrefix}/dashboard` },
+
+    { label: 'Dashboard', path: `${routePrefix}/dashboard` },
     { label: 'Profile', path: `${routePrefix}/profile` },
     { label: 'Feedback', path: `${routePrefix}/feedback` },
     { label: 'Syllabus', path: `${routePrefix}/trainingSyllabus` },
     { label: 'Training', path: `${routePrefix}/trainingAdd` },
     ...(!instituteId ? [{ label: 'Pricing', path: `${routePrefix}/pricing` }] : [])
-    
+
   ];
 
   const [query, setQuery] = useState('');
@@ -305,29 +305,29 @@ const Navbar = ({ title, children }) => {
               {
                 adminToken &&
                 <ListItem
-                button
-                onClick={() => handleNavigate('/pricing')}
-                sx={{
-                  fontWeight: 'bold',
-                  borderRadius: 2,
-                  mb: 1,
-                  bgcolor: isActive(`${routePrefix}/pricing`) ? '#EAB308' : 'white',
-                  // color: isActive('/admin/pricing') ? 'white' : 'black',
-                  cursor: 'pointer',
-                  ":hover": {
-                    color: 'black'
-                  },
+                  button
+                  onClick={() => handleNavigate('/pricing')}
+                  sx={{
+                    fontWeight: 'bold',
+                    borderRadius: 2,
+                    mb: 1,
+                    bgcolor: isActive(`${routePrefix}/pricing`) ? '#EAB308' : 'white',
+                    // color: isActive('/admin/pricing') ? 'white' : 'black',
+                    cursor: 'pointer',
+                    ":hover": {
+                      color: 'black'
+                    },
 
-                }}
-              >
-                <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
-                  <img src="/images/donate.svg" alt="Pricing" />
-                </ListItemIcon>
-                <CustomTypography text='Pricing' color={isActive(`${routePrefix}/pricing`) ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
-              </ListItem>
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
+                    <img src="/images/donate.svg" alt="Pricing" />
+                  </ListItemIcon>
+                  <CustomTypography text='Pricing' color={isActive(`${routePrefix}/pricing`) ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
+                </ListItem>
 
               }
-        
+
 
               {
                 adminToken &&
@@ -377,6 +377,33 @@ const Navbar = ({ title, children }) => {
                 </ListItemIcon>
                 <CustomTypography text='Student profile' color={isActive(`${routePrefix}/studentProfile`) ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
               </ListItem>
+
+
+              {
+                adminToken &&
+                <ListItem
+                  button
+                  onClick={() => handleNavigate('/advertise')}
+                  sx={{
+                    fontWeight: 'bold',
+                    borderRadius: 2,
+                    mb: 1,
+                    bgcolor: isActive(`${routePrefix}/advertise`) ? '#EAB308' : 'white',
+                    // color: isActive('/admin/pricing') ? 'white' : 'black',
+                    cursor: 'pointer',
+                    ":hover": {
+                      color: 'black'
+                    },
+
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
+                    <img src="/images/3-User.svg" alt="img" />
+                  </ListItemIcon>
+                  <CustomTypography text='Advertise' color={isActive(`${routePrefix}/advertise`) ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
+                </ListItem>
+              }
+
 
             </List>
           </Box>

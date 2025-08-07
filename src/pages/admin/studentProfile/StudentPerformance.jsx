@@ -5,10 +5,9 @@ import ReactSpeedometer from "react-d3-speedometer";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { apiGet, apiPost } from "../../../api/axios";
-
+import { min } from "date-fns";
 
 function StudentPerformance() {
-
 
   const navigate = useNavigate();
   const [selectedPeriod, setSelectedPeriod] = useState("Monthly");
@@ -17,27 +16,17 @@ function StudentPerformance() {
   const [syllabus, setSyllabus] = useState([]);
   const userData = JSON.parse(localStorage.getItem('user'));
 
-   const location = useLocation();
-  const { studentId } = location.state || {};
-
-  useEffect(() => {
-    if (studentId) {
-      console.log("Received studentId:", studentId);
-      // You can now call an API using studentId here
-    } else {
-      console.warn("No studentId received in navigation state");
-    }
-  }, [studentId]);
-
-
-
+  const location = useLocation();
+  const { student } = location.state || {};
 
   let data;
+
   useEffect(() => {
     const fetchFlightLogData = async () => {
       try {
         const requestBody = {
-          fromDate: userData?.userRegisteredDate,
+          studentId: student?._id,
+          fromDate: student?.createdAt,
           toDate: new Date().toISOString(),
         }
         const response = await apiPost('/countTotalTest', requestBody);
@@ -61,7 +50,7 @@ function StudentPerformance() {
       try {
         const response = await apiGet("/getSyllabus");
         setSyllabus(response.data.data);
-        getStudentProgress();
+        // getStudentProgress();
       } catch (error) {
         console.error("Error fetching syllabus:", error);
       }
@@ -70,7 +59,7 @@ function StudentPerformance() {
 
     const getStudentProgress = async () => {
       try {
-        const response = await apiGetToken(`/task/studentTaskProgress?userId=${userData._id}`);
+        const response = await apiPost(`/studentTaskProgress`, { studentId: student?._id });
         console.log(response, "responsegetStudentprogress");
         if (response?.data?.status === 200) {
           const taskStatus = response?.data?.data;
@@ -83,14 +72,17 @@ function StudentPerformance() {
         // snackbarEmitter("")
       }
     }
+
+
     fetchSyllabus();
 
   }, []);
 
-  const grade = useMemo(() => {
-    const raw = countResult?.grade ?? 0;
-    return raw > 0 && raw < 1 ? 1 : Number(raw.toFixed(2));
-  }, [countResult]);
+
+  // const grade = useMemo(() => {
+  //   const raw = countResult?.grade ?? 0;
+  //   return raw > 0 && raw < 1 ? 1 : Number(raw.toFixed(2));
+  // }, [countResult]);
 
 
   return (
@@ -120,7 +112,7 @@ function StudentPerformance() {
                   <Avatar sx={{ width: 35, height: 35, }} ></Avatar>
 
                   <CustomTypography
-                    text={"Bhumika prajapati"}
+                    text={`${student?.firstName} ${student?.lastName}`}
                     sx={{ fontWeight: "bold", mb: 0 }} />
                 </Box>
                 <CustomTypography text={"Info"} sx={{ fontWeight: "bold", mb: 1 }} />
@@ -130,8 +122,8 @@ function StudentPerformance() {
 
                   <Box >
                     <CustomTypography
-                      text={"15 March 2020"}
-                      sx={{ fontWeight: "bold", mb: 0 }} />
+                      text={new Date(student.createdAt).toLocaleDateString()}
+                      sx={{ fontWeight: "bold", mb: 0 }} fontSize={{ xs: "10px", md: "12px", sm: "12px" }} />
 
                     <CustomTypography
                       text={"Joined date"}
@@ -154,7 +146,7 @@ function StudentPerformance() {
                       sx={{ mb: 0, color: '#9E9E9E' }} />
 
                     <CustomTypography
-                      text={"cockpit@gmail.com"}
+                      text={student.email}
                       // fontSize={{xs: "10px", md: "12px", sm: "12px"}}
                       sx={{ mb: 0 }} />
 
@@ -171,7 +163,7 @@ function StudentPerformance() {
                       sx={{ mb: 0, color: '#9E9E9E' }} />
 
                     <CustomTypography
-                      text={"0987654321"}
+                      text={student.phone}
                       // fontSize={{xs: "10px", md: "12px", sm: "12px"}}
                       sx={{ mb: 0 }} />
 
@@ -183,7 +175,7 @@ function StudentPerformance() {
           </Card>
         </Grid>
 
-        <Grid item size={{ xs: 4, md: 4, sm: 8 }}>
+        <Grid item size={{ xs: 4, md: 4, sm: 8 }} >
           <Card sx={{ p: { xs: 1, sm: 1 }, borderRadius: 3, border: " 1px solid #E5E7E9", justifyContent: "center", textAlign: "center" }}>
             <CardContent sx={{ flexGrow: 1 }}>
               <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -201,9 +193,8 @@ function StudentPerformance() {
               </Box>
             </CardContent>
             {countResult && (
-
               <ReactSpeedometer
-                value={grade}
+                value={countResult?.grade}
                 minValue={0}
                 maxValue={100}
                 segments={100}
@@ -215,7 +206,7 @@ function StudentPerformance() {
                 needleHeightRatio={0.5}
                 ringWidth={15}
                 textColor="#000"
-                customSegmentStops={[0, grade, 100]}
+                customSegmentStops={[0, countResult?.grade, 100]}
                 currentValueText={`Your Grade: ${countResult?.grade ? countResult?.grade?.toFixed(2) : "0"}%`}
                 height={180}
                 width={270}
@@ -234,19 +225,37 @@ function StudentPerformance() {
         fontSize={{ xs: "14px", md: "16px", sm: "16px" }}
       />
 
-      <Box sx={{ maxWidth: '100%', overflowX: 'auto', mb: 4 }}>
+      <Box sx={{ maxWidth: '100%', overflowX: 'auto' }} mb={8}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2, width: 'max-content' }}>
+          {
+            syllabus?.map((item, index) => {
+              return (
+                <Box key={index} sx={{ maxWidth: '100%', overflowX: 'auto', mb: 4, cursor: 'pointer' }}>
+                  <Card sx={{ display: "flex", alignItems: "center", width: 'max-content', gap: 3, p: { xs: 1, sm: 1, md: 1 }, borderRadius: 3, border: " 1px solid #E5E7E9" }} >
+                    <img src="/images/btn.svg" alt="" />
+                    <CustomTypography
+                      text={item.title}
+                      mb={0}
+                      fontWeight={500}
+                      fontSize={{ xs: "14px", sm: "16px", md: "16px" }}
+                    />
+                  </Card>
+                </Box>
+              )
 
-        <Card sx={{ display: "flex", alignItems: "center", width: 'max-content', gap: 3, p: { xs: 1, sm: 1, md: 1 }, borderRadius: 3, border: " 1px solid #E5E7E9" }} >
-          <img src="/images/btn.svg" alt="" />
-          <CustomTypography
-            text={"syllabus name"}
-            mb={0}
-            fontWeight={500}
-            fontSize={{ xs: "14px", sm: "16px", md: "16px" }}
-          />
-        </Card>
+            })
+          }
+        </Box>
+
 
       </Box>
+
+
+
+
+
+
+
 
       <CustomTypography
         text={"Test Analysis"}
@@ -256,38 +265,49 @@ function StudentPerformance() {
 
       <Box sx={{ maxWidth: '100%', overflowX: 'auto', mb: 4 }}>
         <Box sx={{ display: "flex", gap: 2 }}>
-          <Card
-            sx={{
-              borderRadius: 3,
-              boxShadow: 3,
-              // height: "100%",
-              // display: "flex",
-              // flexDirection: "column",
-              // justifyContent: "space-between",
-            }}
-          >
-            <CardMedia
-              component="img"
-              height="100"
-              image={"/images/frame.png"}
-            // alt={course.title}
-            />
-            <Box sx={{ ml: 2 }}>
-              <CardContent sx={{ px: 0 }}>
-                <CustomTypography
-                  text={"syllabus name"}
-                  fontWeight={500}
-                  mb={0} />
-                <CustomTypography
-                  text={"general"}
-                  mb={0}
-                  fontSize={{ xs: "10px", md: "12px", sm: "12px" }}
-                  sx={{ color: '#EAB308' }}
-                />
-              </CardContent>
-            </Box>
 
-          </Card>
+          {
+            syllabus?.map((item, index) => {
+              return (
+                <Card
+                key={index}
+                  sx={{
+                    borderRadius: 3,
+                    boxShadow: 3,
+                    // height: "100%",
+                    // display: "flex",
+                    // flexDirection: "column",
+                    // justifyContent: "space-between",
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    height="100"
+                    image={"/images/frame.png"}
+                  // alt={course.title}
+                  />
+                  <Box sx={{ ml: 2 }}>
+                    <CardContent sx={{ px: 0 }}>
+                      <CustomTypography
+                        text={item.title}
+                        fontWeight={500}
+                        mb={0} />
+                      <CustomTypography
+                        text={item.category}
+                        fontWeight={500}
+                        mb={0}
+                        fontSize={{ xs: "10px", md: "12px", sm: "12px" }}
+                        sx={{ color: '#EAB308' }}
+                      />
+                    </CardContent>
+                  </Box>
+
+                </Card>
+              )
+            })
+          }
+
+
         </Box>
 
 
