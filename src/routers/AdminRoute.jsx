@@ -18,6 +18,7 @@ import Test from '../pages/admin/database/Test/Test';
 import TestQuestions from '../pages/admin/database/Test/TestQuestions';
 import AddTestQuestion from '../pages/admin/database/Test/AddTestQuestion';
 import Advertise from '../pages/admin/Advertise/Advertise';
+import StudentChapter from '../pages/admin/studentProfile/StudentChapter';
 
 const AdminRoute = () => {
 
@@ -59,6 +60,7 @@ const AdminRoute = () => {
           <Route path={`${routePrefix}/testQuestions`} element={<TestQuestions />} />
           <Route path={`${routePrefix}/addTestQuestion`} element={<AddTestQuestion />} />
           <Route path={`${routePrefix}/advertise`} element={<Advertise />} />
+          <Route path={`${routePrefix}/studentChapter`} element={<StudentChapter />} />
         </Route>
       </Routes>
     </BrowserRouter>
