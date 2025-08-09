@@ -1,6 +1,6 @@
-import { max, set } from "date-fns";
-import { apiGet } from "../../../api/axios";
+import { apiGet, apiPost } from "../../../api/axios";
 import Navbar from "../../../components/admin/Navbar";
+import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 
 const StudentChapter = () => {
     const [books, setBooks] = useState([]);
@@ -33,10 +33,34 @@ const StudentChapter = () => {
         fetchBooksAndChapters();
     }, []);
 
+    const getStudentProgress = async () => {
+        try {
+            const response = await apiPost(`/studentTaskProgress`, { studentId: studentId });
+            console.log(response, "responsegetStudentprogress");
+            if (response?.data?.status === 200) {
+                const taskStatus = response?.data?.data;
+                console.log(taskStatus, "taskstatus");
+            }
+            else {
+                snackbarEmitter(response?.data?.message, "error");
+            }
+        }
+        catch (err) {
+            return err
+            // snackbarEmitter("")
+        }
+    }
+
+    // useEffect(() => {
+    //   getStudentProgress();
+    // }, []);
+
     useEffect(() => {
 
         const filterChapters = chapters.filter((chapter) => chapter.bookId === selectedBookID);
         setFilteredChapters(filterChapters);
+        getStudentProgress();
+
 
     }, [chapters, selectedBookID]);
 
@@ -52,7 +76,7 @@ const StudentChapter = () => {
                 </Box>
             </Box>
 
-            <Box className="tabs-section" sx={{ p: 4,  borderRadius: 2 }}>
+            <Box className="tabs-section" sx={{ p: 4, borderRadius: 2 }}>
                 <Box className="custom-tabs" component="ul" sx={{ listStyle: 'none', p: 0, m: 0, display: 'flex', overflowX: 'auto', borderRadius: '10px 10px 0 0', backgroundColor: '#F5F5F5' }}>
                     {books?.map((book, index) => (
                         <Box component="li" className="nav-item" key={index} sx={{ minWidth: { xs: '50%', sm: '25%' }, flex: 1, borderRight: '1px solid #EAEAEA', }}>
@@ -90,7 +114,7 @@ const StudentChapter = () => {
                 </Box>
 
 
-                <Box className="chapter-list" sx={{maxHeight: '400px', overflowY: 'auto', px: 4, py: 3, borderRadius: '0 0 10px 10px', backgroundColor: '#F5F5F5', }}>
+                <Box className="chapter-list" sx={{ maxHeight: '400px', overflowY: 'auto', px: 4, py: 3, borderRadius: '0 0 10px 10px', backgroundColor: '#F5F5F5', }}>
                     {filteredChapters?.filter(chapter => chapter.isactive)?.map((chapter, index) => {
 
                         return (
@@ -103,8 +127,7 @@ const StudentChapter = () => {
                                     mb: 2,
                                     borderRadius: 2,
                                     fontWeight: 500,
-                                    cursor: 'pointer',
-                                    
+
 
                                 }}
                             >

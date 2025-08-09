@@ -65,23 +65,6 @@ function StudentPerformance() {
     };
 
 
-    const getStudentProgress = async () => {
-      try {
-        const response = await apiPost(`/studentTaskProgress`, { studentId: student?._id });
-        console.log(response, "responsegetStudentprogress");
-        if (response?.data?.status === 200) {
-          const taskStatus = response?.data?.data;
-          console.log(taskStatus, "taskstatus");
-          setUserSyllabuses(taskStatus?.syllabuses || []);
-        }
-      }
-      catch (err) {
-        return err
-        // snackbarEmitter("")
-      }
-    }
-
-
     fetchSyllabus();
 
   }, []);

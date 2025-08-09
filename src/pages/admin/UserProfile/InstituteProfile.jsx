@@ -7,7 +7,6 @@ import styles from "./profilestyles.js";
 import CustomTypography from "../../../components/admin/CustomTypography.jsx";
 
 const InstituteProfile = () => {
-  const instituteId = localStorage.getItem("instituteId");
 
   const [email, setEmail] = useState("");
   const [formData, setFormData] = useState({
@@ -135,27 +134,37 @@ const InstituteProfile = () => {
       <Card elevation={3} sx={styles.card}>
         <Grid container spacing={2} component="form" onSubmit={handleSubmit}>
           <Grid size={{ xs: 12, md: 12, sm: 12 }} sx={styles.profileImageContainer}>
-            <Box sx={styles.profileImageBox}>
-              <label htmlFor="profile-upload" style={styles.profileImageLabel}>
-                {profileImage ? (
-                  <img src={profileImage instanceof File ? URL.createObjectURL(profileImage) : profileImage} alt="Profile" style={styles.profileImage} />
-                ) : (
-                  <CameraAltIcon fontSize="large" />
-                )}
-              </label>
-              <input type="file" id="profile-upload" accept="image/*" style={{ display: "none" }} onChange={handleImageChange} />
+            <Box>
+              <Box sx={styles.profileImageBox}>
+
+                <label htmlFor="profile-upload" style={styles.profileImageLabel}>
+                  {profileImage ? (
+                    <img src={profileImage instanceof File ? URL.createObjectURL(profileImage) : profileImage} alt="Profile" style={styles.profileImage} />
+                  ) : (
+                    <CameraAltIcon fontSize="large" />
+                  )}
+                </label>
+                <input type="file" id="profile-upload" accept="image/*" style={{ display: "none" }} onChange={handleImageChange} />
+
+              </Box>
+              <CustomTypography text="Upload profile" />
 
             </Box>
-            <Box sx={styles.profileImageBox}>
-              <label htmlFor="logo-upload" style={styles.profileImageLabel}>
-                {logoImage ? (
-                  <img src={logoImage instanceof File ? URL.createObjectURL(logoImage) : logoImage} alt="image" style={styles.profileImage} />
-                ) : (
-                  <CameraAltIcon fontSize="large" />
 
-                )}
-              </label>
-              <input type="file" id="logo-upload" accept="image/*" style={{ display: "none" }} onChange={handleLogoChange} />
+            <Box>
+              <Box sx={styles.profileImageBox}>
+                <label htmlFor="logo-upload" style={styles.profileImageLabel}>
+                  {logoImage ? (
+                    <img src={logoImage instanceof File ? URL.createObjectURL(logoImage) : logoImage} alt="image" style={styles.profileImage} />
+                  ) : (
+                    <CameraAltIcon fontSize="large" />
+
+                  )}
+                </label>
+                <input type="file" id="logo-upload" accept="image/*" style={{ display: "none" }} onChange={handleLogoChange} />
+
+              </Box>
+              <CustomTypography text="Upload logo" />
 
             </Box>
 
