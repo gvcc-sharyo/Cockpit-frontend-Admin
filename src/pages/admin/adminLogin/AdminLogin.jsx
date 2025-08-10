@@ -6,7 +6,7 @@ import CustomButton from '../../../components/admin/CustomButton';
 import './adminLogin.css';
 import CustomTypography from '../../../components/admin/CustomTypography';
 import { useGoogleLogin } from '@react-oauth/google';
-import { act } from 'react';
+import { useAuth } from '../../../context/AuthContext';
 
 const styles = {
   containerBox: {
@@ -131,6 +131,8 @@ const styles = {
 
 
 function AdminLogin() {
+
+  const { setAdminToken, setAdminId, setInstituteToken, setInstituteId } = useAuth();
   const [activeForm, setActiveForm] = useState('login');
 
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
@@ -185,8 +187,8 @@ function AdminLogin() {
 
         if (response.data.status === 200) {
           snackbarEmitter(response.data.message, 'success');
-          localStorage.setItem('adminToken', response.data.token);
-          localStorage.setItem('adminId', response.data.data._id);
+          setAdminToken(response.data.token);
+          setAdminId(response.data.data._id);
           setLoginForm({ email: '', password: '' });
           navigate('/admin/dashboard');
         } else {
@@ -197,11 +199,12 @@ function AdminLogin() {
     } catch (error) {
       setTimeout(() => {
         setLoading(false);
-
         snackbarEmitter(error.message, 'error');
       }, 500);
     }
   };
+
+
   const handleInsLogin = async () => {
     // e.preventDefault();
     if (!validateInsLoginForm()) return;
@@ -218,8 +221,8 @@ function AdminLogin() {
 
         if (response.data.status === 200) {
           snackbarEmitter(response.data.message, 'success');
-          localStorage.setItem('instituteToken', response.data.token);
-          localStorage.setItem('instituteId', response.data.data._id);
+          setInstituteToken(response.data.token);
+          setInstituteId(response.data.data._id);
           setInsLoginForm({ email: '', password: '' });
           navigate('/admin/institute/dashboard');
         } else {
@@ -340,15 +343,15 @@ function AdminLogin() {
         if (userResponse.data.status === 200) {
           snackbarEmitter(userResponse.data.message, 'success');
           if (activeForm === 'instituteLogin') {
-            localStorage.setItem('instituteToken', userResponse.data.token);
-            localStorage.setItem('instituteId', userResponse.data.data._id);
-           
+        setInstituteToken(userResponse.data.token);
+        setInstituteId(userResponse.data.data._id);
+
           } else {
-            localStorage.setItem('adminToken', userResponse.data.token);
-            localStorage.setItem('adminId', userResponse.data.data._id);
+            setAdminToken(userResponse.data.token);
+
           }
 
-           activeForm === 'login' ? navigate('/admin/dashboard') : navigate('/admin/institute/dashboard');
+          activeForm === 'login' ? navigate('/admin/dashboard') : navigate('/admin/institute/dashboard');
         } else {
           snackbarEmitter(userResponse.data.message, 'error');
         }

@@ -19,20 +19,20 @@ import TestQuestions from '../pages/admin/database/Test/TestQuestions';
 import AddTestQuestion from '../pages/admin/database/Test/AddTestQuestion';
 import Advertise from '../pages/admin/Advertise/Advertise';
 import StudentChapter from '../pages/admin/studentProfile/StudentChapter';
+import { getAdminRoutePrefix } from '../utils/RoutePrefix';
+import { useAuth } from '../context/AuthContext';
 
 const AdminRoute = () => {
+  const { adminToken, instituteToken, instituteId } = useAuth();
 
-   let adminToken = localStorage.getItem("adminToken");
-    let instituteToken = localStorage.getItem("instituteToken");
-    let instituteId = localStorage.getItem("instituteId");
-  
-  const routePrefix = instituteId ? "/admin/institute" : "/admin";
+  const routePrefix = getAdminRoutePrefix();
+
 
   const AuthRoute = () => {
     const isAuthenticated = !!adminToken || !!instituteToken;
     return isAuthenticated ? <Outlet /> : <Navigate to="/adminlogin" />;
   };
-  
+
 
   return (
     <BrowserRouter>

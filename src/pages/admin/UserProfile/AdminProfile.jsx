@@ -4,9 +4,10 @@ import CustomTextField from "../../../components/admin/CustomTextField";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import CustomButton from "../../../components/admin/CustomButton";
 import styles from "./profilestyles.js";
+import { useAuth } from "../../../context/AuthContext.jsx";
 
 const AdminProfile = () => {
-  const adminId = localStorage.getItem("adminId");
+ const {adminId} = useAuth();
 
   const [email, setEmail] = useState("");
   const [formData, setFormData] = useState({

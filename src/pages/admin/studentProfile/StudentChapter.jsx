@@ -1,12 +1,14 @@
 import { apiGet, apiPost } from "../../../api/axios";
 import Navbar from "../../../components/admin/Navbar";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
+import ArrowCircleLeftRoundedIcon from "@mui/icons-material/ArrowCircleLeftRounded";
+import CustomTypography from "../../../components/admin/CustomTypography";
 
 const StudentChapter = () => {
     const [books, setBooks] = useState([]);
     const [chapters, setChapters] = useState([]);
     const location = useLocation();
-    const { syllabusId, studentId } = location.state || {};
+    const { syllabusTitle, syllabusId, studentId } = location.state || {};
 
     const [selectedBookID, setSelectedBookID] = useState(books[0]?._id);
     const [filteredChapters, setFilteredChapters] = useState([]);
@@ -67,6 +69,27 @@ const StudentChapter = () => {
 
     return (
         <Navbar title="Student Profile">
+
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 5 }}>
+                <ArrowCircleLeftRoundedIcon sx={{ color: "#EAB308", fontSize: "28px", cursor: "pointer" }} onClick={() => window.history.back()} />
+                <CustomTypography
+                    text={"Performance"}
+                    fontWeight={500}
+                    fontSize={{ xs: "14px", sm: "16px", md: "16px" }}
+                />
+                <CustomTypography
+                    text={">"}
+                    fontWeight={700}
+                    fontSize={{ xs: "14px", sm: "16px", md: "16px" }}
+                />
+                <CustomTypography
+                    text={syllabusTitle}
+                    fontWeight={500}
+                    fontSize={{ xs: "14px", sm: "16px", md: "16px" }}
+                />
+            
+            </Box>
+
             <Box sx={{ p: 2, backgroundColor: '#f5f5f5', display: "flex", alignItems: "center", }}>
                 <Box
                     onClick={() => navigate("/training")}

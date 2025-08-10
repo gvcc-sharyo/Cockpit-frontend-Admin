@@ -3,7 +3,7 @@ import CustomButton from "../../../components/admin/CustomButton";
 import CustomTypography from "../../../components/admin/CustomTypography";
 import CustomTable from "../../../components/admin/CustomTable";
 import CustomTextField from "../../../components/admin/CustomTextField";
-import { apiGet, apiGetToken, apiPost } from "../../../api/axios";
+import { apiGet,  apiPost } from "../../../api/axios";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import { getAdminRoutePrefix } from "../../../utils/RoutePrefix";
 

@@ -1,10 +1,11 @@
 import Navbar from "../../../components/admin/Navbar";
 import AdminProfile from './AdminProfile';
 import InstituteProfile from './InstituteProfile';
+import { useAuth } from "../../../context/AuthContext";
 
 const Profile = () => {
-  const adminId = localStorage.getItem("adminId");
-  const instituteId = localStorage.getItem("instituteId");
+
+  const { instituteId } = useAuth();
 
  
   return (

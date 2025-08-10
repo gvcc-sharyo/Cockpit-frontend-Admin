@@ -11,6 +11,7 @@ import {
   Tooltip as RechartsTooltip,
   Legend,
 } from "chart.js";
+import { useAuth } from "../../../context/AuthContext";
 // import { Box, Typography } from "@mui/material";
 
 // Register Chart.js components
@@ -27,7 +28,7 @@ ChartJS.register(
 const Graph = () => {
   const [chartData, setChartData] = useState(null);
   const chartRef = useRef(null);
-  const adminId = localStorage.getItem("adminId");
+  const{adminId} = useAuth();
 
   const fetchData = async () => {
     try {

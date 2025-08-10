@@ -7,13 +7,12 @@ import CustomTypography from "../../../components/admin/CustomTypography";
 import classes from "./dashboardtemp.js";
 import StudentsTable from "../institute/StudentTable.jsx";
 import { getAdminRoutePrefix } from "../../../utils/RoutePrefix.jsx";
-import { set } from "date-fns";
+import { useAuth } from "../../../context/AuthContext.jsx";
 
 
 
 function Dashboard() {
-  const adminId = localStorage.getItem("adminId");
-  const instituteId = localStorage.getItem("instituteId");
+  const { adminId, instituteId } = useAuth();
   const routePrefix = getAdminRoutePrefix();
 
   const [reports, setReports] = useState([]);
@@ -105,7 +104,6 @@ function Dashboard() {
     getTotals();
   }
   }, []);
-
 
   const navigate = useNavigate();
 

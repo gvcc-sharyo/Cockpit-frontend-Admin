@@ -3,7 +3,7 @@ import CustomButton from "../../../components/admin/CustomButton";
 import CustomTypography from "../../../components/admin/CustomTypography";
 import CustomTable from "../../../components/admin/CustomTable";
 import CustomTextField from "../../../components/admin/CustomTextField";
-import { apiGet, apiGetToken, apiPost } from "../../../api/axios";
+import { apiGet, apiPost } from "../../../api/axios";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 
 function SuperAdminStudentProfile() {
@@ -20,6 +20,7 @@ function SuperAdminStudentProfile() {
       }
     } catch (error) {
       console.error("Error fetching students:", error);
+      
       snackbarEmitter("Something went wrong", "error");
     }
   };

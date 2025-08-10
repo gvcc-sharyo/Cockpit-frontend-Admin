@@ -8,6 +8,7 @@ import { apiGet, apiPost } from "../../../api/axios";
 import { max, min } from "date-fns";
 import { LineChart, Line, XAxis, YAxis, Tooltip as RechartsTooltip, CartesianGrid, ResponsiveContainer } from "recharts";
 import { getAdminRoutePrefix } from "../../../utils/RoutePrefix";
+import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 
 function StudentPerformance() {
 
@@ -73,24 +74,35 @@ function StudentPerformance() {
 
   const fetchTestSyllabus = async () => {
     try {
-      const resSyllabus = await apiGet("/getSyllabus");
-      const syllabi = resSyllabus?.data?.data || [];
+      // const resSyllabus = await apiGet("/getSyllabus");
+      // const syllabi = resSyllabus?.data?.data || [];
 
-      const response = await apiGet("/getTestAll");
-      const testData = response?.data?.data || [];
+      // const response = await apiGet("/getTestAll");
+      // const testData = response?.data?.data || [];
 
-      const testSyllabusIds = testData.map(test => test.syllabusId);
+      // const testSyllabusIds = testData.map(test => test.syllabusId);
       
 
     // Step 2: Filter syllabi based on matching _id
-    const filteredSyllabi = syllabi.filter(syllabus =>
-      testSyllabusIds.includes(syllabus._id)
-    );
-      setTestSyllabus(filteredSyllabi);
+    // const filteredSyllabi = syllabi.filter(syllabus =>
+    //   testSyllabusIds.includes(syllabus._id)
+    // );
+    //   setTestSyllabus(filteredSyllabi);
 
-      if (filteredSyllabi.length > 0) {
-        handleSyllabusClick(filteredSyllabi[0]);
+    //   if (filteredSyllabi.length > 0) {
+    //     handleSyllabusClick(filteredSyllabi[0]);
+    //   }
+
+      const res = await apiPost("/testGetAllSyllabus", { studentId: student?._id });
+      if(res.data.status== 200){
+        setTestSyllabus(res.data.data);
+        handleSyllabusClick(res.data.data[0]);
+      } else{
+        snackbarEmitter(res.data.message, "error");
       }
+
+
+
     } catch (error) {
       console.error("Error fetching syllabus:", error);
     }
@@ -107,7 +119,8 @@ function StudentPerformance() {
     // setAttempts([]);
     setChartData([]);
     try {
-      const bookResponse = await apiGet(`/booksBySyllabusId/${syllabus._id}`);
+      // const bookResponse = await apiGet(`/booksBySyllabusId/${syllabus._id}`);
+      const bookResponse = await apiPost(`/testGetAllBooks`, {studentId: student?._id, syllabusId: syllabus._id });
       const fetchedBooks = bookResponse?.data?.data || [];
       console.log(fetchedBooks, "fetchedBooks");
 
@@ -171,6 +184,7 @@ function StudentPerformance() {
 
   const handleNav=(syllabus)=>{
     navigate(`${routePrefix}/studentChapter`, {state : {
+      syllabusTitle : syllabus.title,
       syllabusId : syllabus._id,
       studentId : student?._id
     }})
@@ -414,8 +428,8 @@ function StudentPerformance() {
               label="Book"
               onChange={(e) => handleBookSelect(e.target.value)}
             >
-              {bookList.map((book) => (
-                <MenuItem key={book._id} value={book._id}>
+              {bookList.map((book, index) => (
+                <MenuItem key={index} value={book._id}>
                   {book.bookTitle}
                 </MenuItem>
               ))}

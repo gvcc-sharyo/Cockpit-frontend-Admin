@@ -3,17 +3,13 @@ import { apiGet } from '../../api/axios';
 import CustomButton from './CustomButton';
 import CustomTypography from './CustomTypography';
 import { getAdminRoutePrefix } from '../../utils/RoutePrefix';
-import { set } from 'date-fns';
+import { useAuth } from '../../context/AuthContext';
 
 const Navbar = ({ title, children }) => {
+  const { logout, adminId, instituteId, instituteToken, adminToken } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const routePrefix = getAdminRoutePrefix();
-
-  const adminId = localStorage.getItem('adminId');
-  const adminToken = localStorage.getItem('adminToken');
-  const instituteToken = localStorage.getItem('instituteToken');
-  const instituteId = localStorage.getItem('instituteId');
 
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -103,18 +99,8 @@ const Navbar = ({ title, children }) => {
   };
 
   const confirmLogout = () => {
-    // if (adminToken) {
-    //   localStorage.removeItem('adminToken');
-    //   localStorage.removeItem('adminId');
-    // }
-    // if (instituteToken) {
-    //   localStorage.removeItem('instituteToken');
-    //   localStorage.removeItem('instituteId');
-    // }
-
-    localStorage.clear();
-    // window.location.reload();
     setOpen(false);
+    logout();
     navigate('/adminlogin');
   };
 

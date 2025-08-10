@@ -1,13 +1,18 @@
 import axios from 'axios';
 const url = import.meta.env.VITE_API_URL;
 
-const adminToken = localStorage.getItem("adminToken");
-const instituteToken = localStorage.getItem("instituteToken");
-const instituteId = localStorage.getItem("instituteId");
+const getTokenAndBaseUrl = () => {
+  const instituteId = localStorage.getItem("instituteId");
+  const adminToken = localStorage.getItem("adminToken");
+  const instituteToken = localStorage.getItem("instituteToken");
 
-const token = instituteId ? instituteToken : adminToken;
+  const token = instituteId ? instituteToken : adminToken;
+  const BASE_URL = instituteId ? `${url}/institute` : url;
 
-const BASE_URL = instituteId ? `${url}/institute` : url;
+  return { token, BASE_URL };
+};
+
+
 
 
 // const BASE_URL = 'http://13.235.91.167:8000/cockpit';
@@ -15,6 +20,8 @@ const BASE_URL = instituteId ? `${url}/institute` : url;
 // GET
 
 export const apiGet = async (endpoint) => {
+  const { token, BASE_URL } = getTokenAndBaseUrl();
+
   const headers = {
     'Content-Type': 'application/json',
     ...(token && { Authorization: `Bearer ${token}` }),
@@ -23,16 +30,10 @@ export const apiGet = async (endpoint) => {
   return await axios.get(`${BASE_URL}${endpoint}`, { headers });
 };
 
-export const apiGetToken = async (endpoint) => {
-  const headers = {
-    'Content-Type': 'application/json',
-    ...(token && { Authorization: `Bearer ${token}` }),
-    // 'User-Type': userType
-  };
-  return await axios.get(`${BASE_URL}${endpoint}`, { headers });
-};
 
 export const apiPost = async (endpoint, data) => {
+  const { token, BASE_URL } = getTokenAndBaseUrl();
+
   const headers = {
     'Content-Type': 'application/json',
     ...(token && { Authorization: `Bearer ${token}` }),
@@ -47,16 +48,9 @@ export const apiPost = async (endpoint, data) => {
 };
 
 
-export const apiPostToken = async (endpoint, data) => {
-  const token = localStorage.getItem('adminToken');
-  const headers = {
-    'Content-Type': 'application/json',
-    ...(token && { Authorization: `Bearer ${token}` }),
-  };
-  return await axios.post(`${BASE_URL}${endpoint}`, data, { headers });
-};
-
 export const apiPostUpload = async (endpoint, data) => {
+  const { token, BASE_URL } = getTokenAndBaseUrl();
+
   const headers = {
     'Content-Type': 'multipart/form-data',
     ...(token && { Authorization: `Bearer ${token}` }),
@@ -69,18 +63,22 @@ export const apiPostUpload = async (endpoint, data) => {
 
 // PUT
 export const apiPut = async (endpoint, data) => {
+  const { token, BASE_URL } = getTokenAndBaseUrl();
+
   const headers = {
     'Content-Type': 'application/json',
-     ...(token && { Authorization: `Bearer ${token}` }),
+    ...(token && { Authorization: `Bearer ${token}` }),
   };
   return await axios.put(`${BASE_URL}${endpoint}`, data, { headers });
 };
 // DELETE
 
 export const apiDelete = async (endpoint, body) => {
+  const { token, BASE_URL } = getTokenAndBaseUrl();
+
   const headers = {
     'Content-Type': 'application/json',
     ...(token && { Authorization: `Bearer ${token}` }),
   };
-  return await axios.delete(`${BASE_URL}${endpoint}`, {headers,data: body,});
+  return await axios.delete(`${BASE_URL}${endpoint}`, { headers, data: body, });
 };
