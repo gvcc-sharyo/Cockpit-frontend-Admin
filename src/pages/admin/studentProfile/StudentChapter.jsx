@@ -12,6 +12,7 @@ const StudentChapter = () => {
 
     const [selectedBookID, setSelectedBookID] = useState(books[0]?._id);
     const [filteredChapters, setFilteredChapters] = useState([]);
+    const [completedChapterIds, setCompletedChapterIds] = useState(new Set());
 
     useEffect(() => {
         const fetchBooksAndChapters = async () => {
@@ -42,6 +43,20 @@ const StudentChapter = () => {
             if (response?.data?.status === 200) {
                 const taskStatus = response?.data?.data;
                 console.log(taskStatus, "taskstatus");
+                const completedIds = new Set();
+                // setUserSyllabuses(taskStatus?.syllabuses || []);
+                taskStatus?.syllabuses?.forEach((syllabus) => {
+                    syllabus.books?.forEach((book) => {
+                        book.chapters?.forEach((chapter) => {
+
+                            if (chapter.isTaskCompleted) {
+                                console.log(chapter, "chapter222");
+                                completedIds.add(chapter._id);
+                            }
+                        });
+                    });
+                });
+                setCompletedChapterIds(completedIds);
             }
             else {
                 snackbarEmitter(response?.data?.message, "error");
@@ -87,7 +102,7 @@ const StudentChapter = () => {
                     fontWeight={500}
                     fontSize={{ xs: "14px", sm: "16px", md: "16px" }}
                 />
-            
+
             </Box>
 
 
@@ -105,7 +120,7 @@ const StudentChapter = () => {
                                     borderRight: '1px solid #f5f5f5',
                                     padding: '12px 20px',
                                     fontWeight: 600,
-                                    fontSize:{ xs: '11px', sm: '12px', md: '14px' },
+                                    fontSize: { xs: '11px', sm: '12px', md: '14px' },
                                     textTransform: 'uppercase',
                                     borderRadius: 0,
                                     transition: '0.3s',
@@ -132,7 +147,7 @@ const StudentChapter = () => {
 
                 <Box className="chapter-list" sx={{ maxHeight: '400px', overflowY: 'auto', px: 4, py: 3, borderRadius: '0 0 10px 10px', backgroundColor: '#F5F5F5', }}>
                     {filteredChapters?.filter(chapter => chapter.isactive)?.map((chapter, index) => {
-
+                        const isCompleted = completedChapterIds?.has(chapter?._id);
                         return (
                             <Paper
                                 key={index}
@@ -154,9 +169,9 @@ const StudentChapter = () => {
                                         </Typography>
                                     </Grid>
                                     <Grid size={{ xs: 2, sm: 1 }} alignItems="center" display="flex" justifyContent={{ xs: "right" }} pr={{ xs: 0 }}>
-                                        {/* {isCompleted && (
+                                        {isCompleted && (
                                             <CheckCircleIcon sx={{ color: '#27C76F', fontSize: 32 }} />
-                                        )} */}
+                                        )}
                                     </Grid>
                                 </Grid>
                             </Paper>
