@@ -90,14 +90,6 @@ const StudentChapter = () => {
             
             </Box>
 
-            <Box sx={{ p: 2, backgroundColor: '#f5f5f5', display: "flex", alignItems: "center", }}>
-                <Box
-                    onClick={() => navigate("/training")}
-                    sx={{ display: "flex", alignItems: "center", cursor: "pointer", color: "#183251" }}
-                >
-                    <ArrowBackIcon sx={{ mr: 0.5 }} />
-                </Box>
-            </Box>
 
             <Box className="tabs-section" sx={{ p: 4, borderRadius: 2 }}>
                 <Box className="custom-tabs" component="ul" sx={{ listStyle: 'none', p: 0, m: 0, display: 'flex', overflowX: 'auto', borderRadius: '10px 10px 0 0', backgroundColor: '#F5F5F5' }}>
@@ -113,6 +105,7 @@ const StudentChapter = () => {
                                     borderRight: '1px solid #f5f5f5',
                                     padding: '12px 20px',
                                     fontWeight: 600,
+                                    fontSize:{ xs: '11px', sm: '12px', md: '14px' },
                                     textTransform: 'uppercase',
                                     borderRadius: 0,
                                     transition: '0.3s',

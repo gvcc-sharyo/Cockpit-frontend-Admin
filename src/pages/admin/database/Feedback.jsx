@@ -5,11 +5,14 @@ import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import { apiGet, apiPost } from "../../../api/axios";
 import CustomButton from "../../../components/admin/CustomButton";
 import Training from "../../../components/admin/Training";
+import { useAuth } from "../../../context/AuthContext";
 
 function Feedback() {
 
   const location = useLocation();
   const { reportID } = location.state || {};
+
+  const {instituteId} = useAuth();
 
   console.log('reportId', reportID);
 
@@ -88,8 +91,33 @@ function Feedback() {
     }
   };
 
+  const InsfetchReports = async () => {
+
+    try {
+      const response = await apiGet('/getAllReport');
+
+      if (response.data.status === 200) {
+        // setOpen(null);
+        const filteredReports = response.data.data.filter((report) => report.status === 'pending');
+        if (filteredReports.length === 0) {
+          setOpen(null);
+          setReports([]); 
+          snackbarEmitter('No pending reports found', 'info');
+        } else {
+          setReports(filteredReports);
+        }
+      }
+      else {
+        snackbarEmitter(response.data.message, 'error');
+      }
+
+    } catch (error) {
+      snackbarEmitter('Something went wrong', 'error');
+    }
+  };
+
   useEffect(() => {
-    fetchReports();
+   instituteId ? InsfetchReports() : fetchReports();
   }, [])
 
 

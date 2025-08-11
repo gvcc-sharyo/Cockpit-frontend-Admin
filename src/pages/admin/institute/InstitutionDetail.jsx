@@ -147,13 +147,13 @@ function InstitutionDetail() {
                   <WorkOutlineIcon fontSize="small" color="action" />
                 </Box>
                 <Box>
-                  <Typography sx={styles.infoPrimary}>Manager</Typography>
+                  <Typography sx={styles.infoPrimary}> {instituteData?.department }</Typography>
                   <Typography
                     variant="caption"
                     color="text.secondary"
                     sx={styles.infoSecondary}
                   >
-                    {instituteData?.department }
+                   Department
                   </Typography>
                 </Box>
               </Stack>
@@ -257,9 +257,9 @@ function InstitutionDetail() {
                 <SubscriptionPlan  instituteId={instituteId} />
               </TabPanel>
 
-              <TabPanel value={value} index={2}>
+              {/* <TabPanel value={value} index={2}>
                 <Address />
-              </TabPanel>
+              </TabPanel> */}
             </Box>
           </Grid>
         </Grid>

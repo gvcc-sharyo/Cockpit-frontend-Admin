@@ -23,29 +23,31 @@ const InstituteProfile = () => {
   const [logoImage, setLogoImage] = useState(null);
   const [errors, setErrors] = useState({});
 
+
+  const getProfile = async () => {
+    try {
+      const {
+        data: { data },
+      } = await apiGet('/getInstitute')
+      const newFormData = {
+        instituteName: data.institeDetails.instituteName || "",
+        phone: data.institeDetails.phone || "",
+        department: data.institeDetails.department || "",
+        address: data.institeDetails.currentAddress || "",
+        subsrciptionAmt: data.subscriptionDetails.subscriptionAmt || "",
+        subscriptionPeriod: data.subscriptionDetails.subscriptionPeriod || "",
+      };
+      setFormData(newFormData);
+      setInitialFormData(newFormData);
+      setProfileImage(data.institeDetails.profileimage || "");
+      setLogoImage(data.institeDetails.logo || "");
+      setEmail(data.institeDetails.email);
+    } catch (error) {
+      snackbarEmitter("Error fetching profile", "error");
+    }
+  };
+
   useEffect(() => {
-    const getProfile = async () => {
-      try {
-        const {
-          data: { data },
-        } = await apiGet('/getInstitute')
-        const newFormData = {
-          instituteName: data.institeDetails.instituteName || "",
-          phone: data.institeDetails.phone || "",
-          department: data.institeDetails.department || "",
-          address: data.institeDetails.currentAddress || "",
-          subsrciptionAmt: data.subscriptionDetails.subscriptionAmt || "",
-          subscriptionPeriod: data.subscriptionDetails.subscriptionPeriod || "",
-        };
-        setFormData(newFormData);
-        setInitialFormData(newFormData);
-        setProfileImage(data.institeDetails.profileimage || "");
-        setLogoImage(data.institeDetails.logo || "");
-        setEmail(data.institeDetails.email);
-      } catch (error) {
-        snackbarEmitter("Error fetching profile", "error");
-      }
-    };
     getProfile();
   }, []);
 
@@ -92,9 +94,11 @@ const InstituteProfile = () => {
       setLoading(false);
       if (response.data.status === 200) {
         snackbarEmitter(response.data.message, "success");
+         
       } else {
         snackbarEmitter(response.data.message, "error");
       }
+      getProfile();
     } catch (error) {
       setLoading(false);
       snackbarEmitter("Unexpected Error", "error");
@@ -120,7 +124,7 @@ const InstituteProfile = () => {
   const handleCancel = () => setFormData(initialFormData);
 
   const inputFields = [
-    { name: "institutename", placeholder: "First Name", value: formData.instituteName },
+    { name: "instituteName", placeholder: "First Name", value: formData.instituteName },
     { name: "phone", placeholder: "Mobile Number", value: formData.phone },
     { name: "email", placeholder: "Email Address", value: email, disabled: true },
     { name: "address", placeholder: "Address", value: formData.address },
@@ -169,8 +173,8 @@ const InstituteProfile = () => {
             </Box>
 
           </Grid>
-          {inputFields.map((field) => (
-            <Grid key={field.name} size={{ xs: 12, md: 6 }}>
+          {inputFields.map((field, index) => (
+            <Grid key={index} size={{ xs: 12, md: 6 }}>
               <CustomTextField name={field.name} placeholder={field.placeholder} value={field.value} onChange={handleChange} required error={!!errors[field.name]} helperText={errors[field.name]}
                 {...(field.disabled && { disabled: true })} />
             </Grid>

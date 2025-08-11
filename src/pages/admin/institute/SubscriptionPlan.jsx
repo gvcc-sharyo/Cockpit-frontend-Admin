@@ -189,6 +189,7 @@ const SubscriptionPlan = ({ instituteId }) => {
       });
       // console.log("Subscription plan response:", response);
       setOpen(false);
+      subscriptionHistory();
     } catch (error) {
       snackbarEmitter("Error adding subscription plan", "error");
       // console.error("Error fetching subscription plan:", error);
@@ -217,7 +218,7 @@ const SubscriptionPlan = ({ instituteId }) => {
   };
   useEffect(() => {
     subscriptionHistory();
-  });
+  },[]);
 
   let latestSubscription = null;
 
@@ -251,6 +252,9 @@ const SubscriptionPlan = ({ instituteId }) => {
   let timeDiff = endDate.getTime() - today.getTime();
   let daysLeft = Math.max(Math.ceil(timeDiff / (1000 * 60 * 60 * 24)), 0);
 
+  console.log("subscriptionHistory", subscriptionsHistory);
+  
+
   return (
     <>
       <Paper
@@ -267,11 +271,8 @@ const SubscriptionPlan = ({ instituteId }) => {
               {" "}
               Subscription Plan{" "}
             </Typography>
-            <Typography sx={styles.leftGrid.subtitle}>
-              Your subscription plan will expire soon. Please upgrade!
-            </Typography>
             <Typography sx={styles.leftGrid.price}>
-              ₹1500 <span style={{ fontWeight: 400 }}>/ 1 month</span>{" "}
+              {amount} <span style={{ fontWeight: 400 }}>/ {period} month</span>{" "}
             </Typography>
           </Grid>
 
@@ -357,7 +358,7 @@ const SubscriptionPlan = ({ instituteId }) => {
             justifyContent: "space-between",
           }}
         >
-          <Typography variant="h6">Add Institution</Typography>
+          <Typography variant="h6">Update Subscription</Typography>
           <IconButton onClick={() => setOpen(false)}>
             <CloseIcon />
           </IconButton>
@@ -405,7 +406,7 @@ const SubscriptionPlan = ({ instituteId }) => {
 
         <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
           <CustomButton
-            children="Add"
+            children="Update"
             bgColor="#EAB308"
             sx={{ width: "20%" }}
             onClick={() => {

@@ -116,7 +116,7 @@ const Graph = () => {
     totalUsersBox: {
       width: {xs:"550px",md:"100%",},
       height: { xs: 300, md: "100%" ,lg:"42vh"},
-      mt: 3,
+      // mt: 3,
       padding: "40px 0px",
       backgroundColor: "#fff",
      

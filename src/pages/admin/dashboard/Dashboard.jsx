@@ -35,6 +35,24 @@ function Dashboard() {
     }
   };
 
+  const InsfetchReports = async () => {
+    try {
+      const response = await apiGet("/getAllReport");
+
+      if (response.data.status === 200) {
+        const filteredReports = response.data.data.filter((report) => report.status === 'pending');
+        console.log("filteredReports", filteredReports);
+
+        setReports(filteredReports);
+      }
+      else {
+        snackbarEmitter(response.data.message, "error");
+      }
+    } catch (error) {
+      snackbarEmitter("Something went wrong", "error");
+    }
+  };
+
 
 
   const [totals, setTotals] = useState([]);
@@ -100,7 +118,7 @@ function Dashboard() {
    if (instituteId) {
     getStudents();
   } else {
-    fetchReports();
+   instituteId ? InsfetchReports() : fetchReports();
     getTotals();
   }
   }, []);
@@ -161,8 +179,6 @@ function Dashboard() {
                 tableData={tableData}
               /> : <Graph />}
             </Grid>
-
-
 
             <Grid size={{ xs: 10, md: 12, lg: 5 }}>
               <Box sx={classes.reportBox}>

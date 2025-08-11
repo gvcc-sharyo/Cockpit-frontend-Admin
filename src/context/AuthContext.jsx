@@ -1,4 +1,3 @@
-
 import { createContext, useContext } from "react";
 
 const AuthContext = createContext();
@@ -9,7 +8,6 @@ export const AuthProvider = ({ children }) => {
   const [instituteToken, setInstituteToken] = useState(localStorage.getItem("instituteToken"));
   const [instituteId, setInstituteId] = useState(localStorage.getItem("instituteId"));
 
-  // Sync to localStorage on state changes
   useEffect(() => {
     if (adminToken) localStorage.setItem("adminToken", adminToken);
     else localStorage.removeItem("adminToken");

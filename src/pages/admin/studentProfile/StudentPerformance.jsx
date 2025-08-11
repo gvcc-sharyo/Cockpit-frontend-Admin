@@ -33,10 +33,20 @@ function StudentPerformance() {
   useEffect(() => {
     const fetchFlightLogData = async () => {
       try {
+
+        const days = selectedPeriod === "Monthly" ? 30 :  7;
+        const toDate = new Date();
+        console.log("to date", toDate);
+        
+        const fromDate = new Date(toDate.getTime() - days * 24 * 60 * 60 * 1000);
+
+        console.log("from date", fromDate);
+        
+
         const requestBody = {
           studentId: student?._id,
-          fromDate: student?.createdAt,
-          toDate: new Date().toISOString(),
+          fromDate: fromDate.toISOString(), 
+          toDate: toDate.toISOString(),
         }
         const response = await apiPost('/countTotalTest', requestBody);
         // Handle the response data as needed
@@ -50,6 +60,7 @@ function StudentPerformance() {
           },
         ];
       } catch (error) {
+        snackbarEmitter("Something went wrong", "error");
       }
     }
 
@@ -68,7 +79,7 @@ function StudentPerformance() {
 
     fetchSyllabus();
 
-  }, []);
+  }, [selectedPeriod]);
 
   const [testSyllabus, setTestSyllabus] = useState([]);
 
@@ -81,23 +92,23 @@ function StudentPerformance() {
       // const testData = response?.data?.data || [];
 
       // const testSyllabusIds = testData.map(test => test.syllabusId);
-      
 
-    // Step 2: Filter syllabi based on matching _id
-    // const filteredSyllabi = syllabi.filter(syllabus =>
-    //   testSyllabusIds.includes(syllabus._id)
-    // );
-    //   setTestSyllabus(filteredSyllabi);
 
-    //   if (filteredSyllabi.length > 0) {
-    //     handleSyllabusClick(filteredSyllabi[0]);
-    //   }
+      // Step 2: Filter syllabi based on matching _id
+      // const filteredSyllabi = syllabi.filter(syllabus =>
+      //   testSyllabusIds.includes(syllabus._id)
+      // );
+      //   setTestSyllabus(filteredSyllabi);
+
+      //   if (filteredSyllabi.length > 0) {
+      //     handleSyllabusClick(filteredSyllabi[0]);
+      //   }
 
       const res = await apiPost("/testGetAllSyllabus", { studentId: student?._id });
-      if(res.data.status== 200){
+      if (res.data.status == 200) {
         setTestSyllabus(res.data.data);
         handleSyllabusClick(res.data.data[0]);
-      } else{
+      } else {
         snackbarEmitter(res.data.message, "error");
       }
 
@@ -108,19 +119,19 @@ function StudentPerformance() {
     }
   };
 
-    useEffect(() => {
+  useEffect(() => {
     fetchTestSyllabus();
   }, []);
 
 
-    const handleSyllabusClick = async (syllabus) => {
+  const handleSyllabusClick = async (syllabus) => {
     setSelectedSyllabus(syllabus);
     setSelectedBook("");
     // setAttempts([]);
     setChartData([]);
     try {
       // const bookResponse = await apiGet(`/booksBySyllabusId/${syllabus._id}`);
-      const bookResponse = await apiPost(`/testGetAllBooks`, {studentId: student?._id, syllabusId: syllabus._id });
+      const bookResponse = await apiPost(`/testGetAllBooks`, { studentId: student?._id, syllabusId: syllabus._id });
       const fetchedBooks = bookResponse?.data?.data || [];
       console.log(fetchedBooks, "fetchedBooks");
 
@@ -166,7 +177,7 @@ function StudentPerformance() {
     }
   };
 
-    const CustomTooltip = ({ active, payload, label }) => {
+  const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload?.length) {
       const { score, total, correct, incorrect } = payload[0].payload;
       return (
@@ -182,12 +193,14 @@ function StudentPerformance() {
     return null;
   };
 
-  const handleNav=(syllabus)=>{
-    navigate(`${routePrefix}/studentChapter`, {state : {
-      syllabusTitle : syllabus.title,
-      syllabusId : syllabus._id,
-      studentId : student?._id
-    }})
+  const handleNav = (syllabus) => {
+    navigate(`${routePrefix}/studentChapter`, {
+      state: {
+        syllabusTitle: syllabus.title,
+        syllabusId: syllabus._id,
+        studentId: student?._id
+      }
+    })
   }
 
 
@@ -209,7 +222,7 @@ function StudentPerformance() {
         />
       </Box>
 
-      <Grid container sx={{ display: "flex", gap:{ xs: 4, md: 8, sm: 4}, mb: 4 }}>
+      <Grid container sx={{ display: "flex", gap: { xs: 4, md: 8, sm: 4 }, mb: 4 }}>
 
         <Grid size={{ xs: 12, md: 6, sm: 6 }} >
           <Card sx={{ overflowX: "auto", p: 3, borderRadius: 3, border: " 1px solid #E5E7E9" }}>
@@ -225,7 +238,7 @@ function StudentPerformance() {
 
                   <CustomTypography
                     text={`${student?.firstName} ${student?.lastName}`}
-                    fontSize = {{ xs: '11px', sm: '13px', md: '14px' }}
+                    fontSize={{ xs: '11px', sm: '13px', md: '14px' }}
                     sx={{ fontWeight: "bold", mb: 0 }} />
                 </Box>
                 <CustomTypography text={"Info"} sx={{ fontWeight: "bold", mb: 1 }} />
@@ -344,7 +357,7 @@ function StudentPerformance() {
         <Box sx={{ display: 'flex', gap: '15px', padding: '10px', width: 'max-content' }}>
           {
             syllabus?.map((item, index) => (
-              <Box key={index} onClick={() => handleNav(item)} sx={{ cursor: 'pointer', border: '1px solid transparent', '&:hover':{borderColor: '#EAB308'}, display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'space-between', boxShadow: 3, borderRadius: '10px', px: 2, py: 1, minWidth: { xs: '45px', md: '120px', sm: '60px' } }}>
+              <Box key={index} onClick={() => handleNav(item)} sx={{ cursor: 'pointer', border: '1px solid transparent', '&:hover': { borderColor: '#EAB308' }, display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'space-between', boxShadow: 3, borderRadius: '10px', px: 2, py: 1, minWidth: { xs: '45px', md: '120px', sm: '60px' } }}>
                 <img src="/images/btn.svg" alt="" />
                 <CustomTypography
                   text={item.title}
