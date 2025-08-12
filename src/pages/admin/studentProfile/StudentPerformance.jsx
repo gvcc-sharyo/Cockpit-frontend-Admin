@@ -224,8 +224,8 @@ function StudentPerformance() {
 
       <Grid container sx={{ display: "flex", gap: { xs: 4, md: 8, sm: 4 }, mb: 4 }}>
 
-        <Grid size={{ xs: 12, md: 6, sm: 6 }} >
-          <Card sx={{ overflowX: "auto", p: 3, borderRadius: 3, border: " 1px solid #E5E7E9" }}>
+        <Grid size={{ xs: 12, md: 5, sm: 5 }} >
+          <Card sx={{ overflowX: "auto", py: { xs: 2, md: 5, sm: 5.3 }, px: { xs: 2, md: 5, sm: 5.3 }, borderRadius: 3, border: " 1px solid #E5E7E9" }}>
             <CustomTypography
               text={"About"}
               sx={{ fontWeight: "bold", mb: 1 }}
