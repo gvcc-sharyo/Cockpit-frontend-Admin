@@ -3,8 +3,10 @@ import { apiGet, apiPostUpload, apiPost } from "../../../api/axios";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import CustomButton from "../../../components/admin/CustomButton";
 import CustomTypography from "../../../components/admin/CustomTypography";
+import { getAdminRoutePrefix } from "../../../utils/RoutePrefix";
 
 function TrainingQuestion() {
+    const routePrefix = getAdminRoutePrefix();
 
     const [questions, setQuestions] = useState([]);
 
@@ -44,7 +46,7 @@ function TrainingQuestion() {
 
     const navigate = useNavigate();
     const handleAddClick = () => {
-        navigate('/admin/addQuestion',
+        navigate(`${routePrefix}/addQuestion`,
             {
                 state: {
                     syllabusName: syllabusName,
@@ -120,7 +122,7 @@ function TrainingQuestion() {
     };
 
     const handleEditClick = (question) => {
-        navigate('/admin/addQuestion/', {
+        navigate(`${routePrefix}/addQuestion`, {
             state: {
                 syllabusName: syllabusName,
                 bookName: bookName,
@@ -170,10 +172,7 @@ function TrainingQuestion() {
 
         // console.log('is active', req.isactive);
 
-
-
         setLoading(true);
-
 
         try {
             const response = await apiPost('/updateQuestion', req);
@@ -202,7 +201,7 @@ function TrainingQuestion() {
     }
 
     const handleNavigate = () => {
-        navigate('/admin/trainingChapter', {
+        navigate(`${routePrefix}/trainingChapter`, {
             state: {
                 syllabusTitle: syllabusName,
                 syllabusID: syllabusid,
@@ -228,7 +227,7 @@ function TrainingQuestion() {
             >
 
                 <Grid sx={{ display: 'flex', alignItems: 'center', gap: '10px' }} mb={2}>
-                    <CustomTypography text={syllabusName} onClick={() => navigate('/admin/trainingsyllabus')} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
+                    <CustomTypography text={syllabusName} onClick={() => navigate(`${routePrefix}/trainingSyllabus`)} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
                     <CustomTypography text='>' sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' } }} />
                     <CustomTypography text={bookName} onClick={handleNavigate} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
                     <CustomTypography text='>' sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' } }} />

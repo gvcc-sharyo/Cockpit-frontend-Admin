@@ -2,6 +2,7 @@ import { apiPost } from "../../../api/axios";
 import { differenceInDays, addMonths } from "date-fns";
 import CustomTextField from "../../../components/admin/CustomTextField";
 import CustomButton from "../../../components/admin/CustomButton";
+import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 
 const styles = {
   container: {
@@ -18,16 +19,10 @@ const styles = {
     "&::-webkit-scrollbar": {
       width: "4px",
     },
-    "&::-webkit-scrollbar-track": {
-      backgroundColor: "#f1f1f1",
-      borderRadius: "10px",
-    },
+
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: "#EAB308",
       borderRadius: "10px",
-    },
-    "&::-webkit-scrollbar-thumb:hover": {
-      backgroundColor: "#EAB308",
     },
   },
   heading: {
@@ -186,10 +181,18 @@ const SubscriptionPlan = ({ instituteId }) => {
         instituteId,
         ...formData,
       });
-      console.log("Subscription plan response:", response);
+      snackbarEmitter(response.data.message, "success");
+      setFormData({
+        subscriptionAmt: "",
+        subscriptionPeriod: "",
+        transactionId: "",
+      });
+      // console.log("Subscription plan response:", response);
       setOpen(false);
+      subscriptionHistory();
     } catch (error) {
-      console.error("Error fetching subscription plan:", error);
+      snackbarEmitter("Error adding subscription plan", "error");
+      // console.error("Error fetching subscription plan:", error);
     }
   };
 
@@ -201,23 +204,21 @@ const SubscriptionPlan = ({ instituteId }) => {
 
       const formatted = response.data.data?.map((item, index) => ({
         ...item,
-        invoice: `INVOICE-${index + 1}`,
+        invoice: `Invoice-${index + 1}`,
         date: new Date(item.createdAt).toLocaleDateString(),
         status: item.status === "Active" ? "Paid" : "Cancelled",
         amount: `₹${item.subscriptionAmt}`,
       }));
 
       setSubscriptionsHistory(formatted);
-      console.log("Subscription history response:", response);
+      // console.log("Subscription history response:", response);
     } catch (error) {
       console.error("Error fetching subscription history:", error);
     }
   };
-
   useEffect(() => {
-   
     subscriptionHistory();
-  }, []);
+  },[]);
 
   let latestSubscription = null;
 
@@ -251,6 +252,9 @@ const SubscriptionPlan = ({ instituteId }) => {
   let timeDiff = endDate.getTime() - today.getTime();
   let daysLeft = Math.max(Math.ceil(timeDiff / (1000 * 60 * 60 * 24)), 0);
 
+  console.log("subscriptionHistory", subscriptionsHistory);
+  
+
   return (
     <>
       <Paper
@@ -264,13 +268,11 @@ const SubscriptionPlan = ({ instituteId }) => {
         <Grid container spacing={2} alignItems="center">
           <Grid size={{ xs: 12, md: 8 }}>
             <Typography sx={styles.leftGrid.title}>
-              Subscription Plan
-            </Typography>
-            <Typography sx={styles.leftGrid.subtitle}>
-              Your subscription plan will expire soon. Please upgrade!
+              {" "}
+              Subscription Plan{" "}
             </Typography>
             <Typography sx={styles.leftGrid.price}>
-              ₹1500 <span style={{ fontWeight: 400 }}>/ 1 month</span>
+              {amount} <span style={{ fontWeight: 400 }}>/ {period} month</span>{" "}
             </Typography>
           </Grid>
 
@@ -356,7 +358,7 @@ const SubscriptionPlan = ({ instituteId }) => {
             justifyContent: "space-between",
           }}
         >
-          <Typography variant="h6">Add Institution</Typography>
+          <Typography variant="h6">Update Subscription</Typography>
           <IconButton onClick={() => setOpen(false)}>
             <CloseIcon />
           </IconButton>
@@ -377,7 +379,7 @@ const SubscriptionPlan = ({ instituteId }) => {
             <Grid size={{ xs: 12, md: 6 }}>
               <CustomTextField
                 label="Subscription Period"
-                name="period"
+                name="subscriptionPeriod" 
                 select
                 fullWidth
                 required
@@ -404,7 +406,7 @@ const SubscriptionPlan = ({ instituteId }) => {
 
         <DialogActions sx={{ justifyContent: "center", pb: 3 }}>
           <CustomButton
-            children="Add"
+            children="Update"
             bgColor="#EAB308"
             sx={{ width: "20%" }}
             onClick={() => {

@@ -1,10 +1,11 @@
 import AdminRoute from './routers/AdminRoute';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
-    <div>
+    // <AuthProvider>
       <AdminRoute />
-    </div>
+    // </AuthProvider>
   );
 }
 

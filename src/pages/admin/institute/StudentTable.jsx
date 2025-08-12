@@ -10,7 +10,6 @@ const styles = {
     height: "auto",
     maxHeight: "600px", 
     overflow: "auto",
-
    
     "&::-webkit-scrollbar": {
       width: "4px",
@@ -69,25 +68,7 @@ const styles = {
     mr: 1,
   },
 
-  paginationInput: {
-    width: "40px",
-    "& .MuiOutlinedInput-root": {
-      height: "30px",
-      borderRadius: "8px",
-      fontFamily: "Inter",
-      fontWeight: 600,
-      fontSize: "14px",
-      color: "#EAB308",
-      borderColor: "#EAB308",
-    },
-    "& .MuiOutlinedInput-notchedOutline": {
-      borderColor: "#EAB308",
-    },
-    "& .MuiInputBase-input": {
-      textAlign: "center",
-      padding: "5px 8px",
-    },
-  },
+ 
 };
 
 
@@ -95,10 +76,6 @@ const styles = {
 function StudentsTable({ instituteId }) {
 
    const [students, setStudents] = useState([]);
-
-
-
-
 
 
   const getInstituteDetails = async () => {
@@ -133,15 +110,7 @@ function StudentsTable({ instituteId }) {
       <TableContainer>
         <Table stickyHeader>
           <TableHead>
-            <TableRow>
-              {[
-                "S/N",
-                "First Name",
-                "Last Name",
-                "Gender",
-                "Phone Number",
-                "Action",
-              ].map((head, idx) => (
+            <TableRow>{["S/N","First Name","Last Name","Gender", "Phone Number", ].map((head, idx) => (
                 <TableCell key={idx} sx={styles.tableHeadCell}>
                   {head}
                 </TableCell>
@@ -156,7 +125,7 @@ function StudentsTable({ instituteId }) {
                 <TableCell sx={styles.tableCell}>{row.lastName}</TableCell>
                 <TableCell sx={styles.tableCell}>{row.gender}</TableCell>
                 <TableCell sx={styles.tableCell}>{row.phone}</TableCell>
-                <TableCell sx={styles.tableCell}><IconButton><img src="/images/edit.svg" alt="Edit" style={{ width: '20px', height: '20px' }} /></IconButton></TableCell>
+                {/* <TableCell sx={styles.tableCell}><IconButton><img src="/images/edit.svg" alt="Edit" style={{ width: '20px', height: '20px' }} /></IconButton></TableCell> */}
               </TableRow>
             ))}
           </TableBody>

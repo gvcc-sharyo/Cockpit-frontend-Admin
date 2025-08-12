@@ -4,8 +4,10 @@ import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import CustomTextField from "../../../components/admin/CustomTextField";
 import CustomButton from "../../../components/admin/CustomButton";
 import CustomTypography from "../../../components/admin/CustomTypography";
+import { getAdminRoutePrefix } from "../../../utils/RoutePrefix";
 
 function TrainingSyllabus() {
+  const routePrefix = getAdminRoutePrefix();
   const [syllabus, setSyllabus] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -45,7 +47,7 @@ function TrainingSyllabus() {
 
   const navigate = useNavigate();
   const handleClick = (item) => {
-    navigate('/admin/trainingChapter', {
+    navigate(`${routePrefix}/trainingChapter`, {
       state: {
         syllabusID: item._id,
         syllabusTitle: item.title,

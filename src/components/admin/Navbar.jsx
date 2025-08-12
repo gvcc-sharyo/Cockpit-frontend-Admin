@@ -2,12 +2,14 @@ import { snackbarEmitter } from './CustomSnackbar';
 import { apiGet } from '../../api/axios';
 import CustomButton from './CustomButton';
 import CustomTypography from './CustomTypography';
+import { getAdminRoutePrefix } from '../../utils/RoutePrefix';
+import { useAuth } from '../../context/AuthContext';
 
 const Navbar = ({ title, children }) => {
+  const { logout, adminId, instituteId, instituteToken, adminToken } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const adminId = localStorage.getItem('adminId');
+  const routePrefix = getAdminRoutePrefix();
 
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -19,7 +21,7 @@ const Navbar = ({ title, children }) => {
   const isActive = (path) => location.pathname === path;
 
   const handleNavigate = (route) => {
-    navigate(route);
+    navigate(`${routePrefix}${route}`);
     if (sidebarOpen) setSidebarOpen(false);
   };
 
@@ -39,14 +41,15 @@ const Navbar = ({ title, children }) => {
 
   const getProfile = async () => {
     try {
+
       const response = await apiGet(`/admin/getAdmin?adminId=${adminId}`);
       // console.log("admin data",response.data.data);
-      
+
 
       if (response.data.status === 200) {
         setAdminData({
           profileimage: response.data.data.profileimage,
-          firstname: response.data.data.firstname,
+          firstname: response.data.data.firstname || response.data.data.instituteName,
           role: response.data.data.role,
         });
 
@@ -59,9 +62,30 @@ const Navbar = ({ title, children }) => {
     }
   };
 
-  useEffect(() => {
-    getProfile();
+ 
+
+  const[instituteData, setInstituteData] = useState({});
+
+    const getInstituteProfile = async () => {
+      try {
+        const response = await apiGet('/getInstitute');
+
+        if (response.data.status === 200) {
+          setInstituteData(response.data.data);
+        }
+        else {
+          snackbarEmitter(response.data.message, 'error');
+        }
+      } catch (error) {
+        snackbarEmitter("Error fetching profile", "error");
+      }
+    };
+
+     useEffect(() => {
+      instituteId ? getInstituteProfile() :  getProfile();
+  
   }, []);
+    
 
   const [open, setOpen] = useState(false);
   // const navigate = useNavigate();
@@ -75,18 +99,20 @@ const Navbar = ({ title, children }) => {
   };
 
   const confirmLogout = () => {
-    localStorage.removeItem('adminToken');
     setOpen(false);
+    logout();
     navigate('/adminlogin');
   };
 
   const suggestionsList = [
-    { label: 'Dashboard', path: '/' },
-    { label: 'Profile', path: '/admin/profile' },
-    { label: 'Feedback', path: '/admin/feedback' },
-    { label: 'Syllabus', path: '/admin/trainingsyllabus' },
-    { label: 'Training', path: '/admin/trainingAdd' },
-    { label: 'Pricing', path: '/admin/pricing' },
+
+    { label: 'Dashboard', path: `${routePrefix}/dashboard` },
+    { label: 'Profile', path: `${routePrefix}/profile` },
+    { label: 'Feedback', path: `${routePrefix}/feedback` },
+    { label: 'Syllabus', path: `${routePrefix}/trainingSyllabus` },
+    { label: 'Training', path: `${routePrefix}/trainingAdd` },
+    ...(!instituteId ? [{ label: 'Pricing', path: `${routePrefix}/pricing` }] : [])
+
   ];
 
   const [query, setQuery] = useState('');
@@ -147,10 +173,10 @@ const Navbar = ({ title, children }) => {
           </Box>
 
           {/* Logo */}
-          <Box sx={{ textAlign: 'center', mb: 3, cursor: 'pointer' }} onClick={() => handleNavigate('/')}>
+          <Box sx={{ textAlign: 'center', mb: 3, cursor: 'pointer' }} onClick={() => handleNavigate('/dashboard')}>
             <img
-              src="/images/full logo.svg"
-              alt="Logo"
+              src={instituteId ? instituteData?.institeDetails?.logo : '/images/full logo.svg'}
+              alt="Add Logo"
               style={{ width: '100px', height: 'auto', marginBottom: '10px' }}
             />
           </Box>
@@ -160,12 +186,12 @@ const Navbar = ({ title, children }) => {
               {/* Dashboard */}
               <ListItem
                 button
-                onClick={() => handleNavigate('/')}
+                onClick={() => handleNavigate('/dashboard')}
                 sx={{
                   fontWeight: 'bold',
                   borderRadius: 2,
                   mb: 1,
-                  bgcolor: isActive('/') ? '#EAB308' : 'white',
+                  bgcolor: isActive(`${routePrefix}/dashboard`) ? '#EAB308' : 'white',
                   // color: isActive('/admin/dashboard') ? 'white' : 'black',
                   cursor: 'pointer',
                   ":hover": {
@@ -176,17 +202,17 @@ const Navbar = ({ title, children }) => {
                 <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
                   <img src="/images/dashboard.svg" alt="Dashboard" />
                 </ListItemIcon>
-                <CustomTypography text='Dashboard' color={isActive('/') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
+                <CustomTypography text='Dashboard' color={isActive(`${routePrefix}/dashboard`) ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
               </ListItem>
 
               <ListItem
                 button
-                onClick={() => handleNavigate('/admin/trainingsyllabus')}
+                onClick={() => handleNavigate('/trainingsyllabus')}
                 sx={{
                   fontWeight: 'bold',
                   borderRadius: 2,
                   mb: 1,
-                  bgcolor: isActive('/admin/trainingsyllabus') ? '#EAB308' : 'white',
+                  bgcolor: isActive(`${routePrefix}/trainingsyllabus`) ? '#EAB308' : 'white',
                   cursor: 'pointer',
                   ":hover": {
                     color: 'black'
@@ -196,7 +222,7 @@ const Navbar = ({ title, children }) => {
                 <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
                   <img src="/images/syllabus.svg" alt="Syllabus" />
                 </ListItemIcon>
-                <CustomTypography text='Syllabus' color={isActive('/admin/trainingsyllabus') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
+                <CustomTypography text='Syllabus' color={isActive(`${routePrefix}/trainingsyllabus`) ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
               </ListItem>
 
               {/* Database collapsible */}
@@ -220,120 +246,132 @@ const Navbar = ({ title, children }) => {
 
               <Collapse in={openDatabase} timeout="auto" unmountOnExit>
                 {/* <List component="div" disablePadding> */}
+                <ListItem
+                  button
+                  sx={{
+                    pl: 4,
+                    mb: 1,
+                    borderRadius: 2,
+                    bgcolor: isActive(`${routePrefix}/trainingAdd`) ? '#EAB308' : 'white',
+                    // color: isActive('/admin/trainingAdd') ? 'white' : 'black',
+                    cursor: 'pointer',
+                    ":hover": {
+                      color: 'black'
+                    }
+                  }}
+                  onClick={() => handleNavigate('/trainingAdd')}
+                >
+                  <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
+                    <img src="/images/database.svg" alt="img" />
+                  </ListItemIcon>
+                  <CustomTypography text='Training' color={isActive(`${routePrefix}/trainingAdd`) ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
+                </ListItem>
+
+                {
+                  instituteToken &&
                   <ListItem
                     button
                     sx={{
                       pl: 4,
                       mb: 1,
                       borderRadius: 2,
-                      bgcolor: isActive('/admin/trainingAdd') ? '#EAB308' : 'white',
+                      bgcolor: isActive(`${routePrefix}/test`) ? '#EAB308' : 'white',
                       // color: isActive('/admin/trainingAdd') ? 'white' : 'black',
                       cursor: 'pointer',
                       ":hover": {
                         color: 'black'
                       }
                     }}
-                    onClick={() => handleNavigate('/admin/trainingAdd')}
+                    onClick={() => handleNavigate('/test')}
                   >
                     <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
                       <img src="/images/database.svg" alt="img" />
                     </ListItemIcon>
-                    <CustomTypography text='Training' color={isActive('/admin/trainingAdd') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
+                    <CustomTypography text='Test' color={isActive(`${routePrefix}/test`) ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
                   </ListItem>
+                }
 
-                      {/* <ListItem
-                    button
-                    sx={{
-                      pl: 4,
-                      mb: 1,
-                      borderRadius: 2,
-                      bgcolor: isActive('/admin/test') ? '#EAB308' : 'white',
-                      // color: isActive('/admin/trainingAdd') ? 'white' : 'black',
-                      cursor: 'pointer',
-                      ":hover": {
-                        color: 'black'
-                      }
-                    }}
-                    onClick={() => handleNavigate('/admin/test')}
-                  >
-                    <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
-                      <img src="/images/database.svg" alt="img" />
-                    </ListItemIcon>
-                    <CustomTypography text='Test' color={isActive('/admin/test') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
-                  </ListItem> */}
-
-                  <ListItem
-                    button
-                    sx={{
-                      pl: 4,
-                      borderRadius: 2,
-                      bgcolor: isActive('/admin/feedback') ? '#EAB308' : 'white',
-                      // color: isActive('/admin/feedback') ? 'white' : 'black',
-                      cursor: 'pointer',
-                    }}
-                    onClick={() => handleNavigate('/admin/feedback')}
-                  >
-                    <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
-                      <img src="/images/database.svg" alt="Feedback" />
-                    </ListItemIcon>
-                    <CustomTypography text='Feedback' color={isActive('/admin/feedback') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
-                  </ListItem>
+                <ListItem
+                  button
+                  sx={{
+                    pl: 4,
+                    borderRadius: 2,
+                    bgcolor: isActive(`${routePrefix}/feedback`) ? '#EAB308' : 'white',
+                    // color: isActive('/admin/feedback') ? 'white' : 'black',
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => handleNavigate('/feedback')}
+                >
+                  <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
+                    <img src="/images/database.svg" alt="Feedback" />
+                  </ListItemIcon>
+                  <CustomTypography text='Feedback' color={isActive(`${routePrefix}/feedback`) ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
+                </ListItem>
                 {/* </List> */}
               </Collapse>
 
+              {
+                adminToken &&
+                <ListItem
+                  button
+                  onClick={() => handleNavigate('/pricing')}
+                  sx={{
+                    fontWeight: 'bold',
+                    borderRadius: 2,
+                    mb: 1,
+                    bgcolor: isActive(`${routePrefix}/pricing`) ? '#EAB308' : 'white',
+                    // color: isActive('/admin/pricing') ? 'white' : 'black',
+                    cursor: 'pointer',
+                    ":hover": {
+                      color: 'black'
+                    },
+
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
+                    <img src="/images/donate.svg" alt="Pricing" />
+                  </ListItemIcon>
+                  <CustomTypography text='Pricing' color={isActive(`${routePrefix}/pricing`) ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
+                </ListItem>
+
+              }
+
+
+              {
+                adminToken &&
+                <ListItem
+                  button
+                  onClick={() => handleNavigate('/institution')}
+                  sx={{
+                    fontWeight: 'bold',
+                    borderRadius: 2,
+                    mb: 1,
+                    bgcolor: isActive(`${routePrefix}/institution`) ? '#EAB308' : 'white',
+                    // color: isActive('/admin/pricing') ? 'white' : 'black',
+                    cursor: 'pointer',
+                    ":hover": {
+                      color: 'black'
+                    },
+
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
+                    <img src="/images/institution.svg" alt="institution" />
+                  </ListItemIcon>
+                  <CustomTypography text='Institution' color={isActive(`${routePrefix}/institution`) ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
+                </ListItem>
+              }
+
+
+
               <ListItem
                 button
-                onClick={() => handleNavigate('/admin/pricing')}
+                onClick={() => handleNavigate('/studentProfile')}
                 sx={{
                   fontWeight: 'bold',
                   borderRadius: 2,
                   mb: 1,
-                  bgcolor: isActive('/admin/pricing') ? '#EAB308' : 'white',
-                  // color: isActive('/admin/pricing') ? 'white' : 'black',
-                  cursor: 'pointer',
-                  ":hover": {
-                    color: 'black'
-                  },
-
-                }}
-              >
-                <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
-                  <img src="/images/donate.svg" alt="Pricing" />
-                </ListItemIcon>
-                <CustomTypography text='Pricing' color={isActive('/admin/pricing') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
-              </ListItem>
-
-
-               {/* <ListItem
-                button
-                onClick={() => handleNavigate('/admin/institution')}
-                sx={{
-                  fontWeight: 'bold',
-                  borderRadius: 2,
-                  mb: 1,
-                  bgcolor: isActive('/admin/institution') ? '#EAB308' : 'white',
-                  // color: isActive('/admin/pricing') ? 'white' : 'black',
-                  cursor: 'pointer',
-                  ":hover": {
-                    color: 'black'
-                  },
-
-                }}
-              >
-                <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
-                  <img src="/images/institution.svg" alt="institution" />
-                </ListItemIcon>
-                <CustomTypography text='Institution' color={isActive('/admin/institution') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
-              </ListItem> */}
-
-              {/* <ListItem
-                button
-                onClick={() => handleNavigate('/admin/studentProfile')}
-                sx={{
-                  fontWeight: 'bold',
-                  borderRadius: 2,
-                  mb: 1,
-                  bgcolor: isActive('/admin/studentProfile') ? '#EAB308' : 'white',
+                  bgcolor: isActive(`${routePrefix}/studentProfile`) ? '#EAB308' : 'white',
                   // color: isActive('/admin/pricing') ? 'white' : 'black',
                   cursor: 'pointer',
                   ":hover": {
@@ -345,8 +383,35 @@ const Navbar = ({ title, children }) => {
                 <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
                   <img src="/images/3-User.svg" alt="img" />
                 </ListItemIcon>
-                <CustomTypography text='Student profile' color={isActive('/admin/studentProfile') ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
-              </ListItem> */}
+                <CustomTypography text='Student profile' color={isActive(`${routePrefix}/studentProfile`) ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
+              </ListItem>
+
+
+              {
+                adminToken &&
+                <ListItem
+                  button
+                  onClick={() => handleNavigate('/advertise')}
+                  sx={{
+                    fontWeight: 'bold',
+                    borderRadius: 2,
+                    mb: 1,
+                    bgcolor: isActive(`${routePrefix}/advertise`) ? '#EAB308' : 'white',
+                    // color: isActive('/admin/pricing') ? 'white' : 'black',
+                    cursor: 'pointer',
+                    ":hover": {
+                      color: 'black'
+                    },
+
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
+                    <img src="/images/3-User.svg" alt="img" />
+                  </ListItemIcon>
+                  <CustomTypography text='Advertise' color={isActive(`${routePrefix}/advertise`) ? 'white' : '#8F95B2'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={500} />
+                </ListItem>
+              }
+
 
             </List>
           </Box>
@@ -396,7 +461,7 @@ const Navbar = ({ title, children }) => {
         </DialogContent>
         <DialogActions sx={{ display: 'flex', gap: 0.5, mb: 1 }} >
           <CustomButton children='Logout' onClick={confirmLogout} bgColor='#EAB308' sx={{ width: { xs: '50%', md: '30%', sm: '30%' }, fontSize: { xs: '11px', md: '13px', sm: '13px' } }} />
-           <CustomButton children='Cancel' onClick={handleClose} bgColor='#BF0000' sx={{ width: { xs: '50%', md: '30%', sm: '30%' }, fontSize: { xs: '11px', md: '13px', sm: '13px' } }} />
+          <CustomButton children='Cancel' onClick={handleClose} bgColor='#BF0000' sx={{ width: { xs: '50%', md: '30%', sm: '30%' }, fontSize: { xs: '11px', md: '13px', sm: '13px' } }} />
         </DialogActions>
       </Dialog>
 
@@ -434,18 +499,18 @@ const Navbar = ({ title, children }) => {
             {/* Logo center */}
             <Box sx={{ flexGrow: 1, textAlign: 'center' }}>
               <img
-                src="/images/full logo.svg"
-                alt="Logo"
+                src={instituteId ? instituteData?.institeDetails?.logo : '/images/full logo.svg'}
+                alt="Add Logo"
                 style={{ width: '80px', height: 'auto' }}
               />
             </Box>
 
             {/* Admin text */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, cursor: 'pointer' }} onClick={() => handleNavigate('/admin/profile')}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, cursor: 'pointer' }} onClick={() => handleNavigate('/profile')}>
               <Avatar sx={{ width: 25, height: 25, }}
-                src={adminData.profileimage}
+                src={instituteId ? instituteData?.institeDetails?.profileimage : adminData?.profileimage}
               >
-                {adminData?.firstname?.charAt(0).toUpperCase()}
+                {instituteId? instituteData?.institeDetails?.instituteName :  adminData?.firstname?.charAt(0).toUpperCase()}
 
               </Avatar>
             </Box>
@@ -614,9 +679,9 @@ const Navbar = ({ title, children }) => {
                 <NotificationsIcon />
               </IconButton> */}
             </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }} onClick={() => handleNavigate('/admin/profile')}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }} onClick={() => handleNavigate('/profile')}>
               <Avatar sx={{ width: 40, height: 40 }}
-                src={adminData.profileimage}
+                src={instituteId ? instituteData?.institeDetails?.profileimage : adminData.profileimage}
               >
                 {adminData?.firstname?.charAt(0)?.toUpperCase()}</Avatar>
               <Grid sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -624,7 +689,7 @@ const Navbar = ({ title, children }) => {
                 {/* <Typography variant="body1">
                   {adminData?.username}
                 </Typography> */}
-                <CustomTypography text={adminData?.firstname} fontSize={{ xs: '12px', md: '14px', sm: '14px' }} mb={0} fontWeight={600} />
+                <CustomTypography text={instituteId? instituteData?.institeDetails?.instituteName : adminData?.firstname} fontSize={{ xs: '12px', md: '14px', sm: '14px' }} mb={0} fontWeight={600} />
                 {/* <Typography variant="caption" color="text.secondary">
                   {adminData?.role === "super_admin" ? "Super Admin" : "Admin"}
                   
