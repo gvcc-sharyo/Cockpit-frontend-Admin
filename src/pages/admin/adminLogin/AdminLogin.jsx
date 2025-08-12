@@ -132,6 +132,9 @@ const styles = {
 
 function AdminLogin() {
 
+  console.log("admin login page");
+  
+
   const { setAdminToken, setAdminId, setInstituteToken, setInstituteId } = useAuth();
   const [activeForm, setActiveForm] = useState('login');
 
