@@ -139,17 +139,17 @@ function Feedback() {
   const handleModalOpen = (report) => {
     setOpenModal(true);
     setFormData({
-      syllabus: report.questionId?.syllabus,
-      book: report.questionId?.book,
-      chapter: report.questionId?.chapter,
-      syllabusId: report.questionId?.syllabusId,
-      bookId: report.questionId?.bookId,  
-      chapterId: report.questionId?.chapterId,
+     syllabus: report.questionsDetails[0]?.syllabusId.title,
+      book: report.questionsDetails[0]?.bookId.bookTitle,
+      chapter: report.questionsDetails[0]?.chapterId.chaptername,
+      syllabusId: report.questionsDetails[0]?.syllabusId._id,
+      bookId: report.questionsDetails[0]?.bookId._id,  
+      chapterId: report.questionsDetails[0]?.chapterId._id,
       question: {
-        _id: report.questionId._id,
-        question: report.questionId.question,
-        options: report.questionId.options,
-        explanation: report.questionId.explanation,
+        _id: report.questionsDetails[0]?._id,
+        question: report.questionsDetails[0]?.question,
+        options: report.questionsDetails[0]?.options,
+        explanation: report.questionsDetails[0]?.explanation,
       },
     });
   }
@@ -229,7 +229,7 @@ function Feedback() {
                     <CustomTypography
                       fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
                       fontWeight={500}
-                      text={`${report?.userId?.username} has ${report?.reason === '' ? 'reported a' : 'filed answer for a'}  question on ${report?.questionId?.syllabus}`}
+                      text={`${report?.userId?.username} has ${report?.reason === '' ? 'reported a' : 'filed answer for a'}  question on ${report?.questionsDetails[0]?.syllabusId?.title}`}
                       mb={0} />
 
                     <CustomTypography
@@ -272,7 +272,7 @@ function Feedback() {
                       <CustomTypography
                         fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
                         fontWeight={500}
-                        text={report?.questionId?.question}
+                        text={report?.questionsDetails[0]?.question}
                         mb={0} />
 
                       <CustomTypography
@@ -286,7 +286,7 @@ function Feedback() {
                       <CustomTypography
                         fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
                         fontWeight={500}
-                        text={report?.questionId?.explanation}
+                        text={report?.questionsDetails[0]?.explanation}
                         mb={0} />
                     </Box>
                   </Grid>
