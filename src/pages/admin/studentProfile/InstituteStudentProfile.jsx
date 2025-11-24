@@ -3,7 +3,7 @@ import CustomButton from "../../../components/admin/CustomButton";
 import CustomTypography from "../../../components/admin/CustomTypography";
 import CustomTable from "../../../components/admin/CustomTable";
 import CustomTextField from "../../../components/admin/CustomTextField";
-import { apiGet,  apiPost } from "../../../api/axios";
+import { apiGet, apiPost } from "../../../api/axios";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import { getAdminRoutePrefix } from "../../../utils/RoutePrefix";
 
@@ -65,7 +65,7 @@ function AdminStudentProfile() {
   const handleSubmit = async () => {
     const errors = handleErrors();
 
-    if (errors.length > 0) {
+    if (Object.key(errors).length > 0) {
       return;
     }
 
@@ -96,7 +96,7 @@ function AdminStudentProfile() {
         id: editingStudentId,
         ...formData,
       });
-       setTimeout(() => {
+      setTimeout(() => {
         if (response.status === 200) {
           setLoading(false);
           snackbarEmitter(response.data.message, "success");
@@ -144,7 +144,7 @@ function AdminStudentProfile() {
       email: student.email || "",
       phone: student.phone || "",
       gender: student.gender || "",
-      password: student.password || "",
+      password: "",
       address: student.address || "",
     });
     console.log("Form data set for edit:", formData);
@@ -213,7 +213,6 @@ function AdminStudentProfile() {
     setFormData((prev) => ({ ...prev, password }));
     console.log("Generated password:", password);
   };
-
 
   const styles = {
     container: {
@@ -285,7 +284,7 @@ function AdminStudentProfile() {
       <Dialog open={openModal} onClose={handleModalClose} fullWidth>
         <DialogTitle sx={styles.dialogTitle}>
           <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-            Add Student
+            {editingStudentId ? "Edit Student" : "Add Student"}
           </Typography>
           <IconButton onClick={handleModalClose}>
             <CloseIcon />
