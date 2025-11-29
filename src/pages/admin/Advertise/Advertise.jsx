@@ -252,8 +252,8 @@ function Advertise() {
             </IconButton>
           </DialogTitle>
           <DialogContent dividers>
-            <Grid container sx={styles.formGrid}>
-              <Grid size={{ xs: 12, md: 5 }}>
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <CustomTextField
                   label="Link*"
                   name="link"
@@ -265,10 +265,11 @@ function Advertise() {
                 />
               </Grid>
 
-              <Grid size={{ xs: 12, md: 5 }}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <CustomTextField
-                  label="Time Limit*"
+                  label="Time Limit (Hours)*"
                   name="timeLimit"
+                  type="number"
                   value={formData.timeLimit || ""}
                   onChange={handleChange}
                   placeholder="Enter"
@@ -277,7 +278,7 @@ function Advertise() {
                 />
               </Grid>
 
-              <Grid size={{ xs: 12, md: 7 }}>
+              <Grid size={{ xs: 12, md: 12 }}>
                 <CustomTextField
                   label="Image*"
                   name="image"
@@ -287,7 +288,44 @@ function Advertise() {
                       : formData.image || ""
                   }
                   placeholder="Click to upload image"
+                  readOnly
+                  error={!!formErrs.image}
+                  helperText={formErrs.image}
                   onClick={handleFileClick}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <CustomButton
+                          children="Choose File"
+                          bgColor="#EAB308"
+                          onClick={(e) => {
+                            e.stopPropagation(); // prevent triggering textfield click
+                            handleFileClick();
+                          }}
+                          sx={{
+                            // height: "40px",
+                            fontSize: "12px",
+                            fontWeight: "bold",
+                            // borderRadius: "8px",
+                            // padding: "6px",
+                          }}
+                        />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+
+              {/* <Grid size={{ xs: 12, md: 7 }}>
+                <CustomTextField
+                  label="Image*"
+                  name="image"
+                  value={
+                    formData.image instanceof File
+                      ? formData.image.name
+                      : formData.image || ""
+                  }
+                  placeholder="Click to upload image"
                   readOnly
                   error={!!formErrs.image}
                   helperText={formErrs.image}
@@ -309,7 +347,7 @@ function Advertise() {
                     mt: 3,
                   }}
                 />
-              </Grid>
+              </Grid> */}
 
               <input
                 type="file"
@@ -322,7 +360,7 @@ function Advertise() {
 
             <Grid
               item
-              sx={{ display: "flex", justifyContent: "center" }}
+              sx={{ display: "flex", justifyContent: "center", mt:2 }}
               size={{ xs: 12, md: 6 }}
             >
               <CustomButton

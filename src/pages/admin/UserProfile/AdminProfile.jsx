@@ -1,6 +1,7 @@
 import { apiGet, apiPost } from "../../../api/axios";
 import Navbar from "../../../components/admin/Navbar";
 import CustomTextField from "../../../components/admin/CustomTextField";
+import CustomTypography from "../../../components/admin/CustomTypography.jsx";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import CustomButton from "../../../components/admin/CustomButton";
 import styles from "./profilestyles.js";
@@ -167,15 +168,16 @@ const handleSubmit = async (e) => {
             </Grid>
             {inputFields.map((field) => (
               <Grid key={field.name} size={{ xs: 12, md: 6 }}>
-               <CustomTextField name={field.name} placeholder={field.placeholder} value={field.value} onChange={handleChange} required error={!!errors[field.name]} helperText={errors[field.name]}
+               <CustomTextField name={field.name} label={field.placeholder} placeholder={field.placeholder} value={field.value} onChange={handleChange} required error={!!errors[field.name]} helperText={errors[field.name]}
                {...(field.disabled && { disabled: true })}  />
               </Grid>
             ))}
             <Grid size={{ xs: 12, md: 6 }}>
-             <TextField fullWidth placeholder="Date of Birth" type="date" name="dob" required value={formData.dob} onChange={handleChange} InputLabelProps={{ shrink: true }} variant="outlined" sx={styles.dobTextField} error={!!errors.dob} helperText={errors.dob} />
+               <CustomTypography text={"Date of Birth"} />
+             <TextField fullWidth  placeholder="Date of Birth" type="date" name="dob" required value={formData.dob} onChange={handleChange} InputLabelProps={{ shrink: true }} variant="outlined" sx={styles.dobTextField} error={!!errors.dob} helperText={errors.dob} />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <CustomTextField select required placeholder="Gender" name="gender" value={formData.gender} onChange={handleChange} SelectProps={{ native: false }} error={!!errors.gender} helperText={errors.gender}>  
+              <CustomTextField select required label={"Gender"} placeholder="Gender" name="gender" value={formData.gender} onChange={handleChange} SelectProps={{ native: false }} error={!!errors.gender} helperText={errors.gender}>  
                 <MenuItem value="male">Male</MenuItem>
                 <MenuItem value="female">Female</MenuItem>
                 <MenuItem value="other">Other</MenuItem>
@@ -183,7 +185,7 @@ const handleSubmit = async (e) => {
             </Grid>
             {addressFields.map((field) => (
               <Grid key={field.name} size={field.size}>
-                <CustomTextField required name={field.name} placeholder={field.placeholder} value={field.value} onChange={handleChange} error={!!errors[field.name]} helperText={errors[field.name]}
+                <CustomTextField required label={field.name} name={field.name} placeholder={field.placeholder} value={field.value} onChange={handleChange} error={!!errors[field.name]} helperText={errors[field.name]}
                  />
               </Grid>
             ))}

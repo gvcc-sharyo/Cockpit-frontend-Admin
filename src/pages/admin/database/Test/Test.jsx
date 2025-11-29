@@ -76,18 +76,18 @@ function Test() {
   };
 
   const handleSyllabusChange = async (e) => {
-  const syllabusId = e.target.value;
+    const syllabusId = e.target.value;
 
-  // Update form state
-  setFormData((prev) => ({
-    ...prev,
-    syllabusId,
-    bookId: "",
-  }));
+    // Update form state
+    setFormData((prev) => ({
+      ...prev,
+      syllabusId,
+      bookId: "",
+    }));
 
-  // Fetch books for the selected syllabus
-  await getBooks(syllabusId);
-};
+    // Fetch books for the selected syllabus
+    await getBooks(syllabusId);
+  };
 
   const [books, setBooks] = useState([]);
 
@@ -157,13 +157,13 @@ function Test() {
 
   const handleNavigate = (id) => {
     // console.log("Eye Icon Clicked", id);
-      navigate(`${routePrefix}/testQuestions`, { state: { testId : id} });
+    navigate(`${routePrefix}/testQuestions`, { state: { testId: id } });
   };
 
   const tableHeaders = [
     "Sr No",
     "Test Name",
-    "Marks",
+    "Total Marks",
     "Duration (in Minutes)",
     "Action",
   ];
@@ -173,7 +173,7 @@ function Test() {
       <Box>{test.testName}</Box>,
       <Box>{test.marks}</Box>,
       <Box>{test.duration}</Box>,
-      <Box sx={{display:{xs:"flex",md:"inline"}}}>
+      <Box sx={{ display: { xs: "flex", md: "inline" } }}>
         <IconButton
           onClick={() => handleNavigate(test._id)}
           sx={{ color: "#EAB308" }}
@@ -241,7 +241,7 @@ function Test() {
             maxWidth={"100%"}
             tableHeaders={tableHeaders}
             tableData={tableData}
-            //   handleEdit={handleEdit}
+          //   handleEdit={handleEdit}
           />
         </Grid>
 
@@ -276,7 +276,7 @@ function Test() {
                   select
                   value={formData.syllabusId}
                   onChange={handleSyllabusChange}
-                 
+
                   error={!!errors.syllabusId}
                   helperText={errors.syllabusId}
                 >
@@ -311,6 +311,7 @@ function Test() {
                 <CustomTextField
                   label="Duration* (in Minutes)"
                   name="duration"
+                  type="number"
                   placeholder="Enter"
                   value={formData.duration}
                   onChange={(e) =>
@@ -323,8 +324,9 @@ function Test() {
 
               <Grid size={{ xs: 12, md: 5 }}>
                 <CustomTextField
-                  label="Marks*"
+                  label="Total Marks*"
                   name="marks"
+                  type="number"
                   placeholder="Enter"
                   value={formData.marks}
                   onChange={(e) =>
@@ -359,7 +361,7 @@ function Test() {
         >
           <DialogTitle>Confirm Deletion</DialogTitle>
           <DialogContent>
-            <Typography>Are you sure you want to delete </Typography>
+            <Typography>Are you sure you want to delete this test ?</Typography>
           </DialogContent>
           <DialogActions>
             <Button
@@ -372,7 +374,7 @@ function Test() {
             <Button
               onClick={handleConfirmDelete}
               variant="contained"
-            //   color="#EAB308"
+              //   color="#EAB308"
               sx={{ textTransform: "none", backgroundColor: "#EAB308" }}
             >
               Delete

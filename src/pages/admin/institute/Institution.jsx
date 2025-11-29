@@ -85,6 +85,7 @@ function Institution() {
 
   const handleModalOpen = () => setOpenModal(true);
   const handleModalClose = () => {
+    setId("");
     setOpenModal(false);
     setFormData({});
     setFormErrs({});

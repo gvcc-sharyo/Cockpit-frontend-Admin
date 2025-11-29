@@ -55,6 +55,7 @@ function CustomTable({ maxWidth = "100%", tableData = [], tableHeaders = [], han
     <Grid container>
       <TableContainer component={Paper} elevation={0} sx={{ ...styles.container, maxWidth }}>
         <Table stickyHeader>
+          {console.log(tableHeaders, "tableHeaders")}
           <TableHead>
             <TableRow>
               {tableHeaders.map((header, index) => (

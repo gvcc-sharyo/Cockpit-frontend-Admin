@@ -16,6 +16,8 @@ function TestQuestions() {
     const location = useLocation();
     const {testId} = location.state;
 
+    console.log(testId, "testId");
+    
     const [openStatusModal, setOpenStatusModal] = useState(false);
     const handleStatusModalOpen = () => setOpenStatusModal(true);
     const handleStatusModalClose = () => setOpenStatusModal(false);
