@@ -20,7 +20,7 @@ function SuperAdminStudentProfile() {
       }
     } catch (error) {
       console.error("Error fetching students:", error);
-      
+
       snackbarEmitter("Something went wrong", "error");
     }
   };
@@ -29,43 +29,32 @@ function SuperAdminStudentProfile() {
     getStudents();
   }, []);
 
-
-
-
-  const tableHeaders = [
-    "Sr No",
-    "Name",
-    "Email",
-    "Status",
-    "Subscription",
-  ];
+  const tableHeaders = ["Sr No", "Name", "Email", "Status", "Subscription"];
 
   const tableData = students.map((student) => ({
-     row: [
-      
-       student.username,
-       student.email, 
+    row: [
+      student.username,
+      student.email,
 
-       <CustomButton
-         children={student.isactive ? "Active" : "Inactive"}
-       
-          bgColor={student.isactive ? "#109CF1" : "#F44336"}
-          sx={{
-            width: { xs: "50px", sm: "60px", md: "70px" },
-            fontSize: { xs: "10px", sm: "11px", md: "12px" },
-          }}
-        />,
+      <CustomButton
+        children={student.isactive ? "Active" : "Inactive"}
+        bgColor={student.isactive ? "#109CF1" : "#F44336"}
+        sx={{
+          width: { xs: "50px", sm: "60px", md: "70px" },
+          fontSize: { xs: "10px", sm: "11px", md: "12px" },
+        }}
+      />,
 
-       <CustomButton
-         children={student.is_subscribed ? "Subscribed" : "Not Subscribed"}
-         loading={false}
-         bgColor={student.is_subscribed ? "#109CF1" : "#F44336"}
-         sx={{
-           width: "auto",
-           fontSize: { xs: "10px", sm: "11px", md: "12px" },
-         }}
-       />,
-     ],
+      <CustomButton
+        children={student.is_subscribed ? "Subscribed" : "Not Subscribed"}
+        loading={false}
+        bgColor={student.is_subscribed ? "#109CF1" : "#F44336"}
+        sx={{
+          width: "auto",
+          fontSize: { xs: "10px", sm: "11px", md: "12px" },
+        }}
+      />,
+    ],
   }));
 
   const styles = {
@@ -74,12 +63,11 @@ function SuperAdminStudentProfile() {
       justifyContent: "space-between",
       alignItems: "center",
     },
- 
   };
 
   return (
     <>
-    <Grid container sx={styles.container} size={{ xs: 12, sm: 11, md: 11 }}>
+      <Grid container sx={styles.container} size={{ xs: 12, sm: 11, md: 11 }}>
         <Grid size={{ xs: 12, sm: 12, md: 12 }}>
           <CustomTypography
             text="Students"
@@ -87,17 +75,14 @@ function SuperAdminStudentProfile() {
             fontSize={{ xs: "18px", md: "22px", sm: "20px" }}
           />
         </Grid>
-
-        
       </Grid>
       <Grid mt={2}>
-          <CustomTable
-            maxWidth={"100%"}
-            tableHeaders={tableHeaders}
-            tableData={tableData}
-            
-          />
-        </Grid>
+        <CustomTable
+          maxWidth={"100%"}
+          tableHeaders={tableHeaders}
+          tableData={tableData}
+        />
+      </Grid>
     </>
   );
 }

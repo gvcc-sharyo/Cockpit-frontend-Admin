@@ -7,8 +7,6 @@ import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import Navbar from "../../../components/admin/Navbar";
 import { getAdminRoutePrefix } from "../../../utils/RoutePrefix";
 
-
-
 const styles = {
   container: {
     display: "flex",
@@ -110,9 +108,8 @@ function Advertise() {
 
   const table = ads.map((ad, index) => ({
     row: [
-     
       new Date(ad.createdAt).toLocaleDateString(),
-      ad.link,
+      <Box sx={{ textAlign: "left", paddingLeft: "120px" }}>{ad.link}</Box>,
       ad.timeLimit,
       <CustomButton
         children={ad.isactive ? "Active" : "Inactive"}
@@ -175,7 +172,10 @@ function Advertise() {
     payload.append("image", formData.image);
 
     try {
-      const response = await apiPostUpload("/admin/createAdvertisement", payload);
+      const response = await apiPostUpload(
+        "/admin/createAdvertisement",
+        payload
+      );
       snackbarEmitter(response.data.message, "success");
       handleModalClose();
       fetchAds();
@@ -188,7 +188,7 @@ function Advertise() {
     if (!validate()) return;
 
     const payload = new FormData();
-    payload.append("advertisementId",id)
+    payload.append("advertisementId", id);
     payload.append("link", formData.link);
     payload.append("timeLimit", formData.timeLimit);
     if (formData.image instanceof File) {
@@ -196,7 +196,10 @@ function Advertise() {
     }
 
     try {
-      const response = await apiPostUpload(`/admin/updateAdvertisement`, payload);
+      const response = await apiPostUpload(
+        `/admin/updateAdvertisement`,
+        payload
+      );
       console.log(response);
       snackbarEmitter("Advertisement updated", "success");
       handleModalClose();
@@ -209,11 +212,11 @@ function Advertise() {
 
   return (
     <>
-      <Navbar title="Institution">
+      <Navbar title="Advertisement">
         <Grid container sx={styles.container}>
           <Grid size={{ xs: 6, sm: 6, md: 6 }}>
             <CustomTypography
-              text="Advertisement"
+              text="List of Advertisement"
               fontWeight={500}
               fontSize={{ xs: "18px", md: "22px", sm: "20px" }}
             />

@@ -4,12 +4,11 @@ import SuperAdminStudentProfile from "./SuperAdminInstitute";
 import { useAuth } from "../../../context/AuthContext";
 
 function StudentProfile() {
-
-const {instituteId} = useAuth();
+  const { instituteId } = useAuth();
 
   return (
     <Navbar title="Student Profile">
-     {instituteId ? <AdminStudentProfile /> : <SuperAdminStudentProfile />}   
+      {instituteId ? <AdminStudentProfile /> : <SuperAdminStudentProfile />}
     </Navbar>
   );
 }
