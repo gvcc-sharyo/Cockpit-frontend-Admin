@@ -7,7 +7,6 @@ import styles from "./profilestyles.js";
 import CustomTypography from "../../../components/admin/CustomTypography.jsx";
 
 const InstituteProfile = () => {
-
   const [email, setEmail] = useState("");
   const [formData, setFormData] = useState({
     instituteName: "",
@@ -23,12 +22,11 @@ const InstituteProfile = () => {
   const [logoImage, setLogoImage] = useState(null);
   const [errors, setErrors] = useState({});
 
-
   const getProfile = async () => {
     try {
       const {
         data: { data },
-      } = await apiGet('/getInstitute')
+      } = await apiGet("/getInstitute");
       const newFormData = {
         instituteName: data.institeDetails.instituteName || "",
         phone: data.institeDetails.phone || "",
@@ -89,12 +87,10 @@ const InstituteProfile = () => {
         formDataToSend.append("logo", logoImage);
       }
 
-
       const response = await apiPostUpload("/updateInstitute", formDataToSend);
       setLoading(false);
       if (response.data.status === 200) {
         snackbarEmitter(response.data.message, "success");
-         
       } else {
         snackbarEmitter(response.data.message, "error");
       }
@@ -104,7 +100,6 @@ const InstituteProfile = () => {
       snackbarEmitter("Unexpected Error", "error");
     }
   };
-
 
   const handleChange = ({ target: { name, value } }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -118,71 +113,162 @@ const InstituteProfile = () => {
     const file = files[0];
     if (file) setLogoImage(file);
     console.log("logo image", logoImage);
-
   };
 
   const handleCancel = () => setFormData(initialFormData);
 
   const inputFields = [
-    { name: "instituteName", placeholder: "First Name", value: formData.instituteName },
+    {
+      name: "instituteName",
+      placeholder: "First Name",
+      value: formData.instituteName,
+    },
     { name: "phone", placeholder: "Mobile Number", value: formData.phone },
-    { name: "email", placeholder: "Email Address", value: email, disabled: true },
+    {
+      name: "email",
+      placeholder: "Email Address",
+      value: email,
+      disabled: true,
+    },
     { name: "address", placeholder: "Address", value: formData.address },
-    { name: "subsrciptionAmt", placeholder: "Subscription Amount", value: formData.subsrciptionAmt, disabled: true },
-    { name: "subscriptionPeriod", placeholder: "Subscription Period", value: formData.subscriptionPeriod, disabled: true },
+    {
+      name: "subsrciptionAmt",
+      placeholder: "Subscription Amount",
+      value: formData.subsrciptionAmt,
+      disabled: true,
+    },
+    {
+      name: "subscriptionPeriod",
+      placeholder: "Subscription Period",
+      value: formData.subscriptionPeriod,
+      disabled: true,
+    },
   ];
-
 
   return (
     <Box>
       <Card elevation={3} sx={styles.card}>
         <Grid container spacing={2} component="form" onSubmit={handleSubmit}>
-          <Grid size={{ xs: 12, md: 12, sm: 12 }} sx={styles.profileImageContainer}>
+          <Grid
+            size={{ xs: 12, md: 12, sm: 12 }}
+            sx={styles.profileImageContainer}
+          >
             <Box>
-              <Box sx={styles.profileImageBox}>
-
-                <label htmlFor="profile-upload" style={styles.profileImageLabel}>
+              <label htmlFor="profile-upload" style={{ cursor: "pointer" }}>
+                <Box sx={styles.profileImageBox}>
                   {profileImage ? (
-                    <img src={profileImage instanceof File ? URL.createObjectURL(profileImage) : profileImage} alt="Profile" style={styles.profileImage} />
+                    <img
+                      src={
+                        profileImage instanceof File
+                          ? URL.createObjectURL(profileImage)
+                          : profileImage
+                      }
+                      alt="Profile"
+                      style={styles.profileImage}
+                    />
                   ) : (
-                    <CameraAltIcon fontSize="large" />
+                    <Box
+                      sx={{
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "14px",
+                        color: "#888",
+                      }}
+                    >
+                      Click to upload profile
+                    </Box>
                   )}
-                </label>
-                <input type="file" id="profile-upload" accept="image/*" style={{ display: "none" }} onChange={handleImageChange} />
+                </Box>
+              </label>
+              <input
+                type="file"
+                id="profile-upload"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={handleImageChange}
+              />
 
-              </Box>
               <CustomTypography text="Upload profile" />
-
             </Box>
 
             <Box>
-              <Box sx={styles.profileImageBox}>
-                <label htmlFor="logo-upload" style={styles.profileImageLabel}>
+              <label htmlFor="logo-upload" style={{ cursor: "pointer" }}>
+                <Box sx={styles.profileImageBox}>
                   {logoImage ? (
-                    <img src={logoImage instanceof File ? URL.createObjectURL(logoImage) : logoImage} alt="image" style={styles.profileImage} />
+                    <img
+                      src={
+                        logoImage instanceof File
+                          ? URL.createObjectURL(logoImage)
+                          : logoImage
+                      }
+                      alt="image"
+                      style={styles.profileImage}
+                    />
                   ) : (
-                    <CameraAltIcon fontSize="large" />
-
+                    <Box
+                      sx={{
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "14px",
+                        color: "#888",
+                      }}
+                    >
+                      Click to upload logo
+                    </Box>
                   )}
-                </label>
-                <input type="file" id="logo-upload" accept="image/*" style={{ display: "none" }} onChange={handleLogoChange} />
+                </Box>
+              </label>
+              <input
+                type="file"
+                id="logo-upload"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={handleLogoChange}
+              />
 
-              </Box>
               <CustomTypography text="Upload logo" />
-
             </Box>
-
           </Grid>
+
           {inputFields.map((field, index) => (
             <Grid key={index} size={{ xs: 12, md: 6 }}>
-              <CustomTextField name={field.name} placeholder={field.placeholder} value={field.value} onChange={handleChange} required error={!!errors[field.name]} helperText={errors[field.name]}
-                {...(field.disabled && { disabled: true })} />
+              <CustomTextField
+                name={field.name}
+                placeholder={field.placeholder}
+                value={field.value}
+                onChange={handleChange}
+                required
+                error={!!errors[field.name]}
+                helperText={errors[field.name]}
+                {...(field.disabled && { disabled: true })}
+              />
             </Grid>
           ))}
 
           <Grid size={{ xs: 12 }} sx={styles.buttonsContainer}>
-            <Button variant="contained" onClick={handleCancel} sx={styles.cancelButton} >Cancel </Button>
-            <CustomButton type="submit" loading={loading} bgColor="#EAB308" borderRadius="10px" sx={styles.saveButton} >  Save </CustomButton>
+            <Button
+              variant="contained"
+              onClick={handleCancel}
+              sx={styles.cancelButton}
+            >
+              Cancel{" "}
+            </Button>
+            <CustomButton
+              type="submit"
+              loading={loading}
+              bgColor="#EAB308"
+              borderRadius="10px"
+              sx={styles.saveButton}
+            >
+              {" "}
+              Save{" "}
+            </CustomButton>
           </Grid>
         </Grid>
       </Card>

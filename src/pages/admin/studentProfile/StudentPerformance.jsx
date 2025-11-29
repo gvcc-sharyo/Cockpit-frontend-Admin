@@ -3,15 +3,22 @@ import CustomTypography from "../../../components/admin/CustomTypography";
 import ArrowCircleLeftRoundedIcon from "@mui/icons-material/ArrowCircleLeftRounded";
 import ReactSpeedometer from "react-d3-speedometer";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { apiGet, apiPost } from "../../../api/axios";
 import { max, min } from "date-fns";
-import { LineChart, Line, XAxis, YAxis, Tooltip as RechartsTooltip, CartesianGrid, ResponsiveContainer } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip as RechartsTooltip,
+  CartesianGrid,
+  ResponsiveContainer,
+} from "recharts";
 import { getAdminRoutePrefix } from "../../../utils/RoutePrefix";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 
 function StudentPerformance() {
-
   const routePrefix = getAdminRoutePrefix();
   const navigate = useNavigate();
   const [selectedPeriod, setSelectedPeriod] = useState("Monthly");
@@ -33,36 +40,36 @@ function StudentPerformance() {
   useEffect(() => {
     const fetchFlightLogData = async () => {
       try {
-
-        const days = selectedPeriod === "Monthly" ? 30 :  7;
+        const days = selectedPeriod === "Monthly" ? 30 : 7;
         const toDate = new Date();
         console.log("to date", toDate);
-        
-        const fromDate = new Date(toDate.getTime() - days * 24 * 60 * 60 * 1000);
+
+        const fromDate = new Date(
+          toDate.getTime() - days * 24 * 60 * 60 * 1000
+        );
 
         console.log("from date", fromDate);
-        
 
         const requestBody = {
           studentId: student?._id,
-          fromDate: fromDate.toISOString(), 
+          fromDate: fromDate.toISOString(),
           toDate: toDate.toISOString(),
-        }
-        const response = await apiPost('/countTotalTest', requestBody);
+        };
+        const response = await apiPost("/countTotalTest", requestBody);
         // Handle the response data as needed
         console.log(response.data, "fflightLogDetails");
-        setCountResult(response?.data?.data)
+        setCountResult(response?.data?.data);
         data = [
           {
-            name: 'Score',
+            name: "Score",
             value: 62, // percentage
-            fill: '#F5B400',
+            fill: "#F5B400",
           },
         ];
       } catch (error) {
         snackbarEmitter("Something went wrong", "error");
       }
-    }
+    };
 
     fetchFlightLogData();
 
@@ -76,9 +83,7 @@ function StudentPerformance() {
       }
     };
 
-
     fetchSyllabus();
-
   }, [selectedPeriod]);
 
   const [testSyllabus, setTestSyllabus] = useState([]);
@@ -93,7 +98,6 @@ function StudentPerformance() {
 
       // const testSyllabusIds = testData.map(test => test.syllabusId);
 
-
       // Step 2: Filter syllabi based on matching _id
       // const filteredSyllabi = syllabi.filter(syllabus =>
       //   testSyllabusIds.includes(syllabus._id)
@@ -104,16 +108,15 @@ function StudentPerformance() {
       //     handleSyllabusClick(filteredSyllabi[0]);
       //   }
 
-      const res = await apiPost("/testGetAllSyllabus", { studentId: student?._id });
+      const res = await apiPost("/testGetAllSyllabus", {
+        studentId: student?._id,
+      });
       if (res.data.status == 200) {
         setTestSyllabus(res.data.data);
         handleSyllabusClick(res.data.data[0]);
       } else {
         snackbarEmitter(res.data.message, "error");
       }
-
-
-
     } catch (error) {
       console.error("Error fetching syllabus:", error);
     }
@@ -123,7 +126,6 @@ function StudentPerformance() {
     fetchTestSyllabus();
   }, []);
 
-
   const handleSyllabusClick = async (syllabus) => {
     setSelectedSyllabus(syllabus);
     setSelectedBook("");
@@ -131,7 +133,10 @@ function StudentPerformance() {
     setChartData([]);
     try {
       // const bookResponse = await apiGet(`/booksBySyllabusId/${syllabus._id}`);
-      const bookResponse = await apiPost(`/testGetAllBooks`, { studentId: student?._id, syllabusId: syllabus._id });
+      const bookResponse = await apiPost(`/testGetAllBooks`, {
+        studentId: student?._id,
+        syllabusId: syllabus._id,
+      });
       const fetchedBooks = bookResponse?.data?.data || [];
       console.log(fetchedBooks, "fetchedBooks");
 
@@ -145,17 +150,21 @@ function StudentPerformance() {
     setSelectedBook(bookId);
     setSelectedAttempt("");
     try {
-      const response = await apiPost(`/countTestAttemptsByBook`, { bookId: bookId, studentId: student?._id });
+      const response = await apiPost(`/countTestAttemptsByBook`, {
+        bookId: bookId,
+        studentId: student?._id,
+      });
       console.log(response.data.data.testAttempts, "responseattempts");
 
       const Attempts = response?.data?.data?.testAttempts;
       console.log(Attempts, "attempts");
 
       setAttempts(Attempts);
-      const chartData = await apiPost(`/testChartData`, { bookId: bookId, studentId: student?._id });
+      const chartData = await apiPost(`/testChartData`, {
+        bookId: bookId,
+        studentId: student?._id,
+      });
       console.log(chartData, "chartData");
-
-
 
       const rawChartData = chartData?.data?.data || [];
       console.log(rawChartData, "rawChartData");
@@ -181,8 +190,17 @@ function StudentPerformance() {
     if (active && payload?.length) {
       const { score, total, correct, incorrect } = payload[0].payload;
       return (
-        <div style={{ background: "#fff", padding: "10px", border: "1px solid #ccc", borderRadius: "8px" }}>
-          <p><strong>{label}</strong></p>
+        <div
+          style={{
+            background: "#fff",
+            padding: "10px",
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+          }}
+        >
+          <p>
+            <strong>{label}</strong>
+          </p>
           <p>Score: {score}</p>
           <p>Total: {total}</p>
           <p>Correct: {correct}</p>
@@ -198,22 +216,23 @@ function StudentPerformance() {
       state: {
         syllabusTitle: syllabus.title,
         syllabusId: syllabus._id,
-        studentId: student?._id
-      }
-    })
-  }
-
+        studentId: student?._id,
+      },
+    });
+  };
 
   // const grade = useMemo(() => {
   //   const raw = countResult?.grade ?? 0;
   //   return raw > 0 && raw < 1 ? 1 : Number(raw.toFixed(2));
   // }, [countResult]);
 
-
   return (
     <Navbar title="Student Profile">
       <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 5 }}>
-        <ArrowCircleLeftRoundedIcon sx={{ color: "#EAB308", fontSize: "28px", cursor: "pointer" }} onClick={() => window.history.back()} />
+        <ArrowCircleLeftRoundedIcon
+          sx={{ color: "#EAB308", fontSize: "28px", cursor: "pointer" }}
+          onClick={() => window.history.back()}
+        />
         <CustomTypography
           text={"Performance"}
           mb={0}
@@ -222,90 +241,143 @@ function StudentPerformance() {
         />
       </Box>
 
-      <Grid container sx={{ display: "flex", gap: { xs: 4, md: 8, sm: 4 }, mb: 4 }}>
-
-        <Grid size={{ xs: 12, md: 5, sm: 5 }} >
-          <Card sx={{ overflowX: "auto", py: { xs: 2, md: 5, sm: 5.3 }, px: { xs: 2, md: 5, sm: 5.3 }, borderRadius: 3, border: " 1px solid #E5E7E9" }}>
+      <Grid
+        container
+        sx={{ display: "flex", gap: { xs: 4, md: 8, sm: 4 }, mb: 4 }}
+      >
+        <Grid size={{ xs: 12, md: 5, sm: 5 }}>
+          <Card
+            sx={{
+              overflowX: "auto",
+              py: { xs: 2, md: 5, sm: 5.3 },
+              px: { xs: 2, md: 5, sm: 5.3 },
+              borderRadius: 3,
+              border: " 1px solid #E5E7E9",
+            }}
+          >
             <CustomTypography
               text={"About"}
               sx={{ fontWeight: "bold", mb: 1 }}
             />
 
             <Box sx={{ display: "flex", gap: 2 }}>
-              <Box sx={{ border: "1px solid #E5E7E9", borderRadius: "10px", padding: "20px" }} >
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-                  <Avatar sx={{ width: { xs: 25, md: 35, sm: 35 }, height: { xs: 25, md: 35, sm: 35 }, }} ></Avatar>
+              <Box
+                sx={{
+                  border: "1px solid #E5E7E9",
+                  borderRadius: "10px",
+                  padding: "20px",
+                }}
+              >
+                <Box
+                  sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}
+                >
+                  <Avatar
+                    sx={{
+                      width: { xs: 25, md: 35, sm: 35 },
+                      height: { xs: 25, md: 35, sm: 35 },
+                    }}
+                  ></Avatar>
 
                   <CustomTypography
                     text={`${student?.firstName} ${student?.lastName}`}
-                    fontSize={{ xs: '11px', sm: '13px', md: '14px' }}
-                    sx={{ fontWeight: "bold", mb: 0 }} />
+                    fontSize={{ xs: "11px", sm: "13px", md: "14px" }}
+                    sx={{ fontWeight: "bold", mb: 0 }}
+                  />
                 </Box>
-                <CustomTypography text={"Info"} sx={{ fontWeight: "bold", mb: 1 }} />
+                <CustomTypography
+                  text={"Info"}
+                  sx={{ fontWeight: "bold", mb: 1 }}
+                />
 
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                  <CalendarTodayIcon sx={{ color: "#EAB308", fontSize: { xs: "18px", md: "20px", sm: "22px" } }} />
+                  <CalendarTodayIcon
+                    sx={{
+                      color: "#EAB308",
+                      fontSize: { xs: "18px", md: "20px", sm: "22px" },
+                    }}
+                  />
 
-                  <Box >
+                  <Box>
                     <CustomTypography
                       text={new Date(student.createdAt).toLocaleDateString()}
-                      sx={{ fontWeight: "bold", mb: 0 }} fontSize={{ xs: "10px", md: "12px", sm: "12px" }} />
+                      sx={{ fontWeight: "bold", mb: 0 }}
+                      fontSize={{ xs: "10px", md: "12px", sm: "12px" }}
+                    />
 
                     <CustomTypography
                       text={"Joined date"}
                       fontSize={{ xs: "10px", md: "12px", sm: "12px" }}
-                      sx={{ color: '#9E9E9E', mb: 0 }} />
-
+                      sx={{ color: "#9E9E9E", mb: 0 }}
+                    />
                   </Box>
-
                 </Box>
               </Box>
 
-              <Box >
-                <CustomTypography text={"Contact"} sx={{ fontWeight: "bold", mb: 1 }} />
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
+              <Box>
+                <CustomTypography
+                  text={"Contact"}
+                  sx={{ fontWeight: "bold", mb: 1 }}
+                />
+                <Box
+                  sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}
+                >
                   <EmailOutlinedIcon sx={{ color: "#EAB308" }} />
 
-                  <Box >
+                  <Box>
                     <CustomTypography
-                      text={'Email'}
-                      sx={{ mb: 0, color: '#9E9E9E' }} />
+                      text={"Email"}
+                      sx={{ mb: 0, color: "#9E9E9E" }}
+                    />
 
                     <CustomTypography
                       text={student.email}
                       // fontSize={{xs: "10px", md: "12px", sm: "12px"}}
-                      sx={{ mb: 0 }} />
-
+                      sx={{ mb: 0 }}
+                    />
                   </Box>
-
                 </Box>
 
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                   <SmartphoneIcon sx={{ color: "#EAB308" }} />
 
-                  <Box >
+                  <Box>
                     <CustomTypography
-                      text={'Phone'}
-                      sx={{ mb: 0, color: '#9E9E9E' }} />
+                      text={"Phone"}
+                      sx={{ mb: 0, color: "#9E9E9E" }}
+                    />
 
                     <CustomTypography
                       text={student.phone}
                       // fontSize={{xs: "10px", md: "12px", sm: "12px"}}
-                      sx={{ mb: 0 }} />
-
+                      sx={{ mb: 0 }}
+                    />
                   </Box>
-
                 </Box>
               </Box>
             </Box>
           </Card>
         </Grid>
 
-        <Grid item size={{ xs: 12, md: 4, sm: 5 }} >
-          <Card sx={{ p: { xs: 1, sm: 1 }, borderRadius: 3, border: " 1px solid #E5E7E9", justifyContent: "center", textAlign: "center" }}>
+        <Grid item size={{ xs: 12, md: 4, sm: 5 }}>
+          <Card
+            sx={{
+              p: { xs: 1, sm: 1 },
+              borderRadius: 3,
+              border: " 1px solid #E5E7E9",
+              justifyContent: "center",
+              textAlign: "center",
+            }}
+          >
             <CardContent sx={{ flexGrow: 1 }}>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
-                <CustomTypography text={"Test Performance"} sx={{ fontWeight: "bold", mb: 0 }} />
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <CustomTypography
+                  text={"Test Performance"}
+                  sx={{ fontWeight: "bold", mb: 0 }}
+                />
                 <Select
                   size="small"
                   value={selectedPeriod}
@@ -315,7 +387,6 @@ function StudentPerformance() {
                   <MenuItem value="Weekly">Weekly</MenuItem>
                   <MenuItem value="Monthly">Monthly</MenuItem>
                 </Select>
-
               </Box>
             </CardContent>
             {countResult && (
@@ -333,7 +404,9 @@ function StudentPerformance() {
                 ringWidth={15}
                 textColor="#000"
                 customSegmentStops={[0, countResult?.grade, 100]}
-                currentValueText={` Grade: ${countResult?.grade ? countResult?.grade?.toFixed(2) : "0"}%`}
+                currentValueText={` Grade: ${
+                  countResult?.grade ? countResult?.grade?.toFixed(2) : "0"
+                }%`}
                 height={180}
                 width={270}
               />
@@ -351,28 +424,44 @@ function StudentPerformance() {
         fontSize={{ xs: "14px", md: "16px", sm: "16px" }}
       />
 
-
-
-      <Box sx={{ maxWidth: '100%', overflowX: 'auto' }} mb={8}>
-        <Box sx={{ display: 'flex', gap: '15px', padding: '10px', width: 'max-content' }}>
-          {
-            syllabus?.map((item, index) => (
-              <Box key={index} onClick={() => handleNav(item)} sx={{ cursor: 'pointer', border: '1px solid transparent', '&:hover': { borderColor: '#EAB308' }, display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'space-between', boxShadow: 3, borderRadius: '10px', px: 2, py: 1, minWidth: { xs: '45px', md: '120px', sm: '60px' } }}>
-                <img src="/images/btn.svg" alt="" />
-                <CustomTypography
-                  text={item.title}
-                  fontWeight={500}
-                  fontSize={{ xs: "14px", sm: "16px", md: "16px" }}
-                />
-
-              </Box>
-
-
-            ))
-          }
+      <Box sx={{ maxWidth: "100%", overflowX: "auto" }} mb={8}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: "15px",
+            padding: "10px",
+            width: "max-content",
+          }}
+        >
+          {syllabus?.map((item, index) => (
+            <Box
+              key={index}
+              onClick={() => handleNav(item)}
+              sx={{
+                cursor: "pointer",
+                border: "1px solid transparent",
+                "&:hover": { borderColor: "#EAB308" },
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                justifyContent: "space-between",
+                boxShadow: 3,
+                borderRadius: "10px",
+                px: 2,
+                py: 1,
+                minWidth: { xs: "45px", md: "120px", sm: "60px" },
+              }}
+            >
+              <img src="/images/btn.svg" alt="" />
+              <CustomTypography
+                text={item.title}
+                fontWeight={500}
+                fontSize={{ xs: "14px", sm: "16px", md: "16px" }}
+              />
+            </Box>
+          ))}
         </Box>
       </Box>
-
 
       <CustomTypography
         text={"Test Analysis"}
@@ -380,7 +469,7 @@ function StudentPerformance() {
         fontSize={{ xs: "14px", md: "16px", sm: "16px" }}
       />
 
-      <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', py: 2 }}>
+      <Box sx={{ display: "flex", gap: 2, overflowX: "auto", py: 2 }}>
         {testSyllabus.map((item, index) => (
           <Card
             key={index}
@@ -393,7 +482,10 @@ function StudentPerformance() {
               display: "flex",
               flexDirection: "column",
               flexShrink: 0, // important for horizontal scroll
-              border: selectedSyllabus?._id === item._id ? "2px solid #EAB308" : "none",
+              border:
+                selectedSyllabus?._id === item._id
+                  ? "2px solid #EAB308"
+                  : "none",
             }}
           >
             <CardMedia
@@ -501,7 +593,6 @@ function StudentPerformance() {
           </LineChart>
         </ResponsiveContainer>
       </Box>
-
     </Navbar>
   );
 }
