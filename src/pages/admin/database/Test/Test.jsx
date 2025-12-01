@@ -155,9 +155,9 @@ function Test() {
 
   const navigate = useNavigate();
 
-  const handleNavigate = (id) => {
+  const handleNavigate = (id, test) => {
     // console.log("Eye Icon Clicked", id);
-    navigate(`${routePrefix}/testQuestions`, { state: { testId: id } });
+    navigate(`${routePrefix}/testQuestions`, { state: { testId: id, testNameDetails: test } });
   };
 
   const tableHeaders = [
@@ -170,12 +170,12 @@ function Test() {
 
   const tableData = test.map((test) => ({
     row: [
-      <Box>{test.testName}</Box>,
-      <Box>{test.marks}</Box>,
+      <Box sx={{ textAlign: "left", paddingLeft: "60px", }}>{test.testName}</Box>,
+      <Box sx={{ textAlign: "left", paddingLeft: "60px", }}>{test.marks}</Box>,
       <Box>{test.duration}</Box>,
       <Box sx={{ display: { xs: "flex", md: "inline" } }}>
         <IconButton
-          onClick={() => handleNavigate(test._id)}
+          onClick={() => handleNavigate(test._id, test)}
           sx={{ color: "#EAB308" }}
         >
           <Visibility />

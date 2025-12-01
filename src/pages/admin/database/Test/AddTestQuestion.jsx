@@ -154,8 +154,8 @@ function AddTestQuestion() {
         try {
             const endpoint = editQuestion ? "/updateTestQuestion" : "/uploadTestQuestion";
             console.log("endpoint", endpoint);
-            
-            
+
+
             const response = await apiPost(endpoint, payload);
             if (response.data.status === 200) {
                 setTimeout(() => {
@@ -189,7 +189,7 @@ function AddTestQuestion() {
     const handleCancel = () => {
         setFormData({
             question: "",
-            options: [],
+            options: [{ id: 1, text: "", isCorrect: false }, { id: 2, text: "", isCorrect: false },],
             explanation: "",
         });
         setErrors({});
