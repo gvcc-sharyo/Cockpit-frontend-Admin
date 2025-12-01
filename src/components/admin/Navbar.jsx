@@ -5,6 +5,7 @@ import CustomTypography from "./CustomTypography";
 import { getAdminRoutePrefix } from "../../utils/RoutePrefix";
 import { useAuth } from "../../context/AuthContext";
 
+
 const Navbar = ({ title, children }) => {
   const { logout, adminId, instituteId, instituteToken, adminToken } =
     useAuth();
@@ -102,8 +103,12 @@ const Navbar = ({ title, children }) => {
     { label: "Feedback", path: `${routePrefix}/feedback` },
     { label: "Syllabus", path: `${routePrefix}/trainingSyllabus` },
     { label: "Training", path: `${routePrefix}/trainingAdd` },
+    { label: "Student Profile", path: `${routePrefix}/studentProfile` },
     ...(!instituteId
-      ? [{ label: "Pricing", path: `${routePrefix}/pricing` }]
+      ? [{ label: "Pricing", path: `${routePrefix}/pricing` }, { label: "Institution", path: `${routePrefix}/institution` }, { label: "Advertise", path: `${routePrefix}/advertise` }]
+      : []),
+    ...(instituteId
+      ? [{ label: "Test", path: `${routePrefix}/test` }]
       : []),
   ];
 
@@ -176,7 +181,7 @@ const Navbar = ({ title, children }) => {
 
           {/* Logo */}
           <Box
-            sx={{ textAlign: "center", mb: 3, cursor: "pointer" }}
+            sx={{ textAlign: "center", mb: 3, cursor: "pointer", flexGrow: 1 }}
             onClick={() => handleNavigate("/dashboard")}
           >
             {instituteId && instituteData?.institeDetails?.logo ?
@@ -729,14 +734,13 @@ const Navbar = ({ title, children }) => {
               />
 
               {filteredSuggestions.length > 0 && (
+
                 <Paper
                   sx={{
-                    position: "absolute",
-                    top: "100%",
-                    // left: '50%',
-                    // right: 0,
-                    zIndex: 1,
-                    mt: 0.5,
+                    // position: "absolute",
+                    // top: "100%",
+                    zIndex: 9999,
+                    // mt: 0.5,
                     alignItems: "center",
                     justifyContent: "center",
                     boxShadow: 3,

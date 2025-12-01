@@ -32,7 +32,7 @@ const styles = {
     backgroundColor: "#fff",
   },
   row: {
-    cursor: "pointer",
+    // cursor: "pointer",
   },
   bodyCell: {
     textAlign: "center",
@@ -53,9 +53,8 @@ const styles = {
 function CustomTable({ maxWidth = "100%", tableData = [], tableHeaders = [], handleRowClick }) {
   return (
     <Grid container>
-      <TableContainer component={Paper} elevation={0} sx={{ ...styles.container, maxWidth }}>
+      <TableContainer component={Paper} sx={{ ...styles.container, maxWidth, }}>
         <Table stickyHeader>
-          {console.log(tableHeaders, "tableHeaders")}
           <TableHead>
             <TableRow>
               {tableHeaders.map((header, index) => (
@@ -70,7 +69,6 @@ function CustomTable({ maxWidth = "100%", tableData = [], tableHeaders = [], han
             {tableData.map((data, index) => (
               <TableRow key={index} sx={styles.row}>
                 <TableCell sx={styles.bodyCell}>{index + 1}</TableCell>
-
                 {(data.row || []).map((item, i) => (
                   <TableCell key={i} sx={styles.bodyCell}>
                     {item}

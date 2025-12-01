@@ -5,13 +5,16 @@ import CustomButton from "../../../../components/admin/CustomButton";
 import { snackbarEmitter } from "../../../../components/admin/CustomSnackbar";
 import CustomTextField from "../../../../components/admin/CustomTextField";
 import Navbar from "../../../../components/admin/Navbar";
+import { getAdminRoutePrefix } from "../../../../utils/RoutePrefix";
+
 
 function AddTestQuestion() {
 
     const location = useLocation();
-    const { testId } = location?.state || {};
+    const { testId, testNameDetails } = location?.state || {};
     const { editQuestion } = location?.state;
     console.log('editQuestion', editQuestion);
+    const routePrefix = getAdminRoutePrefix();
 
 
     const [test, setTest] = useState([]);
@@ -361,13 +364,15 @@ function AddTestQuestion() {
     return (
         <Navbar title="Test">
             <Grid container spacing={2} sx={styles.questionAreaGrid}>
+                <Grid size={{ xs: 12 }} sx={{ display: 'flex', alignItems: 'center', gap: '10px' }} mb={2}>
+                    <CustomTypography text={testNameDetails?.testName} onClick={() => navigate(`${routePrefix}/testQuestions`, { state: { testId: testNameDetails?._id, testNameDetails: testNameDetails } })} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
+                </Grid>
                 <Grid size={{ xs: 12, md: 12, sm: 12 }} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} >
                     <CustomTypography text="Question" />
                     {
                         !editQuestion &&
                         <CustomButton children='Bulk upload' onClick={handleOpenUploadDialog} loading={false} bgColor='#EAB308' sx={{ width: { xs: '40%', md: '15%', sm: '20%' }, fontSize: { xs: '10px', md: '14px', sm: '14px' } }} />
                     }
-
 
                 </Grid>
 

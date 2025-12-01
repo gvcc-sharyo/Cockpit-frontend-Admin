@@ -243,7 +243,7 @@ function Institution() {
     });
     setId(institute._id);
 
-    console.log(response);
+    console.log(response, "responseEdit");
     handleModalOpen();
     setFormData({
       instituteName: response.data.data.instituteName,
@@ -408,7 +408,7 @@ function Institution() {
                 />
               </Grid>
 
-              <Grid size={{ xs: 12, md: 5 }}>
+              {!id && <Grid size={{ xs: 12, md: 5 }}>
                 <CustomTextField
                   label="Subscription Amount*"
                   name="subscriptionAmt"
@@ -418,9 +418,9 @@ function Institution() {
                   error={!!formErrs.subscriptionAmt}
                   helperText={formErrs.subscriptionAmt}
                 />
-              </Grid>
+              </Grid>}
 
-              <Grid size={{ xs: 12, md: 5 }}>
+              {!id && <Grid size={{ xs: 12, md: 5 }}>
                 <CustomTextField
                   label="Subscription Period*"
                   select
@@ -435,9 +435,9 @@ function Institution() {
                   <MenuItem value="6">6 months</MenuItem>
                   <MenuItem value="12">12 months</MenuItem>
                 </CustomTextField>
-              </Grid>
+              </Grid>}
 
-              <Grid size={{ xs: 12, md: 5 }}>
+              {!id && <Grid size={{ xs: 12, md: 5 }}>
                 <Box sx={{ position: "relative" }}>
                   <CustomTextField
                     label="Password*"
@@ -456,17 +456,17 @@ function Institution() {
                     Generate
                   </Button>
                 </Box>
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 5 }}>
-                <CustomTextField
-                  label="Transaction ID"
-                  name="transactionId"
-                  value={formData.transactionId}
-                  onChange={handleInputChange}
-                  placeholder="Enter"
-                />
-              </Grid>
+              </Grid>}
+              {
+                !id && <Grid size={{ xs: 12, md: 5 }}>
+                  <CustomTextField
+                    label="Transaction ID"
+                    name="transactionId"
+                    value={formData.transactionId}
+                    onChange={handleInputChange}
+                    placeholder="Enter"
+                  />
+                </Grid>}
 
               <Grid size={{ xs: 12, md: 10.5 }}>
                 <CustomTextField
