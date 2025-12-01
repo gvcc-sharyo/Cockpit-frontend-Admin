@@ -229,6 +229,12 @@ const Navbar = ({ title, children }) => {
                   fontSize={{ xs: "14px", sm: "16px", md: "16px" }}
                   mb={0}
                   fontWeight={500}
+                  sx={{
+                    cursor: "pointer",
+                    "&:hover": {
+                      color: "#8F95B2 !important",
+                    },
+                  }}
                 />
               </ListItem>
 
@@ -258,6 +264,12 @@ const Navbar = ({ title, children }) => {
                       ? "white"
                       : "#8F95B2"
                   }
+                  sx={{
+                    cursor: "pointer",
+                    "&:hover": {
+                      color: "#8F95B2 !important",
+                    },
+                  }}
                   fontSize={{ xs: "14px", sm: "16px", md: "16px" }}
                   mb={0}
                   fontWeight={500}
@@ -283,6 +295,7 @@ const Navbar = ({ title, children }) => {
                 <CustomTypography
                   text="Database"
                   color={"#8F95B2"}
+
                   fontSize={{ xs: "14px", sm: "16px", md: "16px" }}
                   mb={0}
                   fontWeight={500}
@@ -311,6 +324,7 @@ const Navbar = ({ title, children }) => {
                       color: "black",
                     },
                   }}
+
                   onClick={() => handleNavigate("/trainingAdd")}
                 >
                   <ListItemIcon sx={{ minWidth: 30, mr: 1 }}>
@@ -326,6 +340,12 @@ const Navbar = ({ title, children }) => {
                     fontSize={{ xs: "14px", sm: "16px", md: "16px" }}
                     mb={0}
                     fontWeight={500}
+                    sx={{
+                      cursor: "pointer",
+                      "&:hover": {
+                        color: "#8F95B2 !important",
+                      },
+                    }}
                   />
                 </ListItem>
 
@@ -357,6 +377,12 @@ const Navbar = ({ title, children }) => {
                       }
                       fontSize={{ xs: "14px", sm: "16px", md: "16px" }}
                       mb={0}
+                      sx={{
+                        cursor: "pointer",
+                        "&:hover": {
+                          color: "#8F95B2 !important",
+                        },
+                      }}
                       fontWeight={500}
                     />
                   </ListItem>
@@ -386,6 +412,12 @@ const Navbar = ({ title, children }) => {
                     fontSize={{ xs: "14px", sm: "16px", md: "16px" }}
                     mb={0}
                     fontWeight={500}
+                    sx={{
+                      cursor: "pointer",
+                      "&:hover": {
+                        color: "#8F95B2 !important",
+                      },
+                    }}
                   />
                 </ListItem>
                 {/* </List> */}
@@ -420,6 +452,12 @@ const Navbar = ({ title, children }) => {
                     fontSize={{ xs: "14px", sm: "16px", md: "16px" }}
                     mb={0}
                     fontWeight={500}
+                    sx={{
+                      cursor: "pointer",
+                      "&:hover": {
+                        color: "#8F95B2 !important",
+                      },
+                    }}
                   />
                 </ListItem>
               )}
@@ -455,6 +493,12 @@ const Navbar = ({ title, children }) => {
                     fontSize={{ xs: "14px", sm: "16px", md: "16px" }}
                     mb={0}
                     fontWeight={500}
+                    sx={{
+                      cursor: "pointer",
+                      "&:hover": {
+                        color: "#8F95B2 !important",
+                      },
+                    }}
                   />
                 </ListItem>
               )}
@@ -489,6 +533,12 @@ const Navbar = ({ title, children }) => {
                   fontSize={{ xs: "14px", sm: "16px", md: "16px" }}
                   mb={0}
                   fontWeight={500}
+                  sx={{
+                    cursor: "pointer",
+                    "&:hover": {
+                      color: "#8F95B2 !important",
+                    },
+                  }}
                 />
               </ListItem>
 
@@ -521,6 +571,12 @@ const Navbar = ({ title, children }) => {
                     fontSize={{ xs: "14px", sm: "16px", md: "16px" }}
                     mb={0}
                     fontWeight={500}
+                    sx={{
+                      cursor: "pointer",
+                      "&:hover": {
+                        color: "#8F95B2 !important",
+                      },
+                    }}
                   />
                 </ListItem>
               )}
