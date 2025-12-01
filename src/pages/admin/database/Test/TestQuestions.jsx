@@ -66,12 +66,13 @@ function TestQuestions() {
         navigate(`${routePrefix}/addTestQuestion`, {
             state: {
                 editQuestion: question,
+                testNameDetails: testNameDetails
             }
         });
     };
 
     const handleNavigate = (id) => {
-        navigate(`${routePrefix}/addTestQuestion`, { state: { testId: testId } });
+        navigate(`${routePrefix}/addTestQuestion`, { state: { testId: testId, testNameDetails: testNameDetails } });
     };
 
     const [formData, setFormData] = useState({
@@ -170,7 +171,7 @@ function TestQuestions() {
         <>
             <Navbar title="Test">
                 <Grid container sx={styles.container} size={{ xs: 12, sm: 12, md: 12 }}>
-                    <Grid size={{xs:12}} sx={{ display: 'flex', alignItems: 'center', gap: '10px' }} mb={2}>
+                    <Grid size={{ xs: 12 }} sx={{ display: 'flex', alignItems: 'center', gap: '10px' }} mb={2}>
                         <CustomTypography text={testNameDetails?.testName} onClick={() => navigate(`${routePrefix}/test`)} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
                     </Grid>
                     <Grid size={{ xs: 6, sm: 6, md: 6 }}>

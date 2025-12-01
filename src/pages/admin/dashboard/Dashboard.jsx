@@ -71,8 +71,8 @@ function Dashboard() {
     }
   };
 
-    const [students, setStudents] = useState([]);
-    const[studentCount, setStudentCount] = useState(0);
+  const [students, setStudents] = useState([]);
+  const [studentCount, setStudentCount] = useState(0);
 
   const getStudents = async () => {
     try {
@@ -89,7 +89,7 @@ function Dashboard() {
   };
 
 
-    const tableHeaders = [
+  const tableHeaders = [
     "Sr No",
     "First Name",
     "Last Name",
@@ -97,7 +97,7 @@ function Dashboard() {
     "Phone",
   ];
 
-    const tableData = students.map((student) => ({
+  const tableData = students.map((student) => ({
     row: [
       <Box >
         {student.firstName}
@@ -115,12 +115,12 @@ function Dashboard() {
   }));
 
   useEffect(() => {
-   if (instituteId) {
-    getStudents();
-  } else {
-   instituteId ? InsfetchReports() : fetchReports();
-    getTotals();
-  }
+    if (instituteId) {
+      getStudents();
+    } else {
+      instituteId ? InsfetchReports() : fetchReports();
+      getTotals();
+    }
   }, []);
 
   const navigate = useNavigate();
@@ -172,7 +172,9 @@ function Dashboard() {
           <Grid container spacing={1} sx={{ mt: 4 }}>
 
 
-            <Grid size={{ xs: 10, md: 12, lg: 6.5 }}>
+            <Grid size={{ xs: 12, md: 12, lg: 6.5 }}>
+              <CustomTypography text={instituteId ? 'Students List' : 'Subscription Graph'} fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={1} fontWeight={600} />
+
               {instituteId ? <CustomTable
                 maxWidth={"100%"}
                 tableHeaders={tableHeaders}
@@ -180,9 +182,10 @@ function Dashboard() {
               /> : <Graph />}
             </Grid>
 
-            <Grid size={{ xs: 10, md: 12, lg: 5 }}>
+            <Grid size={{ xs: 12, md: 12, lg: 5 }}>
+              <CustomTypography text='Report' fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={1} fontWeight={600} />
+
               <Box sx={classes.reportBox}>
-                <CustomTypography text='Report' fontSize={{ xs: '14px', sm: '16px', md: '16px' }} mb={0} fontWeight={600} />
                 {reports.length === 0 ?
                   <CustomTypography text='No pending reports' fontSize={{ xs: '12px', sm: '14px', md: '14px' }} mb={0} fontWeight={600} />
                   :
