@@ -14,7 +14,9 @@ function TestQuestions() {
     const routePrefix = getAdminRoutePrefix();
 
     const location = useLocation();
-    const {testId} = location.state;
+    const { testId, testNameDetails } = location.state;
+
+    console.log(testId, testNameDetails, "testId");
 
     const [openStatusModal, setOpenStatusModal] = useState(false);
     const handleStatusModalOpen = () => setOpenStatusModal(true);
@@ -51,7 +53,7 @@ function TestQuestions() {
     const tableData = testQuestions.map((testquestions) => ({
         row: [
             <Box>{testquestions.question}</Box>,
-            <CustomButton children={testquestions.isactive === true ? 'Active' : 'Inactive'} onClick={() => handleStatusClick(testquestions)}  bgColor={testquestions.isactive === true ? '#109CF1' : '#D61508'} sx={{ width: { xs: '20%', sm: '20%', md: '20%' }, fontSize: { xs: '10px', sm: '11px', md: '12px' }, }} />,
+            <CustomButton children={testquestions.isactive === true ? 'Active' : 'Inactive'} onClick={() => handleStatusClick(testquestions)} bgColor={testquestions.isactive === true ? '#109CF1' : '#D61508'} sx={{ width: { xs: '20%', sm: '20%', md: '20%' }, fontSize: { xs: '10px', sm: '11px', md: '12px' }, }} />,
             <Box>
                 <IconButton color="primary" onClick={() => handleEditClick(testquestions)}>
                     <EditSquareIcon sx={{ color: '#EAB308', fontSize: { xs: '18px', sm: '20px' } }} />
@@ -69,7 +71,7 @@ function TestQuestions() {
     };
 
     const handleNavigate = (id) => {
-        navigate(`${routePrefix}/addTestQuestion`, { state: { testId : testId} });
+        navigate(`${routePrefix}/addTestQuestion`, { state: { testId: testId } });
     };
 
     const [formData, setFormData] = useState({
@@ -113,7 +115,7 @@ function TestQuestions() {
         }
 
         console.log('before is active', req.isactive);
-        
+
 
         // setLoading(true);
 
@@ -168,9 +170,12 @@ function TestQuestions() {
         <>
             <Navbar title="Test">
                 <Grid container sx={styles.container} size={{ xs: 12, sm: 12, md: 12 }}>
+                    <Grid size={{xs:12}} sx={{ display: 'flex', alignItems: 'center', gap: '10px' }} mb={2}>
+                        <CustomTypography text={testNameDetails?.testName} onClick={() => navigate(`${routePrefix}/test`)} sx={{ fontSize: { xs: '10px', md: '14px', sm: '14px' }, cursor: 'pointer', textDecoration: 'underline' }} />
+                    </Grid>
                     <Grid size={{ xs: 6, sm: 6, md: 6 }}>
                         <CustomTypography
-                            text="Test Questions"
+                            text={`${testNameDetails?.testName} Questions`}
                             fontWeight={500}
                             fontSize={{ xs: "18px", md: "22px", sm: "20px" }}
                         />
@@ -218,7 +223,7 @@ function TestQuestions() {
                                 <Grid container spacing={2} sx={{ display: 'flex', alignItems: 'center' }}>
                                     <Grid item>
 
-                                        <CustomButton children='Yes' onClick={updateQuestionStatus}  bgColor='#EAB308' sx={{ width: '20%' }} />
+                                        <CustomButton children='Yes' onClick={updateQuestionStatus} bgColor='#EAB308' sx={{ width: '20%' }} />
                                     </Grid>
                                     <Grid item>
                                         <CustomButton children='No' onClick={handleStatusModalClose} bgColor='#BF0000' sx={{ width: '20%' }} />

@@ -65,7 +65,7 @@ function AdminStudentProfile() {
   const handleSubmit = async () => {
     const errors = handleErrors();
 
-    if (Object.key(errors).length > 0) {
+    if (Object.keys(errors).length > 0) {
       return;
     }
 

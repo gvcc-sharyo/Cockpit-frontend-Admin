@@ -179,15 +179,18 @@ const Navbar = ({ title, children }) => {
             sx={{ textAlign: "center", mb: 3, cursor: "pointer" }}
             onClick={() => handleNavigate("/dashboard")}
           >
-            <img
-              src={
-                instituteId
-                  ? instituteData?.institeDetails?.logo
-                  : "/images/full logo.svg"
-              }
-              alt="Add Logo"
-              style={{ width: "100px", height: "auto", marginBottom: "10px" }}
-            />
+            {instituteId && instituteData?.institeDetails?.logo ?
+
+              <img
+                src={instituteData?.institeDetails?.logo}
+                alt="Add Logo"
+                style={{ width: "100px", height: "auto", marginBottom: "10px" }}
+              />
+              : !instituteId ? <img
+                src={"/images/full logo.svg"}
+                alt="Add Logo"
+                style={{ width: "100px", height: "auto", marginBottom: "10px" }}
+              /> : null}
           </Box>
 
           <Box sx={{ flexGrow: 4 }}>
@@ -558,7 +561,7 @@ const Navbar = ({ title, children }) => {
         onClose={handleClose}
         aria-labelledby="logout-dialog-title"
         aria-describedby="logout-dialog-description"
-        // fullWidth
+      // fullWidth
       >
         <DialogTitle id="logout-dialog-title">
           <CustomTypography
