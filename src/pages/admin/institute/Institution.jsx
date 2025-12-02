@@ -63,6 +63,7 @@ function Institution() {
   const [institutes, setInstitutes] = useState([]);
   const [id, setId] = useState();
   const routePrefix = getAdminRoutePrefix();
+  const [showMessage, setShowMessage] = useState(false);
 
   const fetchInstitute = async () => {
     try {
@@ -166,21 +167,17 @@ function Institution() {
     if (Object.keys(errors).length > 0) {
       return;
     }
+    setLoading(true);
+    setShowMessage(true);
 
     try {
-      setLoading(true);
-      // console.log("Adding institute with data:", formData);
       const response = await apiPost("/admin/addInstitute", formData);
-      // console.log("Response data:", response.data);
-
-      console.log("Response status:", response);
-
       if (response?.data.status === 200) {
         snackbarEmitter(response.data.message, "success");
         handleModalClose();
         resetFormData();
         setLoading(false);
-
+        setShowMessage(false);
       } else {
         snackbarEmitter(response?.data?.message, "error");
         setLoading(false);
@@ -192,10 +189,15 @@ function Institution() {
       // console.error("Error adding institute:", error);
       snackbarEmitter("Something went wrong", "error");
       setLoading(false);
+      setShowMessage(false);
+
     }
   };
 
   const updateInstituteStudents = async (id) => {
+
+    setLoading(true);
+
     const req = {
       instituteName: formData.instituteName,
       department: formData.department,
@@ -220,8 +222,11 @@ function Institution() {
         resetFormData();
         handleModalClose();
         fetchInstitute();
+        setLoading(false);
+
       }
     } catch (error) {
+      setLoading(false);
       snackbarEmitter("Something went wrong", "error");
     }
   };
@@ -241,7 +246,6 @@ function Institution() {
     });
     setId(institute._id);
 
-    console.log(response, "responseEdit");
     handleModalOpen();
     setFormData({
       instituteName: response.data.data.instituteName,
@@ -401,6 +405,7 @@ function Institution() {
                   value={formData.phone}
                   onChange={handleInputChange}
                   placeholder="Enter"
+                  type="number"
                   error={!!formErrs.phone}
                   helperText={formErrs.phone}
                 />
@@ -413,6 +418,7 @@ function Institution() {
                   value={formData.subscriptionAmt}
                   onChange={handleInputChange}
                   placeholder="Enter"
+                  type="number"
                   error={!!formErrs.subscriptionAmt}
                   helperText={formErrs.subscriptionAmt}
                 />
@@ -495,7 +501,6 @@ function Institution() {
             </Grid>
 
             <Grid
-              item
               sx={{ display: "flex", justifyContent: "center" }}
               size={{ xs: 12, md: 6 }}
             >
@@ -504,11 +509,14 @@ function Institution() {
                 onClick={() =>
                   id ? updateInstituteStudents(id) : handleAddInstitute()
                 }
-                loading={false}
+                loading={loading}
                 bgColor="#EAB308"
                 sx={{ width: "20%" }}
               />
             </Grid>
+           { showMessage && <Grid>
+              <Typography sx={{color:"red"}}>Please wait for some time for transferring all syllabus data to institute</Typography>
+            </Grid>}
           </DialogContent>
         </Dialog>
       </Navbar>
