@@ -147,13 +147,13 @@ function InstitutionDetail() {
                   <WorkOutlineIcon fontSize="small" color="action" />
                 </Box>
                 <Box>
-                  <Typography sx={styles.infoPrimary}> {instituteData?.department }</Typography>
+                  <Typography sx={styles.infoPrimary}> {instituteData?.department}</Typography>
                   <Typography
                     variant="caption"
                     color="text.secondary"
                     sx={styles.infoSecondary}
                   >
-                   Department
+                    Department
                   </Typography>
                 </Box>
               </Stack>
@@ -254,7 +254,7 @@ function InstitutionDetail() {
               </TabPanel>
 
               <TabPanel value={value} index={1}>
-                <SubscriptionPlan  instituteId={instituteId} />
+                <SubscriptionPlan instituteId={instituteId} />
               </TabPanel>
 
               {/* <TabPanel value={value} index={2}>

@@ -196,6 +196,12 @@ const SubscriptionPlan = ({ instituteId }) => {
     }
   };
 
+  const [daysLeft, setDaysLeft] = useState(0);
+  const [amount, setAmount] = useState(0);
+  const [period, setPeriod] = useState("");
+
+
+
   const subscriptionHistory = async () => {
     try {
       const response = await apiPost(`/admin/instituteSubscriptionHistory`, {
@@ -206,12 +212,29 @@ const SubscriptionPlan = ({ instituteId }) => {
         ...item,
         invoice: `Invoice-${arr.length - index}`,
         date: new Date(item.createdAt).toLocaleDateString(),
+        activationDate: new Date(item.subscriptionStartDate).toLocaleDateString(),
         status: item.status,
         amount: `₹${item.subscriptionAmt}`,
+        ActiveDays: item.ActiveDays,
       }));
 
       setSubscriptionsHistory(formatted);
-      // console.log("Subscription history response:", response);
+
+      if (formatted.length > 0) {
+
+        const totalDays = formatted.reduce(
+          (sum, item) => sum + (item.ActiveDays || 0),
+          0
+        );
+        setDaysLeft(totalDays);
+        setAmount(formatted[0].subscriptionAmt);
+        setPeriod(formatted[0].subscriptionPeriod);
+      } else {
+        setDaysLeft(0);
+        setAmount(0);
+        setPeriod("");
+      }
+
     } catch (error) {
       console.error("Error fetching subscription history:", error);
     }
@@ -221,39 +244,8 @@ const SubscriptionPlan = ({ instituteId }) => {
     subscriptionHistory();
   }, []);
 
-  let latestSubscription = null;
 
-  for (let i = 0; i < subscriptionsHistory.length; i++) {
-    let sub = subscriptionsHistory[i];
-    console.log(sub, "sub343534");
 
-    if (sub.status === "Active") {
-      if (
-        latestSubscription === null ||
-        new Date(sub.createdAt) > new Date(latestSubscription.createdAt)
-      ) {
-        latestSubscription = sub;
-      }
-    }
-  }
-
-  let amount = 0;
-  let period = 0;
-
-  if (latestSubscription) {
-    amount = latestSubscription.subscriptionAmt;
-    period = parseInt(latestSubscription.subscriptionPeriod);
-  }
-
-  let startDate = latestSubscription
-    ? new Date(latestSubscription.createdAt)
-    : new Date();
-  let endDate = new Date(startDate);
-  endDate.setMonth(startDate.getMonth() + period);
-
-  let today = new Date();
-  let timeDiff = endDate.getTime() - today.getTime();
-  let daysLeft = Math.max(Math.ceil(timeDiff / (1000 * 60 * 60 * 24)), 0);
 
   console.log("subscriptionHistory", subscriptionsHistory);
 
@@ -275,7 +267,7 @@ const SubscriptionPlan = ({ instituteId }) => {
               Subscription Plan{" "}
             </Typography>
             <Typography sx={styles.leftGrid.price}>
-              {amount} <span style={{ fontWeight: 400 }}>/ {period} month</span>{" "}
+              {amount} <span style={{ fontWeight: 400 }}>/ {period} days</span>{" "}
             </Typography>
           </Grid>
 
@@ -305,7 +297,7 @@ const SubscriptionPlan = ({ instituteId }) => {
           <Table stickyHeader>
             <TableHead>
               <TableRow>
-                {["Invoice", "Billing dates", "Status", "Amount"].map(
+                {["Invoice", "Billing dates", "Activation Date", "Status", "Amount"].map(
                   (head, idx) => (
                     <TableCell key={idx} sx={styles.tableHeadCell}>
                       {head}
@@ -319,6 +311,7 @@ const SubscriptionPlan = ({ instituteId }) => {
                 <TableRow key={idx}>
                   <TableCell sx={styles.tableCell}>{row.invoice}</TableCell>
                   <TableCell sx={styles.tableCell}>{row.date}</TableCell>
+                  <TableCell sx={styles.tableCell}>{row.activationDate}</TableCell>
                   <TableCell sx={styles.tableCell}>
                     <Box
                       sx={
@@ -373,6 +366,7 @@ const SubscriptionPlan = ({ instituteId }) => {
               <CustomTextField
                 label="Subscription Amount"
                 name="subscriptionAmt"
+                type="number"
                 value={formData.subscriptionAmt}
                 onChange={handleChange}
                 placeholder="Enter"

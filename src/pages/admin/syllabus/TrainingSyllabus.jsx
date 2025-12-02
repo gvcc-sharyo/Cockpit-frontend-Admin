@@ -5,6 +5,8 @@ import CustomTextField from "../../../components/admin/CustomTextField";
 import CustomButton from "../../../components/admin/CustomButton";
 import CustomTypography from "../../../components/admin/CustomTypography";
 import { getAdminRoutePrefix } from "../../../utils/RoutePrefix";
+import { Switch } from "@mui/material";
+
 
 function TrainingSyllabus() {
   const routePrefix = getAdminRoutePrefix();
@@ -13,8 +15,10 @@ function TrainingSyllabus() {
   const [formData, setFormData] = useState({
     image: null,
     title: '',
-    category: ''
+    category: '',
+    isBlocked: false
   });
+  const adminId = localStorage.getItem("adminId");
 
   const fetchSyllabus = async () => {
     try {
@@ -85,7 +89,7 @@ function TrainingSyllabus() {
     const errors = {};
 
     if (!formData.title) errors.title = 'Title is required';
-    if(!formData.image) errors.image = 'Image is required';
+    if (!formData.image) errors.image = 'Image is required';
 
     setFormErrors(errors);
 
@@ -97,6 +101,7 @@ function TrainingSyllabus() {
     data.append('image', formData.image);
     data.append('title', formData.title);
     data.append('category', formData.category);
+    data.append('isBlocked', formData.isBlocked);
     if (isEditing) {
       data.append('syllabusId', menuItem._id);
     }
@@ -155,7 +160,8 @@ function TrainingSyllabus() {
       {
         image: menuItem.imageUrl,
         title: menuItem.title,
-        category: menuItem.category
+        category: menuItem.category,
+        isBlocked: menuItem.isBlocked
       }
     )
     handleModalOpen();
@@ -211,6 +217,14 @@ function TrainingSyllabus() {
     }
   }
 
+  const handleToggleBlocked = (event) => {
+    setFormData((prev) => ({
+      ...prev,
+      isBlocked: event.target.checked,
+    }));
+  };
+
+
   return (
 
     <Navbar title="Syllabus">
@@ -246,7 +260,7 @@ function TrainingSyllabus() {
 
                         //  ml:2
                       }}
-                      onClick={() => handleClick(item)} 
+                      onClick={() => handleClick(item)}
                     />
 
                     <IconButton
@@ -288,51 +302,64 @@ function TrainingSyllabus() {
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-
         <DialogContent dividers>
-          <Box sx={{ mb: 2 }}>
 
-            <Button variant="outlined" component="label" sx={{ gap: 1, color: 'black' }}>
-              <CameraAltIcon />
-              Upload
-              <input
-                hidden
-                type="file"
-                accept="image/*"
-                name="image"
-                onChange={handleInputChange}
+          <Grid container spacing={2} sx={{ display: 'flex', mb: 3 }}>
+            <Grid size={{ xs: 12, md: adminId ? 6 : 12 }}
+            >
+              <Box sx={{ mb: 2 }}>
+                <Button variant="outlined" component="label" sx={{ color: 'black' }}>
+                  <CameraAltIcon />
+                  Upload
+                  <input
+                    hidden
+                    type="file"
+                    accept="image/*"
+                    name="image"
+                    onChange={handleInputChange}
+                  />
+                </Button>
+
+                {formData.image && (
+                  <Typography variant="body2" sx={{ mt: 1 }}>
+                    {formData.image.name}
+                  </Typography>
+                )}
+
+                {formErrors.image && (
+                  <Typography variant="body2" sx={{ mt: 1, color: 'red' }}>
+                    {formErrors.image}
+                  </Typography>
+                )}
+              </Box>
+            </Grid>
+            {adminId && <Grid size={{ xs: 12, md: 6, sm: 6 }}
+            >
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={formData.isBlocked}
+                    onChange={handleToggleBlocked}
+                    color="primary"
+                  />
+                }
+                label="Hide syllabus if not subscribed"
               />
-            </Button>
-            {formData.image && (
-              <Typography variant="body2" sx={{ mt: 1 }}>
-                {formData.image.name}
-              </Typography>
-            )}
+            </Grid>}
 
-            {
-              formErrors.image && (
-                <Typography variant="body2" sx={{ mt: 1, color: 'red' }}>
-                  {formErrors.image}
-                </Typography>
-              )
-            }
-          </Box>
-
-          <Grid container sx={{ display: 'flex', gap: 3, mb: 3 }}>
-            <Grid size={{ xs: 10, md: 5, sm: 5 }}>
+            <Grid size={{ xs: 12, md: 6, sm: 6 }}>
               <CustomTextField
                 label="Syllabus Title"
                 name="title"
                 value={formData.title}
                 onChange={handleInputChange}
                 placeholder="Syllabus Title"
-                error={!!formErrors.title} //error={formErrors.title ? true : false}
+                error={!!formErrors.title}
                 helperText={formErrors.title}
-
               />
             </Grid>
 
-            <Grid size={{ xs: 10, md: 5, sm: 5 }} >
+            <Grid size={{ xs: 12, md: 6, sm: 6 }}>
               <CustomTextField
                 label="Category"
                 name="category"
@@ -340,17 +367,22 @@ function TrainingSyllabus() {
                 onChange={handleInputChange}
                 placeholder="Category"
               />
-
             </Grid>
-
           </Grid>
 
           <Grid sx={{ display: 'flex', justifyContent: 'center' }}>
-            <CustomButton children={isEditing ? 'Update' : 'Add'} onClick={handleAddSyllabus} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
+            <CustomButton
+              children={isEditing ? 'Update' : 'Add'}
+              onClick={handleAddSyllabus}
+              loading={loading}
+              bgColor='#EAB308'
+              sx={{ width: '20%' }}
+            />
           </Grid>
-
         </DialogContent>
       </Dialog>
+
+
 
 
 
@@ -376,7 +408,7 @@ function TrainingSyllabus() {
                   <CustomButton children='Yes' onClick={handleDeleteSyllabus} loading={loading} bgColor='#EAB308' sx={{ width: '20%' }} />
                 </Grid>
                 <Grid item>
-              <CustomButton children='No' onClick={handleDeleteModalClose} bgColor='#BF0000' sx={{ width:'20%', }}/>
+                  <CustomButton children='No' onClick={handleDeleteModalClose} bgColor='#BF0000' sx={{ width: '20%', }} />
                 </Grid>
               </Grid>
             </Grid>
