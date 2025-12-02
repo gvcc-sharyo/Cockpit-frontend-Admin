@@ -210,9 +210,9 @@ function Training({ syllabusNav = false, syllabusName, bookName, chapterName, qu
       syllabus: syllabusName || "",
       book: bookName || "",
       chapter: chapterName || "",
-      syllabusId: syllabusNav ? syllabusId : "",
-      bookId: syllabusNav ? bookId : "",
-      chapterId: syllabusNav ? chapterId : "",
+      syllabusId: syllabusId ? syllabusId : "",
+      bookId: bookId ? bookId : "",
+      chapterId: chapterId ? chapterId : "",
       question: question?.question || "",
       options: question?.options || [
         { id: 1, text: "", isCorrect: false },
