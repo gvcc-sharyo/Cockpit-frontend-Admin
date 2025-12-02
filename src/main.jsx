@@ -12,7 +12,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <AuthProvider>
       <GoogleOAuthProvider
-        redirect_uri={"http://localhost:5173/adminlogin"}
+        // redirect_uri={"http://localhost:5173/adminlogin"}
         clientId={google_client_id}
       >
         <CustomSnackbarProvider>

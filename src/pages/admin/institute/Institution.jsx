@@ -174,26 +174,24 @@ function Institution() {
       // console.log("Response data:", response.data);
 
       console.log("Response status:", response);
-      fetchInstitute();
 
-      if (response.status === 200) {
+      if (response?.data.status === 200) {
         snackbarEmitter(response.data.message, "success");
         handleModalClose();
         resetFormData();
-      } else {
-        snackbarEmitter("Failed to add institute", "error");
-      }
-
-      setTimeout(() => {
         setLoading(false);
-      }, 2000);
+
+      } else {
+        snackbarEmitter(response?.data?.message, "error");
+        setLoading(false);
+
+      }
+      fetchInstitute();
+
     } catch (error) {
       // console.error("Error adding institute:", error);
       snackbarEmitter("Something went wrong", "error");
-
-      setTimeout(() => {
-        setLoading(false);
-      }, 2000);
+      setLoading(false);
     }
   };
 
@@ -431,9 +429,12 @@ function Institution() {
                   error={!!formErrs.subscriptionPeriod}
                   helperText={formErrs.subscriptionPeriod}
                 >
-                  <MenuItem value="1">1 month</MenuItem>
-                  <MenuItem value="6">6 months</MenuItem>
-                  <MenuItem value="12">12 months</MenuItem>
+                  <MenuItem value="30">1 Month</MenuItem>
+                  <MenuItem value="90">3 Months</MenuItem>
+                  <MenuItem value="180">6 Months</MenuItem>
+                  <MenuItem value="365">1 Year</MenuItem>
+                  <MenuItem value="548">1 Year 6 Months</MenuItem>
+                  <MenuItem value="730">2 Year</MenuItem>
                 </CustomTextField>
               </Grid>}
 
