@@ -221,12 +221,7 @@ const SubscriptionPlan = ({ instituteId }) => {
       setSubscriptionsHistory(formatted);
 
       if (formatted.length > 0) {
-
-        const totalDays = formatted.reduce(
-          (sum, item) => sum + (item.ActiveDays || 0),
-          0
-        );
-        setDaysLeft(totalDays);
+        setDaysLeft(formatted[0].ActiveDays);
         setAmount(formatted[0].subscriptionAmt);
         setPeriod(formatted[0].subscriptionPeriod);
       } else {
