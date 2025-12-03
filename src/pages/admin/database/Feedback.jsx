@@ -5,11 +5,14 @@ import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import { apiGet, apiPost } from "../../../api/axios";
 import CustomButton from "../../../components/admin/CustomButton";
 import Training from "../../../components/admin/Training";
+import { useAuth } from "../../../context/AuthContext";
 
 function Feedback() {
 
   const location = useLocation();
   const { reportID } = location.state || {};
+
+  const {instituteId} = useAuth();
 
   console.log('reportId', reportID);
 
@@ -88,8 +91,33 @@ function Feedback() {
     }
   };
 
+  const InsfetchReports = async () => {
+
+    try {
+      const response = await apiGet('/getAllReport');
+
+      if (response.data.status === 200) {
+        // setOpen(null);
+        const filteredReports = response.data.data.filter((report) => report.status === 'pending');
+        if (filteredReports.length === 0) {
+          setOpen(null);
+          setReports([]); 
+          snackbarEmitter('No pending reports found', 'info');
+        } else {
+          setReports(filteredReports);
+        }
+      }
+      else {
+        snackbarEmitter(response.data.message, 'error');
+      }
+
+    } catch (error) {
+      snackbarEmitter('Something went wrong', 'error');
+    }
+  };
+
   useEffect(() => {
-    fetchReports();
+   instituteId ? InsfetchReports() : fetchReports();
   }, [])
 
 
@@ -139,7 +167,7 @@ function Feedback() {
   const handleModalOpen = (report) => {
     setOpenModal(true);
     setFormData({
-     syllabus: report.questionsDetails[0]?.syllabusId.title,
+      syllabus: report.questionsDetails[0]?.syllabusId.title,
       book: report.questionsDetails[0]?.bookId.bookTitle,
       chapter: report.questionsDetails[0]?.chapterId.chaptername,
       syllabusId: report.questionsDetails[0]?.syllabusId._id,
@@ -229,7 +257,7 @@ function Feedback() {
                     <CustomTypography
                       fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
                       fontWeight={500}
-                      text={`${report?.userId?.username} has ${report?.reason === '' ? 'reported a' : 'filed answer for a'}  question on ${report?.questionsDetails[0]?.syllabusId?.title}`}
+                      text={`${report?.userId?.username} has ${report?.reason === '' ? 'reported a' : 'filed answer for a'}  question on ${report.questionsDetails[0]?.syllabusId?.title}`}
                       mb={0} />
 
                     <CustomTypography
@@ -272,7 +300,7 @@ function Feedback() {
                       <CustomTypography
                         fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
                         fontWeight={500}
-                        text={report?.questionsDetails[0]?.question}
+                        text={report.questionsDetails[0]?.question}
                         mb={0} />
 
                       <CustomTypography
@@ -286,7 +314,7 @@ function Feedback() {
                       <CustomTypography
                         fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
                         fontWeight={500}
-                        text={report?.questionsDetails[0]?.explanation}
+                        text={report.questionsDetails[0]?.explanation}
                         mb={0} />
                     </Box>
                   </Grid>
@@ -307,7 +335,7 @@ function Feedback() {
                         <CustomTypography
                           fontSize={{ xs: '12px', sm: '13px', md: '14px' }}
                           fontWeight={500}
-                          text={report?.reason}
+                          text={report.reason}
                         />
                       </Box>
                     </Grid>

@@ -1,18 +1,23 @@
-import ReactDOM from 'react-dom/client';
-import App from './App';
-import { AuthProvider } from './contextApi/AuthContext';
-import { CustomSnackbarProvider } from './components/admin/CustomSnackbar';
-import { GoogleOAuthProvider} from '@react-oauth/google';
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import { CustomSnackbarProvider } from "./components/admin/CustomSnackbar";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { AuthProvider } from "./context/AuthContext";
+import { Suspense } from "react";
 
-const google_client_id = import.meta.env.VITE_GOOGLE_CLIENT_ID
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <GoogleOAuthProvider redirect_uri={"http://localhost:5173/adminlogin"}  clientId={google_client_id}>
+const google_client_id = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <AuthProvider>
+    <GoogleOAuthProvider
+      clientId={google_client_id}
+    >
       <CustomSnackbarProvider>
-        <App />
+        <Suspense fallback={<div>Loading...</div>}>
+          <App />
+        </Suspense>
       </CustomSnackbarProvider>
     </GoogleOAuthProvider>
-
-  </React.StrictMode>
+  </AuthProvider>
 );

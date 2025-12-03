@@ -78,13 +78,7 @@ function Training({ syllabusNav = false, syllabusName, bookName, chapterName, qu
     if (name === "book") {
       const selected = book.find((b) => b._id === value);
 
-      setFormData((prev) => ({
-        ...prev,
-        book: selected?.bookTitle,
-        bookId: selected?._id || "",
-        chapter: "",
-        chapterId: ""
-      }));
+      setFormData((prev) => ({ ...prev, book: selected?.bookTitle, bookId: selected?._id || "", chapter: "", chapterId: "" }));
       setErrors((prev) => ({ ...prev, book: undefined }));
       getChapters(formData.syllabus, value);
       setChapters([]);
@@ -102,11 +96,8 @@ function Training({ syllabusNav = false, syllabusName, bookName, chapterName, qu
       return;
     }
 
-    // ✅ Generic fallback for other fields like "question"
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    // ✅ Generic fallback for other fields lik "question"
+    setFormData((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
@@ -219,6 +210,9 @@ function Training({ syllabusNav = false, syllabusName, bookName, chapterName, qu
       syllabus: syllabusName || "",
       book: bookName || "",
       chapter: chapterName || "",
+      syllabusId: syllabusId ? syllabusId : "",
+      bookId: bookId ? bookId : "",
+      chapterId: chapterId ? chapterId : "",
       question: question?.question || "",
       options: question?.options || [
         { id: 1, text: "", isCorrect: false },
@@ -250,7 +244,7 @@ function Training({ syllabusNav = false, syllabusName, bookName, chapterName, qu
   };
 
   const getBooks = async (syllabus = "", selectedSyllabusId) => {
-    // console.log("syllabus id for req", formData.syllabusId);
+    console.log("syllabus id for req", selectedSyllabusId);
     try {
 
       const response = await apiGet(`/booksBySyllabusId/${selectedSyllabusId}`);
@@ -313,7 +307,7 @@ function Training({ syllabusNav = false, syllabusName, bookName, chapterName, qu
       options: syllabusNav
         ? [{ label: bookName, value: bookId }]
         : book
-          .filter(item => item.syllabusId?._id === formData.syllabusId)
+          // .filter(item => item.syllabusId?._id === formData.syllabusId)
           .map(item => ({
             label: item.bookTitle,
             value: item._id
@@ -332,8 +326,8 @@ function Training({ syllabusNav = false, syllabusName, bookName, chapterName, qu
         : chapters
           .filter(
             item =>
-              item.bookId === formData.bookId &&
-              item.syllabusId?._id === formData.syllabusId
+              item.bookId === formData.bookId
+            // item.syllabusId?._id === formData.syllabusId
           )
           .map(item => ({
             label: item.chaptername,

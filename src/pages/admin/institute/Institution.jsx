@@ -5,6 +5,7 @@ import CustomTextField from "../../../components/admin/CustomTextField";
 import CustomTypography from "../../../components/admin/CustomTypography";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import Navbar from "../../../components/admin/Navbar";
+import { getAdminRoutePrefix } from "../../../utils/RoutePrefix";
 
 const styles = {
   container: {
@@ -39,7 +40,7 @@ const styles = {
     mb: 3,
     justifyContent: { md: "center", xs: "left" },
   },
-   generateButton: {
+  generateButton: {
     position: "absolute",
     right: 0,
     top: "15%",
@@ -56,30 +57,26 @@ const styles = {
   },
 };
 
-
 function Institution() {
   const [openModal, setOpenModal] = useState(false);
-  const [chapterName, setChapterName] = useState([]);
 
   const [institutes, setInstitutes] = useState([]);
-
-
+  const [id, setId] = useState();
+  const routePrefix = getAdminRoutePrefix();
+  const [showMessage, setShowMessage] = useState(false);
 
   const fetchInstitute = async () => {
     try {
       const response = await apiGet("/admin/getAllInstitute");
-      console.log(response.data);
-
-      if (response.data.status === 200 && response.data.data.length === 0) {
-        snackbarEmitter("No institutes found", "info");
-      } else if (response.data.status === 200) {
+      // console.log("Response data:", response.data);
+      if (response.data?.status === 200) {
         setInstitutes(response.data.data);
-      } else {
-        snackbarEmitter(response.data.message, "error");
       }
     } catch (error) {
-      console.error("Error fetching institutes:", error);
-      snackbarEmitter("Something went wrong", "error");
+      snackbarEmitter(
+        error?.response?.data?.message || "Something went wrong",
+        "error"
+      );
     }
   };
 
@@ -89,6 +86,7 @@ function Institution() {
 
   const handleModalOpen = () => setOpenModal(true);
   const handleModalClose = () => {
+    setId("");
     setOpenModal(false);
     setFormData({});
     setFormErrs({});
@@ -149,13 +147,56 @@ function Institution() {
     return errs;
   };
 
+  const resetFormData = () => {
+    setFormData({
+      instituteName: "",
+      department: "",
+      email: "",
+      phone: "",
+      password: "",
+      subscriptionAmt: "",
+      subscriptionPeriod: "",
+      currentAddress: "",
+      permanentAddress: "",
+      transactionId: "",
+    });
+  };
+
   const handleAddInstitute = async () => {
     const errors = handleErrors();
-
-    // Correct way to check if any validation errors exist
     if (Object.keys(errors).length > 0) {
       return;
     }
+    setLoading(true);
+    setShowMessage(true);
+
+    try {
+      const response = await apiPost("/admin/addInstitute", formData);
+      if (response?.data.status === 200) {
+        snackbarEmitter(response.data.message, "success");
+        handleModalClose();
+        resetFormData();
+        setLoading(false);
+        setShowMessage(false);
+      } else {
+        snackbarEmitter(response?.data?.message, "error");
+        setLoading(false);
+
+      }
+      fetchInstitute();
+
+    } catch (error) {
+      // console.error("Error adding institute:", error);
+      snackbarEmitter("Something went wrong", "error");
+      setLoading(false);
+      setShowMessage(false);
+
+    }
+  };
+
+  const updateInstituteStudents = async (id) => {
+
+    setLoading(true);
 
     const req = {
       instituteName: formData.instituteName,
@@ -163,66 +204,67 @@ function Institution() {
       email: formData.email,
       phone: formData.phone,
       password: formData.password,
-      subscriptionAmt: formData.subscriptionAmt,
-      subscriptionPeriod: formData.subscriptionPeriod,
+      // subscriptionAmt: formData.subscriptionAmt,
+      // subscriptionPeriod: formData.subscriptionPeriod,
       currentAddress: formData.currentAddress,
       permanentAddress: formData.permanentAddress,
-      transactionId: formData.transactionId,
+      // transactionId: formData.transactionId,
     };
 
     try {
-      setLoading(true);
-      const response = await apiPost("/admin/addInstitute", req);
-      console.log(response.data);
-
-      if (response.status === 200) {
+      const response = await apiPost("/admin/updateInstitute", {
+        instituteId: id,
+        ...req,
+      });
+      // console.log("Update response:", response.data);
+      if (response.data.status === 200) {
         snackbarEmitter(response.data.message, "success");
+        resetFormData();
         handleModalClose();
-        setFormData({
-          instituteName: "",
-          department: "",
-          email: "",
-          phone: "",
-          password: "",
-          subscriptionAmt: "",
-          subscriptionPeriod: "",
-          currentAddress: "",
-          permanentAddress: "",
-          transactionId: "",
-        });
-      } else {
-        alert("Failed to add institute");
+        fetchInstitute();
+        setLoading(false);
+
       }
-
-      setTimeout(() => {
-        setLoading(false);
-      }, 2000);
     } catch (error) {
-      console.error("Error adding institute:", error);
+      setLoading(false);
       snackbarEmitter("Something went wrong", "error");
-
-      setTimeout(() => {
-        setLoading(false);
-      }, 2000);
     }
   };
 
   const navigate = useNavigate();
 
-  const handleClick = (id) => {
-    navigate(`/admin/institutiondetails`);
+  const handleClick = (institute) => {
+    // console.log("Navigating to institute details for:", institute._id);
+    navigate(`${routePrefix}/institutiondetails`, {
+      state: { instituteId: institute._id },
+    });
   };
 
-  const handleEdit = (institute) => {
-  navigate(`/admin/institutiondetails`, {
-    state: { instituteId: institute._id },
-  });
-};
+  const handleEdit = async (institute) => {
+    const response = await apiPost(`/admin/getInstitute`, {
+      instituteId: institute._id,
+    });
+    setId(institute._id);
 
+    handleModalOpen();
+    setFormData({
+      instituteName: response.data.data.instituteName,
+      department: response.data.data.department,
+      email: response.data.data.email,
+      phone: response.data.data.phone,
+      // password: response.data.data.password,
+      subscriptionAmt: response.data.data.subscriptionAmt,
+      subscriptionPeriod: String(response.data.data.subscriptionPeriod ?? ""),
+      currentAddress: response.data.data.currentAddress,
+      permanentAddress: response.data.data.permanentAddress,
+      transactionId: response.data.data.transactionId,
+    });
+  };
 
-
-  const handleGeneratePassword = () => {
-    const password = Math.random().toString(36).slice(-8);
+  const handleGeneratePassword = async () => {
+    const response = await apiGet("/admin/instituteAutogeneratedPassword");
+    // console.log("Generated password:", response);
+    const password = response.data.data;
     setFormData({ ...formData, password });
   };
 
@@ -233,6 +275,48 @@ function Institution() {
     "Status",
     "Action",
   ];
+
+  const table = institutes.map((institute) => ({
+    institute,
+    row: [
+      <Box
+        onClick={() => handleClick(institute)}
+        sx={{
+          cursor: "pointer",
+          textAlign: "left",
+          paddingLeft: "120px",
+        }}
+      >
+        {institute.instituteName}
+      </Box>,
+      <Box onClick={() => handleClick(institute)} sx={{ cursor: "pointer" }}>
+        {institute.totalStudents}
+      </Box>,
+      <Box onClick={() => handleClick(institute)} sx={{ cursor: "pointer" }}>
+        <CustomButton
+          children={institute.isactive ? "Active" : "Inactive"}
+          loading={false}
+          bgColor={institute.isactive ? "#109CF1" : "#F44336"}
+          sx={{
+            width: { xs: "50px", sm: "60px", md: "70px" },
+            fontSize: { xs: "10px", sm: "11px", md: "12px" },
+          }}
+        />
+      </Box>,
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation();
+          handleEdit(institute);
+        }}
+      >
+        <img
+          src="/images/edit.svg"
+          alt="Edit"
+          style={{ width: 20, height: 20 }}
+        />
+      </IconButton>,
+    ],
+  }));
 
   return (
     <>
@@ -262,9 +346,7 @@ function Institution() {
         <Grid size={{ xs: 12 }} mt={2}>
           <CustomTable
             maxWidth={"100%"}
-            handleClick={handleClick}
-            handleEdit={handleEdit}
-            institutes={institutes}
+            tableData={table}
             tableHeaders={tableHeaders}
           />
         </Grid>
@@ -272,7 +354,7 @@ function Institution() {
         <Dialog open={openModal} onClose={handleModalClose} fullWidth>
           <DialogTitle sx={styles.dialogTitle}>
             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              Add Institution
+              {id ? "Update" : "Add"} Institution
             </Typography>
             <IconButton onClick={handleModalClose}>
               <CloseIcon />
@@ -323,24 +405,26 @@ function Institution() {
                   value={formData.phone}
                   onChange={handleInputChange}
                   placeholder="Enter"
+                  type="number"
                   error={!!formErrs.phone}
                   helperText={formErrs.phone}
                 />
               </Grid>
 
-              <Grid size={{ xs: 12, md: 5 }}>
+              {!id && <Grid size={{ xs: 12, md: 5 }}>
                 <CustomTextField
-                  label="Label Amount*"
+                  label="Subscription Amount*"
                   name="subscriptionAmt"
                   value={formData.subscriptionAmt}
                   onChange={handleInputChange}
                   placeholder="Enter"
+                  type="number"
                   error={!!formErrs.subscriptionAmt}
                   helperText={formErrs.subscriptionAmt}
                 />
-              </Grid>
+              </Grid>}
 
-              <Grid size={{ xs: 12, md: 5 }}>
+              {!id && <Grid size={{ xs: 12, md: 5 }}>
                 <CustomTextField
                   label="Subscription Period*"
                   select
@@ -351,13 +435,16 @@ function Institution() {
                   error={!!formErrs.subscriptionPeriod}
                   helperText={formErrs.subscriptionPeriod}
                 >
-                  <MenuItem value="1">1 month</MenuItem>
-                  <MenuItem value="6">6 months</MenuItem>
-                  <MenuItem value="12">12 months</MenuItem>
+                  <MenuItem value="30">1 Month</MenuItem>
+                  <MenuItem value="90">3 Months</MenuItem>
+                  <MenuItem value="180">6 Months</MenuItem>
+                  <MenuItem value="365">1 Year</MenuItem>
+                  <MenuItem value="548">1 Year 6 Months</MenuItem>
+                  <MenuItem value="730">2 Year</MenuItem>
                 </CustomTextField>
-              </Grid>
+              </Grid>}
 
-              <Grid size={{ xs: 12, md: 5 }}>
+              {!id && <Grid size={{ xs: 12, md: 5 }}>
                 <Box sx={{ position: "relative" }}>
                   <CustomTextField
                     label="Password*"
@@ -376,17 +463,17 @@ function Institution() {
                     Generate
                   </Button>
                 </Box>
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 5 }}>
-                <CustomTextField
-                  label="Transaction ID"
-                  name="transactionId"
-                  value={formData.transactionId}
-                  onChange={handleInputChange}
-                  placeholder="Enter"
-                />
-              </Grid>
+              </Grid>}
+              {
+                !id && <Grid size={{ xs: 12, md: 5 }}>
+                  <CustomTextField
+                    label="Transaction ID"
+                    name="transactionId"
+                    value={formData.transactionId}
+                    onChange={handleInputChange}
+                    placeholder="Enter"
+                  />
+                </Grid>}
 
               <Grid size={{ xs: 12, md: 10.5 }}>
                 <CustomTextField
@@ -414,18 +501,22 @@ function Institution() {
             </Grid>
 
             <Grid
-              item
               sx={{ display: "flex", justifyContent: "center" }}
               size={{ xs: 12, md: 6 }}
             >
               <CustomButton
-                children="Add"
-                onClick={handleAddInstitute}
-                loading={false}
+                children={id ? "Update" : "Add"}
+                onClick={() =>
+                  id ? updateInstituteStudents(id) : handleAddInstitute()
+                }
+                loading={loading}
                 bgColor="#EAB308"
                 sx={{ width: "20%" }}
               />
             </Grid>
+           { showMessage && <Grid>
+              <Typography sx={{color:"red"}}>Please wait for some time for transferring all syllabus data to institute</Typography>
+            </Grid>}
           </DialogContent>
         </Dialog>
       </Navbar>
