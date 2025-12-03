@@ -1,4 +1,4 @@
-import { apiGet, apiPostUpload } from "../../../api/axios";
+import { apiGet, apiPostUpload, apiDelete } from "../../../api/axios";
 import CustomTable from "../../../components/admin/CustomTable";
 import CustomButton from "../../../components/admin/CustomButton";
 import CustomTextField from "../../../components/admin/CustomTextField";
@@ -6,6 +6,7 @@ import CustomTypography from "../../../components/admin/CustomTypography";
 import { snackbarEmitter } from "../../../components/admin/CustomSnackbar";
 import Navbar from "../../../components/admin/Navbar";
 import { getAdminRoutePrefix } from "../../../utils/RoutePrefix";
+
 
 const styles = {
   container: {
@@ -65,6 +66,31 @@ function Advertise() {
   const routePrefix = getAdminRoutePrefix();
   const fileInputRef = useRef();
 
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  const handleDeleteOpen = (adId) => {
+    setDeleteId(adId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteClose = () => {
+    setDeleteDialogOpen(false);
+    setDeleteId(null);
+  };
+
+  const handleDelete = async () => {
+    try {
+      const response = await apiGet(`/admin/deleteAdvertisement/${deleteId}`);
+      snackbarEmitter("Advertisement deleted", "success");
+      handleDeleteClose();
+      fetchAds();
+    } catch (error) {
+      snackbarEmitter("Delete failed", "error");
+    }
+  };
+
+
+
   const handleModalOpen = (ad = null) => {
     if (ad) {
       setFormData({
@@ -89,7 +115,7 @@ function Advertise() {
     "Created Date",
     "Link",
     "Time Limit",
-    "Status",
+    // "Status",
     "Action",
   ];
 
@@ -111,27 +137,37 @@ function Advertise() {
       new Date(ad.createdAt).toLocaleDateString(),
       <Box sx={{ textAlign: "left", paddingLeft: "120px" }}>{ad.link}</Box>,
       ad.timeLimit,
-      <CustomButton
-        children={ad.isactive ? "Active" : "Inactive"}
-        loading={false}
-        bgColor={ad.isactive ? "#109CF1" : "#F44336"}
-        sx={{
-          width: { xs: "50px", sm: "60px", md: "70px" },
-          fontSize: { xs: "10px", sm: "11px", md: "12px" },
-        }}
-      />,
-      <IconButton
-        onClick={(e) => {
-          e.stopPropagation();
-          handleModalOpen(ad);
-        }}
-      >
-        <img
-          src="/images/edit.svg"
-          alt="Edit"
-          style={{ width: 20, height: 20 }}
-        />
-      </IconButton>,
+      // <CustomButton
+      //   children={ad.isactive ? "Active" : "Inactive"}
+      //   loading={false}
+      //   bgColor={ad.isactive ? "#109CF1" : "#F44336"}
+      //   sx={{
+      //     width: { xs: "50px", sm: "60px", md: "70px" },
+      //     fontSize: { xs: "10px", sm: "11px", md: "12px" },
+      //   }}
+      // />,
+      <Box>
+        <IconButton
+          onClick={(e) => {
+            e.stopPropagation();
+            handleModalOpen(ad);
+          }}
+        >
+          <img
+            src="/images/edit.svg"
+            alt="Edit"
+            style={{ width: 20, height: 20 }}
+          />
+        </IconButton>
+        <IconButton
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDeleteOpen(ad._id);
+          }}
+        >
+          <DeleteIcon sx={{ color: "#C21802" }} />
+        </IconButton>
+      </Box>
     ],
   }));
 
@@ -360,7 +396,7 @@ function Advertise() {
 
             <Grid
               item
-              sx={{ display: "flex", justifyContent: "center", mt:2 }}
+              sx={{ display: "flex", justifyContent: "center", mt: 2 }}
               size={{ xs: 12, md: 6 }}
             >
               <CustomButton
@@ -372,6 +408,36 @@ function Advertise() {
             </Grid>
           </DialogContent>
         </Dialog>
+
+
+        {/* Delete option */}
+        <Dialog open={deleteDialogOpen} onClose={handleDeleteClose}>
+          <DialogTitle sx={{ fontWeight: "bold" }}>
+            Confirm Delete
+          </DialogTitle>
+
+          <DialogContent dividers>
+            <Typography>Are you sure you want to delete this advertisement?</Typography>
+          </DialogContent>
+
+          <DialogActions>
+            <CustomButton
+              children="No"
+              bgColor="#9CA3AF"
+              onClick={handleDeleteClose}
+              sx={{ width: "80px" }}
+            />
+
+            <CustomButton
+              children="Yes"
+              bgColor="#EF4444"
+              onClick={handleDelete}
+              sx={{ width: "80px" }}
+            />
+          </DialogActions>
+        </Dialog>
+
+
       </Navbar>
     </>
   );
