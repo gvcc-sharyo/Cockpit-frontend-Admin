@@ -196,64 +196,54 @@ const SubscriptionPlan = ({ instituteId }) => {
     }
   };
 
+  const [daysLeft, setDaysLeft] = useState(0);
+  const [amount, setAmount] = useState(0);
+  const [period, setPeriod] = useState("");
+
+
+
   const subscriptionHistory = async () => {
     try {
       const response = await apiPost(`/admin/instituteSubscriptionHistory`, {
         instituteId,
       });
 
-      const formatted = response.data.data?.map((item, index) => ({
+      const formatted = response.data.data?.map((item, index, arr) => ({
         ...item,
-        invoice: `Invoice-${index + 1}`,
+        invoice: `Invoice-${arr.length - index}`,
         date: new Date(item.createdAt).toLocaleDateString(),
-        status: item.status === "Active" ? "Paid" : "Cancelled",
+        activationDate: new Date(item.subscriptionStartDate).toLocaleDateString(),
+        status: item.status,
         amount: `₹${item.subscriptionAmt}`,
+        ActiveDays: item.ActiveDays,
       }));
 
       setSubscriptionsHistory(formatted);
-      // console.log("Subscription history response:", response);
+
+      if (formatted.length > 0) {
+        setDaysLeft(formatted[0].ActiveDays);
+        setAmount(formatted[0].subscriptionAmt);
+        setPeriod(formatted[0].subscriptionPeriod);
+      } else {
+        setDaysLeft(0);
+        setAmount(0);
+        setPeriod("");
+      }
+
     } catch (error) {
       console.error("Error fetching subscription history:", error);
     }
   };
+
   useEffect(() => {
     subscriptionHistory();
-  },[]);
+  }, []);
 
-  let latestSubscription = null;
 
-  for (let i = 0; i < subscriptionsHistory.length; i++) {
-    let sub = subscriptionsHistory[i];
-    if (sub.status === "Paid") {
-      if (
-        latestSubscription === null ||
-        new Date(sub.createdAt) > new Date(latestSubscription.createdAt)
-      ) {
-        latestSubscription = sub;
-      }
-    }
-  }
 
-  let amount = 0;
-  let period = 0;
-
-  if (latestSubscription) {
-    amount = latestSubscription.subscriptionAmt;
-    period = parseInt(latestSubscription.subscriptionPeriod);
-  }
-
-  let startDate = latestSubscription
-    ? new Date(latestSubscription.createdAt)
-    : new Date();
-  let endDate = new Date(startDate);
-  endDate.setMonth(startDate.getMonth() + period);
-
-  let today = new Date();
-  let timeDiff = endDate.getTime() - today.getTime();
-  let daysLeft = Math.max(Math.ceil(timeDiff / (1000 * 60 * 60 * 24)), 0);
 
   console.log("subscriptionHistory", subscriptionsHistory);
-  
+
 
   return (
     <>
@@ -272,7 +262,7 @@ const SubscriptionPlan = ({ instituteId }) => {
               Subscription Plan{" "}
             </Typography>
             <Typography sx={styles.leftGrid.price}>
-              {amount} <span style={{ fontWeight: 400 }}>/ {period} month</span>{" "}
+              {amount} <span style={{ fontWeight: 400 }}>/ {period} days</span>{" "}
             </Typography>
           </Grid>
 
@@ -302,7 +292,7 @@ const SubscriptionPlan = ({ instituteId }) => {
           <Table stickyHeader>
             <TableHead>
               <TableRow>
-                {["Invoice", "Billing dates", "Status", "Amount"].map(
+                {["Invoice", "Billing dates", "Activation Date", "Status", "Amount"].map(
                   (head, idx) => (
                     <TableCell key={idx} sx={styles.tableHeadCell}>
                       {head}
@@ -316,10 +306,11 @@ const SubscriptionPlan = ({ instituteId }) => {
                 <TableRow key={idx}>
                   <TableCell sx={styles.tableCell}>{row.invoice}</TableCell>
                   <TableCell sx={styles.tableCell}>{row.date}</TableCell>
+                  <TableCell sx={styles.tableCell}>{row.activationDate}</TableCell>
                   <TableCell sx={styles.tableCell}>
                     <Box
                       sx={
-                        row.status === "Paid"
+                        row.status === "Active"
                           ? styles.statusPaid
                           : styles.statusCancelled
                       }
@@ -331,7 +322,7 @@ const SubscriptionPlan = ({ instituteId }) => {
                           height: "6px",
                           borderRadius: "50%",
                           backgroundColor:
-                            row.status === "Paid" ? "#027A48" : "#B42318",
+                            row.status === "Active" ? "#027A48" : "#B42318",
                         }}
                       />
                       {row.status}
@@ -370,6 +361,7 @@ const SubscriptionPlan = ({ instituteId }) => {
               <CustomTextField
                 label="Subscription Amount"
                 name="subscriptionAmt"
+                type="number"
                 value={formData.subscriptionAmt}
                 onChange={handleChange}
                 placeholder="Enter"
@@ -379,7 +371,7 @@ const SubscriptionPlan = ({ instituteId }) => {
             <Grid size={{ xs: 12, md: 6 }}>
               <CustomTextField
                 label="Subscription Period"
-                name="subscriptionPeriod" 
+                name="subscriptionPeriod"
                 select
                 fullWidth
                 required
@@ -387,9 +379,13 @@ const SubscriptionPlan = ({ instituteId }) => {
                 onChange={handleChange}
                 placeholder="Enter"
               >
-                <MenuItem value="30 days">1 Month</MenuItem>
-                <MenuItem value="90 days">3 Months</MenuItem>
-                <MenuItem value="180 days">6 Months</MenuItem>
+                <MenuItem value="30">1 Month</MenuItem>
+                <MenuItem value="90">3 Months</MenuItem>
+                <MenuItem value="180">6 Months</MenuItem>
+                <MenuItem value="365">1 Year</MenuItem>
+                <MenuItem value="548">1 Year 6 Months</MenuItem>
+                <MenuItem value="730">2 Year</MenuItem>
+
               </CustomTextField>
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>

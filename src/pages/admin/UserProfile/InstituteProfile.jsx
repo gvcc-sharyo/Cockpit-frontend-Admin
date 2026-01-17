@@ -6,6 +6,7 @@ import CustomButton from "../../../components/admin/CustomButton";
 import styles from "./profilestyles.js";
 import CustomTypography from "../../../components/admin/CustomTypography.jsx";
 
+
 const InstituteProfile = () => {
   const [email, setEmail] = useState("");
   const [formData, setFormData] = useState({
@@ -31,7 +32,7 @@ const InstituteProfile = () => {
         instituteName: data.institeDetails.instituteName || "",
         phone: data.institeDetails.phone || "",
         department: data.institeDetails.department || "",
-        address: data.institeDetails.currentAddress || "",
+        address: data.institeDetails.permanentAddress || data.institeDetails.currentAddress || "",
         subsrciptionAmt: data.subscriptionDetails.subscriptionAmt || "",
         subscriptionPeriod: data.subscriptionDetails.subscriptionPeriod || "",
       };
@@ -240,6 +241,7 @@ const InstituteProfile = () => {
             <Grid key={index} size={{ xs: 12, md: 6 }}>
               <CustomTextField
                 name={field.name}
+                label={field.placeholder}
                 placeholder={field.placeholder}
                 value={field.value}
                 onChange={handleChange}

@@ -127,8 +127,8 @@ function InstitutionDetail() {
       <Navbar title="Institution">
         <Grid container spacing={2}>
           <Grid
-            size={{ xs: 12, md: 4, lg: 4, sm: 3 }}
-            sx={{ width: { xs: "100%", md: "auto", sm: "auto" } }}
+            size={{ xs: 12, md: 4, lg: 4, sm: 5 }}
+            // sx={{ width: { xs: "100%", md: "auto", sm: "auto" } }}
           >
             <Paper elevation={3} sx={styles.card}>
               <Box sx={styles.avatarContainer}>
@@ -147,13 +147,13 @@ function InstitutionDetail() {
                   <WorkOutlineIcon fontSize="small" color="action" />
                 </Box>
                 <Box>
-                  <Typography sx={styles.infoPrimary}> {instituteData?.department }</Typography>
+                  <Typography sx={styles.infoPrimary}> {instituteData?.department}</Typography>
                   <Typography
                     variant="caption"
                     color="text.secondary"
                     sx={styles.infoSecondary}
                   >
-                   Department
+                    Department
                   </Typography>
                 </Box>
               </Stack>
@@ -218,8 +218,8 @@ function InstitutionDetail() {
             </Paper>
           </Grid>
 
-          <Grid size={{ xs: 12, md: 8, lg: 8, sm: 7 }} sx={{ width: "100%" }}>
-            <Box sx={{ width: "100%" }}>
+          <Grid size={{ xs: 12, md: 8, lg: 8, sm: 7 }}>
+            <Box >
               <Tabs
                 value={value}
                 onChange={handleChange}
@@ -254,7 +254,7 @@ function InstitutionDetail() {
               </TabPanel>
 
               <TabPanel value={value} index={1}>
-                <SubscriptionPlan  instituteId={instituteId} />
+                <SubscriptionPlan instituteId={instituteId} />
               </TabPanel>
 
               {/* <TabPanel value={value} index={2}>

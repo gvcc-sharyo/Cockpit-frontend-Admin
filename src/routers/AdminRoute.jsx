@@ -21,6 +21,7 @@ import Advertise from '../pages/admin/Advertise/Advertise';
 import StudentChapter from '../pages/admin/studentProfile/StudentChapter';
 import { getAdminRoutePrefix } from '../utils/RoutePrefix';
 import { useAuth } from '../context/AuthContext';
+import InstituteResetPassword from '../pages/admin/resetPassword/InstituteReset';
 
 const AdminRoute = () => {
   const { adminToken, instituteToken, instituteId } = useAuth();
@@ -40,6 +41,7 @@ const AdminRoute = () => {
         <Route path="/" element={adminToken || instituteToken ? <Navigate to={`${routePrefix}/dashboard`} /> : <Navigate to="/adminlogin" />} />
         <Route path="/adminlogin" element={<AdminLogin />} />
         <Route path="/resetpassword/:token" element={<ResetPassword />} />
+        <Route path="/institute/resetpassword/:token" element={<InstituteResetPassword />} />
 
         <Route element={<AuthRoute />}>
           <Route path={`${routePrefix}/dashboard`} element={<Dashboard />} />

@@ -63,6 +63,7 @@ function Institution() {
   const [institutes, setInstitutes] = useState([]);
   const [id, setId] = useState();
   const routePrefix = getAdminRoutePrefix();
+  const [showMessage, setShowMessage] = useState(false);
 
   const fetchInstitute = async () => {
     try {
@@ -74,7 +75,7 @@ function Institution() {
     } catch (error) {
       snackbarEmitter(
         error?.response?.data?.message || "Something went wrong",
-        "error"
+        "error",
       );
     }
   };
@@ -85,6 +86,7 @@ function Institution() {
 
   const handleModalOpen = () => setOpenModal(true);
   const handleModalClose = () => {
+    setId("");
     setOpenModal(false);
     setFormData({});
     setFormErrs({});
@@ -138,8 +140,8 @@ function Institution() {
     if (!formData.permanentAddress)
       errs.permanentAddress = "Permanent address is required";
 
-    if (!formData.transactionId)
-      errs.transactionId = "Transaction ID is required";
+    // if (!formData.transactionId)
+    //   errs.transactionId = "Transaction ID is required";
 
     setFormErrs(errs);
     return errs;
@@ -161,42 +163,43 @@ function Institution() {
   };
 
   const handleAddInstitute = async () => {
+    console.log("ADD BUTTON CLICKED");
     const errors = handleErrors();
+    console.log("FORM ERRORS:", errors);
     if (Object.keys(errors).length > 0) {
       return;
     }
+    setLoading(true);
+    setShowMessage(true);
 
     try {
-      setLoading(true);
-      // console.log("Adding institute with data:", formData);
       const response = await apiPost("/admin/addInstitute", formData);
-      // console.log("Response data:", response.data);
-
-      console.log("Response status:", response);
-      fetchInstitute();
-
-      if (response.status === 200) {
+      if (response?.data.status === 200) {
         snackbarEmitter(response.data.message, "success");
         handleModalClose();
         resetFormData();
+        // setLoading(false);
+        // setShowMessage(false);
       } else {
-        snackbarEmitter("Failed to add institute", "error");
-      }
-
-      setTimeout(() => {
+        snackbarEmitter(response?.data?.message, "error");
         setLoading(false);
-      }, 2000);
+      }
+      fetchInstitute();
     } catch (error) {
       // console.error("Error adding institute:", error);
       snackbarEmitter("Something went wrong", "error");
-
-      setTimeout(() => {
-        setLoading(false);
-      }, 2000);
+      // setLoading(false);
+      // setShowMessage(false);
+    } finally {
+      setLoading(false);
+      setShowMessage(false);
+      fetchInstitute();
     }
   };
 
   const updateInstituteStudents = async (id) => {
+    setLoading(true);
+
     const req = {
       instituteName: formData.instituteName,
       department: formData.department,
@@ -221,8 +224,10 @@ function Institution() {
         resetFormData();
         handleModalClose();
         fetchInstitute();
+        setLoading(false);
       }
     } catch (error) {
+      setLoading(false);
       snackbarEmitter("Something went wrong", "error");
     }
   };
@@ -242,7 +247,6 @@ function Institution() {
     });
     setId(institute._id);
 
-    console.log(response);
     handleModalOpen();
     setFormData({
       instituteName: response.data.data.instituteName,
@@ -402,70 +406,82 @@ function Institution() {
                   value={formData.phone}
                   onChange={handleInputChange}
                   placeholder="Enter"
+                  type="number"
                   error={!!formErrs.phone}
                   helperText={formErrs.phone}
                 />
               </Grid>
 
-              <Grid size={{ xs: 12, md: 5 }}>
-                <CustomTextField
-                  label="Subscription Amount*"
-                  name="subscriptionAmt"
-                  value={formData.subscriptionAmt}
-                  onChange={handleInputChange}
-                  placeholder="Enter"
-                  error={!!formErrs.subscriptionAmt}
-                  helperText={formErrs.subscriptionAmt}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 5 }}>
-                <CustomTextField
-                  label="Subscription Period*"
-                  select
-                  name="subscriptionPeriod"
-                  value={formData.subscriptionPeriod}
-                  onChange={handleInputChange}
-                  placeholder="Enter"
-                  error={!!formErrs.subscriptionPeriod}
-                  helperText={formErrs.subscriptionPeriod}
-                >
-                  <MenuItem value="1">1 month</MenuItem>
-                  <MenuItem value="6">6 months</MenuItem>
-                  <MenuItem value="12">12 months</MenuItem>
-                </CustomTextField>
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 5 }}>
-                <Box sx={{ position: "relative" }}>
+              {!id && (
+                <Grid size={{ xs: 12, md: 5 }}>
                   <CustomTextField
-                    label="Password*"
-                    name="password"
-                    value={formData.password}
+                    label="Subscription Amount*"
+                    name="subscriptionAmt"
+                    value={formData.subscriptionAmt}
                     onChange={handleInputChange}
                     placeholder="Enter"
-                    error={!!formErrs.password}
-                    helperText={formErrs.password}
-                    fullWidth
+                    type="number"
+                    error={!!formErrs.subscriptionAmt}
+                    helperText={formErrs.subscriptionAmt}
                   />
-                  <Button
-                    onClick={handleGeneratePassword}
-                    sx={styles.generateButton}
-                  >
-                    Generate
-                  </Button>
-                </Box>
-              </Grid>
+                </Grid>
+              )}
 
-              <Grid size={{ xs: 12, md: 5 }}>
-                <CustomTextField
-                  label="Transaction ID"
-                  name="transactionId"
-                  value={formData.transactionId}
-                  onChange={handleInputChange}
-                  placeholder="Enter"
-                />
-              </Grid>
+              {!id && (
+                <Grid size={{ xs: 12, md: 5 }}>
+                  <CustomTextField
+                    label="Subscription Period*"
+                    select
+                    name="subscriptionPeriod"
+                    value={formData.subscriptionPeriod}
+                    onChange={handleInputChange}
+                    placeholder="Enter"
+                    error={!!formErrs.subscriptionPeriod}
+                    helperText={formErrs.subscriptionPeriod}
+                  >
+                    <MenuItem value="30">1 Month</MenuItem>
+                    <MenuItem value="90">3 Months</MenuItem>
+                    <MenuItem value="180">6 Months</MenuItem>
+                    <MenuItem value="365">1 Year</MenuItem>
+                    <MenuItem value="548">1 Year 6 Months</MenuItem>
+                    <MenuItem value="730">2 Year</MenuItem>
+                  </CustomTextField>
+                </Grid>
+              )}
+
+              {!id && (
+                <Grid size={{ xs: 12, md: 5 }}>
+                  <Box sx={{ position: "relative" }}>
+                    <CustomTextField
+                      label="Password*"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      placeholder="Enter"
+                      error={!!formErrs.password}
+                      helperText={formErrs.password}
+                      fullWidth
+                    />
+                    <Button
+                      onClick={handleGeneratePassword}
+                      sx={styles.generateButton}
+                    >
+                      Generate
+                    </Button>
+                  </Box>
+                </Grid>
+              )}
+              {!id && (
+                <Grid size={{ xs: 12, md: 5 }}>
+                  <CustomTextField
+                    label="Transaction ID"
+                    name="transactionId"
+                    value={formData.transactionId}
+                    onChange={handleInputChange}
+                    placeholder="Enter"
+                  />
+                </Grid>
+              )}
 
               <Grid size={{ xs: 12, md: 10.5 }}>
                 <CustomTextField
@@ -493,20 +509,27 @@ function Institution() {
             </Grid>
 
             <Grid
-              item
               sx={{ display: "flex", justifyContent: "center" }}
               size={{ xs: 12, md: 6 }}
             >
               <CustomButton
                 children={id ? "Update" : "Add"}
-                onClick={() =>
-                  id ? updateInstituteStudents(id) : handleAddInstitute()
+                onClick={
+                  id ? () => updateInstituteStudents(id) : handleAddInstitute
                 }
-                loading={false}
+                loading={loading}
                 bgColor="#EAB308"
                 sx={{ width: "20%" }}
               />
             </Grid>
+            {showMessage && (
+              <Grid sx={{ mt: 1 }}>
+                <Typography sx={{ color: "red" }}>
+                  Please wait for some time for transferring all syllabus data
+                  to institute
+                </Typography>
+              </Grid>
+            )}
           </DialogContent>
         </Dialog>
       </Navbar>
