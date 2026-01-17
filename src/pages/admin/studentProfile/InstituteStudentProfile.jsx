@@ -65,7 +65,7 @@ function AdminStudentProfile() {
   const handleSubmit = async () => {
     const errors = handleErrors();
 
-    if (Object.key(errors).length > 0) {
+    if (Object.keys(errors).length > 0) {
       return;
     }
 
@@ -393,14 +393,14 @@ function AdminStudentProfile() {
           >
             <CustomButton
               children={editingStudentId ? "Update" : "Add"}
-              loading={false}
-              bgColor="#EAB308"
-              sx={{ width: "20%" }}
               onClick={() =>
                 editingStudentId
                   ? updateStudent(editingStudentId)
                   : handleSubmit()
               }
+              loading={false}
+              bgColor="#EAB308"
+              sx={{ width: "20%" }}
               // onClick={ isEditMode ? updateStudent(): handleSubmit()}
             />
           </Grid>
