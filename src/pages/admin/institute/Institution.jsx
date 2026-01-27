@@ -75,7 +75,7 @@ function Institution() {
     } catch (error) {
       snackbarEmitter(
         error?.response?.data?.message || "Something went wrong",
-        "error"
+        "error",
       );
     }
   };
@@ -140,8 +140,8 @@ function Institution() {
     if (!formData.permanentAddress)
       errs.permanentAddress = "Permanent address is required";
 
-    if (!formData.transactionId)
-      errs.transactionId = "Transaction ID is required";
+    // if (!formData.transactionId)
+    //   errs.transactionId = "Transaction ID is required";
 
     setFormErrs(errs);
     return errs;
@@ -163,7 +163,9 @@ function Institution() {
   };
 
   const handleAddInstitute = async () => {
+    console.log("ADD BUTTON CLICKED");
     const errors = handleErrors();
+    console.log("FORM ERRORS:", errors);
     if (Object.keys(errors).length > 0) {
       return;
     }
@@ -176,26 +178,26 @@ function Institution() {
         snackbarEmitter(response.data.message, "success");
         handleModalClose();
         resetFormData();
-        setLoading(false);
-        setShowMessage(false);
+        // setLoading(false);
+        // setShowMessage(false);
       } else {
         snackbarEmitter(response?.data?.message, "error");
         setLoading(false);
-
       }
       fetchInstitute();
-
     } catch (error) {
       // console.error("Error adding institute:", error);
       snackbarEmitter("Something went wrong", "error");
+      // setLoading(false);
+      // setShowMessage(false);
+    } finally {
       setLoading(false);
       setShowMessage(false);
-
+      fetchInstitute();
     }
   };
 
   const updateInstituteStudents = async (id) => {
-
     setLoading(true);
 
     const req = {
@@ -223,7 +225,6 @@ function Institution() {
         handleModalClose();
         fetchInstitute();
         setLoading(false);
-
       }
     } catch (error) {
       setLoading(false);
@@ -411,61 +412,67 @@ function Institution() {
                 />
               </Grid>
 
-              {!id && <Grid size={{ xs: 12, md: 5 }}>
-                <CustomTextField
-                  label="Subscription Amount*"
-                  name="subscriptionAmt"
-                  value={formData.subscriptionAmt}
-                  onChange={handleInputChange}
-                  placeholder="Enter"
-                  type="number"
-                  error={!!formErrs.subscriptionAmt}
-                  helperText={formErrs.subscriptionAmt}
-                />
-              </Grid>}
-
-              {!id && <Grid size={{ xs: 12, md: 5 }}>
-                <CustomTextField
-                  label="Subscription Period*"
-                  select
-                  name="subscriptionPeriod"
-                  value={formData.subscriptionPeriod}
-                  onChange={handleInputChange}
-                  placeholder="Enter"
-                  error={!!formErrs.subscriptionPeriod}
-                  helperText={formErrs.subscriptionPeriod}
-                >
-                  <MenuItem value="30">1 Month</MenuItem>
-                  <MenuItem value="90">3 Months</MenuItem>
-                  <MenuItem value="180">6 Months</MenuItem>
-                  <MenuItem value="365">1 Year</MenuItem>
-                  <MenuItem value="548">1 Year 6 Months</MenuItem>
-                  <MenuItem value="730">2 Year</MenuItem>
-                </CustomTextField>
-              </Grid>}
-
-              {!id && <Grid size={{ xs: 12, md: 5 }}>
-                <Box sx={{ position: "relative" }}>
+              {!id && (
+                <Grid size={{ xs: 12, md: 5 }}>
                   <CustomTextField
-                    label="Password*"
-                    name="password"
-                    value={formData.password}
+                    label="Subscription Amount*"
+                    name="subscriptionAmt"
+                    value={formData.subscriptionAmt}
                     onChange={handleInputChange}
                     placeholder="Enter"
-                    error={!!formErrs.password}
-                    helperText={formErrs.password}
-                    fullWidth
+                    type="number"
+                    error={!!formErrs.subscriptionAmt}
+                    helperText={formErrs.subscriptionAmt}
                   />
-                  <Button
-                    onClick={handleGeneratePassword}
-                    sx={styles.generateButton}
+                </Grid>
+              )}
+
+              {!id && (
+                <Grid size={{ xs: 12, md: 5 }}>
+                  <CustomTextField
+                    label="Subscription Period*"
+                    select
+                    name="subscriptionPeriod"
+                    value={formData.subscriptionPeriod}
+                    onChange={handleInputChange}
+                    placeholder="Enter"
+                    error={!!formErrs.subscriptionPeriod}
+                    helperText={formErrs.subscriptionPeriod}
                   >
-                    Generate
-                  </Button>
-                </Box>
-              </Grid>}
-              {
-                !id && <Grid size={{ xs: 12, md: 5 }}>
+                    <MenuItem value="30">1 Month</MenuItem>
+                    <MenuItem value="90">3 Months</MenuItem>
+                    <MenuItem value="180">6 Months</MenuItem>
+                    <MenuItem value="365">1 Year</MenuItem>
+                    <MenuItem value="548">1 Year 6 Months</MenuItem>
+                    <MenuItem value="730">2 Year</MenuItem>
+                  </CustomTextField>
+                </Grid>
+              )}
+
+              {!id && (
+                <Grid size={{ xs: 12, md: 5 }}>
+                  <Box sx={{ position: "relative" }}>
+                    <CustomTextField
+                      label="Password*"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      placeholder="Enter"
+                      error={!!formErrs.password}
+                      helperText={formErrs.password}
+                      fullWidth
+                    />
+                    <Button
+                      onClick={handleGeneratePassword}
+                      sx={styles.generateButton}
+                    >
+                      Generate
+                    </Button>
+                  </Box>
+                </Grid>
+              )}
+              {!id && (
+                <Grid size={{ xs: 12, md: 5 }}>
                   <CustomTextField
                     label="Transaction ID"
                     name="transactionId"
@@ -473,7 +480,8 @@ function Institution() {
                     onChange={handleInputChange}
                     placeholder="Enter"
                   />
-                </Grid>}
+                </Grid>
+              )}
 
               <Grid size={{ xs: 12, md: 10.5 }}>
                 <CustomTextField
@@ -506,17 +514,22 @@ function Institution() {
             >
               <CustomButton
                 children={id ? "Update" : "Add"}
-                onClick={() =>
-                  id ? updateInstituteStudents(id) : handleAddInstitute()
+                onClick={
+                  id ? () => updateInstituteStudents(id) : handleAddInstitute
                 }
                 loading={loading}
                 bgColor="#EAB308"
                 sx={{ width: "20%" }}
               />
             </Grid>
-           { showMessage && <Grid>
-              <Typography sx={{color:"red"}}>Please wait for some time for transferring all syllabus data to institute</Typography>
-            </Grid>}
+            {showMessage && (
+              <Grid sx={{ mt: 1 }}>
+                <Typography sx={{ color: "red" }}>
+                  Please wait for some time for transferring all syllabus data
+                  to institute
+                </Typography>
+              </Grid>
+            )}
           </DialogContent>
         </Dialog>
       </Navbar>
